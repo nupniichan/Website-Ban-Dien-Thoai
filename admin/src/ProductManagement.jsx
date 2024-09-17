@@ -86,7 +86,9 @@ const ProductManagement = () => {
   });
 
   return (
-    <Box padding={3}>
+    <>
+    <h3>Quản lý sản phẩm</h3>
+        <Box padding={3}>
       {/* Thanh tìm kiếm */}
       <TextField label="Tìm kiếm sản phẩm" variant="outlined" fullWidth value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} margin="normal" />
 
@@ -141,7 +143,7 @@ const ProductManagement = () => {
             <TableCell>Tên sản phẩm</TableCell>
             <TableCell>Màu</TableCell>
             <TableCell>Số lượng tồn</TableCell>
-            <TableCell>Đơn giá ($)</TableCell>
+            <TableCell>Giá (VNĐ)</TableCell>
             <TableCell>Chi tiết</TableCell>
             <TableCell>Chức năng</TableCell>
           </TableRow>
@@ -181,12 +183,13 @@ const ProductManagement = () => {
             <Typography>Tên sản phẩm: {selectedProduct.name}</Typography>
             <Typography>Màu: {selectedProduct.color}</Typography>
             <Typography>Số lượng: {selectedProduct.quantity}</Typography>
-            <Typography>Đơn giá: ${selectedProduct.price}</Typography>
+            <Typography>Đơn giá: {selectedProduct.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} VNĐ</Typography>
             <Typography>Mô tả: {selectedProduct.description}</Typography>
           </DialogContent>
         </Dialog>
       )}
     </Box>
+    </>
   );
 };
 
