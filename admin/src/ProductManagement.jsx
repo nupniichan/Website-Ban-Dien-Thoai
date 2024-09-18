@@ -183,7 +183,7 @@ const ProductManagement = () => {
             <Typography>Tên sản phẩm: {selectedProduct.name}</Typography>
             <Typography>Màu: {selectedProduct.color}</Typography>
             <Typography>Số lượng: {selectedProduct.quantity}</Typography>
-            <Typography>Đơn giá: {selectedProduct.price.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })} VNĐ</Typography>
+            <Typography>Đơn giá: {selectedProduct.price} VNĐ</Typography>
             <Typography>Mô tả: {selectedProduct.description}</Typography>
           </DialogContent>
         </Dialog>
