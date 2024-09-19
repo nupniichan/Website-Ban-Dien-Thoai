@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import './AdminLogin.css';
 
+// eslint-disable-next-line react/prop-types
 const AdminLogin = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +31,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
       }
     } catch (err) {
       setLoginError("Lỗi server");
+      console.log(err)
     }
   };
 
@@ -47,7 +49,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
             required
           />
         </div>
-        
+
         <div className="form-group">
           <input
             type="password"
