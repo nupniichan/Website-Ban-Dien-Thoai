@@ -1,5 +1,4 @@
 
-import './SearchResults'
 
 const SearchResults = () => {
     return (
