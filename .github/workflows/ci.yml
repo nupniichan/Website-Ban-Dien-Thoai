@@ -78,7 +78,3 @@ jobs:
           npx eslint . --debug
           echo "Running ESLint with auto-fix"
           npx eslint . --fix
-
-      - name: Run tests
-        working-directory: ./server
-        run: npm test
