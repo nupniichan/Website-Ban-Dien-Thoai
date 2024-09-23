@@ -1,31 +1,31 @@
-import React, { useState } from 'react';
-import { Box, TextField, Button, Table, TableHead, TableRow, TableCell, TableBody, Dialog, DialogTitle, DialogContent, Typography, MenuItem, Menu, IconButton } from '@mui/material';
-import { ArrowDropDown, ArrowDropUp } from '@mui/icons-material'; // Icons cho dropdown
-
-const ordersData = [
-  { id: 'OD001', customerId: 'KH001', productId: 'SP001', dayOrder: '10/08/2024' ,quantity: 2, totalAmount: 202123,status: 'Giao thành công' },
-  { id: 'OD002', customerId: 'KH002', productId: 'SP002', dayOrder: '12/09/2024' ,quantity: 1, totalAmount: 7911239,status: 'Đã bị huỷ' },
-  { id: 'OD003', customerId: 'KH003', productId: 'SP003', dayOrder: '17/08/2024' ,quantity: 3, totalAmount: 360000,status: 'Chờ xác nhận' },
-];
+import React, { useState, useEffect } from 'react';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton, Button, TextField } from '@mui/material';
+import { Edit, Delete, Visibility } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const OrderManagement = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
+  const navigate = useNavigate();
+  const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [statusAnchorEl, setStatusAnchorEl] = useState(null);  // Cho menu trạng thái đơn hàng
+  const [searchQuery, setSearchQuery] = useState(''); // Search query state
 
-  const [orders, setOrders] = useState(ordersData); // Quản lý danh sách đơn đặt hàng
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/orders');
+        if (response.ok) {
+          const data = await response.json();
+          setOrders(data);
+        } else {
+          console.error('Failed to fetch orders');
+        }
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+      }
+    };
 
-  // Toggle mở/đóng dropdown trạng thái đơn hàng
-  const handleStatusDropdownClick = (event) => {
-    setStatusAnchorEl(statusAnchorEl ? null : event.currentTarget);
-  };
-
-  // Xử lý chọn trạng thái đơn hàng
-  const handleStatusFilterChange = (event) => {
-    setStatusFilter(event);
-    setStatusAnchorEl(null);  // Đóng menu sau khi chọn
-  };
+    fetchOrders();
+  }, []);
 
   const handleViewDetails = (order) => {
     setSelectedOrder(order);
@@ -35,133 +35,145 @@ const OrderManagement = () => {
     setSelectedOrder(null);
   };
 
-  // Xử lý xóa đơn đặt hàng
-  const handleDeleteOrder = (orderId) => {
-    setOrders(orders.filter(order => order.id !== orderId));
+  const handleDeleteOrder = async (orderId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+        method: 'DELETE',
+      });
+      if (response.ok) {
+        setOrders(orders.filter(order => order.id !== orderId));
+        alert('Order deleted successfully');
+      } else {
+        console.error('Failed to delete order');
+        alert('Failed to delete order');
+      }
+    } catch (error) {
+      console.error('Error deleting order:', error);
+      alert('Error deleting order');
+    }
   };
 
-  // Xử lý thêm đơn đặt hàng mới
+  const handleEditOrderStatus = (orderId) => {
+    navigate(`/edit-order/${orderId}`);
+  };
+
   const handleAddOrder = () => {
-    const newOrder = {
-      id: `OD00${orders.length + 1}`,
-      customerId: 'KH004',
-      productId: 'SP001',
-      dayOrder: new Date().toLocaleDateString('vi-VN'),
-      quantity: 1,
-      totalAmount: 999,
-      status: 'Pending',
-    };
-    setOrders([...orders, newOrder]);
+    navigate('/add-order');
   };
 
-  // Xử lý chỉnh sửa trạng thái đơn đặt hàng (đơn giản là thay đổi trạng thái)
-  const handleEditOrder = (orderId) => {
-    const updatedOrders = orders.map(order =>
-      order.id === orderId ? { ...order, status: 'Delivered' } : order
-    );
-    setOrders(updatedOrders);
+  // Function to determine color based on status
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Chờ xác nhận':
+        return { color: 'orange' };
+      case 'Đã xác nhận':
+      case 'Đã giao':
+        return { color: 'green' };
+      case 'Đã hủy':
+        return { color: 'red' };
+      default:
+        return {};
+    }
   };
 
-  const filteredOrders = orders.filter((order) => {
-    const matchesSearchTerm = order.id.toLowerCase().includes(searchTerm.toLowerCase()) || order.customerId.includes(searchTerm) || order.productId.includes(searchTerm);
-    const matchesStatusFilter = statusFilter === '' || order.status === statusFilter;
-
-    return matchesSearchTerm && matchesStatusFilter;
-  });
+  // Filter orders based on the search query (Order ID or Customer Name)
+  const filteredOrders = orders.filter(order =>
+    order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    order.customerName.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
-    <>
-    <h3>Quản lý đơn đặt hàng</h3>
-        <Box padding={3}>
-      {/* Thanh tìm kiếm */}
-      <TextField label="Tìm kiếm đơn đặt hàng" variant="outlined" fullWidth value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} margin="normal" />
+    <Box padding={3}>
+      <Typography variant="h4" gutterBottom>Quản lý đơn hàng</Typography>
 
-      {/* Bộ lọc trạng thái đơn hàng */}
-      <Box display="flex" gap={2} marginBottom={2}>
-        {/* Dropdown trạng thái */}
-        <Box>
-          <IconButton onClick={handleStatusDropdownClick} aria-controls={statusAnchorEl ? 'status-menu' : undefined}>
-            Trạng thái đơn hàng {statusAnchorEl ? <ArrowDropUp /> : <ArrowDropDown />}
-          </IconButton>
-          <Menu
-            id="status-menu"
-            anchorEl={statusAnchorEl}
-            open={Boolean(statusAnchorEl)}
-            onClose={() => setStatusAnchorEl(null)}
-          >
-            <MenuItem onClick={() => handleStatusFilterChange('')}>Tất cả</MenuItem>
-            <MenuItem onClick={() => handleStatusFilterChange('Giao thành công')}>Giao thành công</MenuItem>
-            <MenuItem onClick={() => handleStatusFilterChange('Chờ xác nhận')}>Chờ xác nhận</MenuItem>
-            <MenuItem onClick={() => handleStatusFilterChange('Đã bị huỷ')}>Đã huỷ</MenuItem>
-          </Menu>
-        </Box>
-      </Box>
+      {/* Search Bar */}
+      <TextField
+        label="Nhập mã order hoặc tên khách hàng"
+        variant="outlined"
+        fullWidth
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        style={{ marginBottom: '20px' }}
+      />
 
-      {/* Nút thêm đơn đặt hàng */}
-      <Box marginBottom={2}>
-        <Button variant="contained" color="primary" onClick={handleAddOrder}>Thêm đơn đặt hàng</Button>
-      </Box>
+      {/* Add Order Button */}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleAddOrder}
+        style={{ marginBottom: '20px' }}
+      >
+        Thêm đơn đặt hàng
+      </Button>
 
-      {/* Danh sách đơn đặt hàng */}
-      <Table>
+      <TableContainer>
+        <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Mã đơn hàng</TableCell>
-              <TableCell>Mã khách hàng</TableCell>
-              <TableCell>Mã sản phẩm</TableCell>
-              <TableCell>Ngày đặt</TableCell>
-              <TableCell>Số lượng đặt</TableCell>
-              <TableCell>Thành tiền (VNĐ)</TableCell>
+              <TableCell>Order ID</TableCell>
+              <TableCell>Tên khách hàng</TableCell>
+              <TableCell>Địa chỉ giao hàng</TableCell>
+              <TableCell>Ngày đặt hàng</TableCell>
+              <TableCell>Phương thức thanh toán</TableCell>
+              <TableCell>Tổng tiền</TableCell>
               <TableCell>Trạng thái</TableCell>
-              <TableCell>Chi tiết</TableCell>
-              <TableCell>Chức năng</TableCell>
+              <TableCell>Hành động</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {filteredOrders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>{order.id}</TableCell>
-                <TableCell>{order.customerId}</TableCell>
-                <TableCell>{order.productId}</TableCell>
-                <TableCell>{order.dayOrder}</TableCell>
-                <TableCell>{order.quantity}</TableCell>
-                <TableCell>{order.totalAmount.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' })}</TableCell> {/* Định dạng thành tiền VNĐ */}
-                <TableCell>{order.status}</TableCell>
+                <TableCell>{order.customerName}</TableCell>
+                <TableCell>{order.shippingAddress}</TableCell>
+                {/* Format date as dd/MM/yyyy */}
+                <TableCell>{new Date(order.orderDate).toLocaleDateString('vi-VN')}</TableCell>
+                <TableCell>{order.paymentMethod}</TableCell>
+                <TableCell>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}</TableCell>
+                <TableCell style={getStatusColor(order.status)}>{order.status}</TableCell>
                 <TableCell>
-                  <Button variant="outlined" onClick={() => handleViewDetails(order)}>
-                    Xem chi tiết
-                  </Button>
-                </TableCell>
-                <TableCell>
-                  <Button variant="contained" color="primary" onClick={() => handleEditOrder(order.id)} style={{ marginRight: '8px' }}>
-                    Sửa
-                  </Button>
-                  <Button variant="contained" color="secondary" onClick={() => handleDeleteOrder(order.id)}>
-                    Xóa
-                  </Button>
+                  <Box display="flex" justifyContent="space-between">
+                    <IconButton onClick={() => handleViewDetails(order)} color="primary">
+                      <Visibility />
+                    </IconButton>
+                    <IconButton onClick={() => handleEditOrderStatus(order.id)} color="secondary">
+                      <Edit />
+                    </IconButton>
+                    <IconButton onClick={() => handleDeleteOrder(order.id)} color="error">
+                      <Delete />
+                    </IconButton>
+                  </Box>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
+      </TableContainer>
 
-      {/* Dialog Chi tiết đơn đặt hàng */}
       {selectedOrder && (
         <Dialog open={true} onClose={handleCloseDialog}>
-          <DialogTitle>Chi tiết đơn đặt hàng</DialogTitle>
+          <DialogTitle>Order Details</DialogTitle>
           <DialogContent>
-            <Typography>Mã đơn hàng: {selectedOrder.id}</Typography>
-            <Typography>Mã khách hàng: {selectedOrder.customerId}</Typography>
-            <Typography>Mã sản phẩm: {selectedOrder.productId}</Typography>
-            <Typography>Ngày đặt: {selectedOrder.dayOrder}</Typography>
-            <Typography>Số lượng đặt: {selectedOrder.quantity}</Typography>
-            <Typography>Thành tiền: {selectedOrder.totalAmount} VNĐ</Typography>
+            <Typography>Order ID: {selectedOrder.id}</Typography>
+            <Typography>Khách hàng: {selectedOrder.customerName}</Typography>
+            <Typography>Địa chỉ giao hàng: {selectedOrder.shippingAddress}</Typography>
+            <Typography>Ngày đặt: {new Date(selectedOrder.orderDate).toLocaleDateString('vi-VN')}</Typography>
+            <Typography>Phương thức thanh toán: {selectedOrder.paymentMethod}</Typography>
             <Typography>Trạng thái: {selectedOrder.status}</Typography>
+            <Typography>Tổng tiền: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedOrder.totalAmount)}</Typography>
+            <Typography>Ghi chú: {selectedOrder.notes}</Typography>
+            <Typography>Sản phẩm đặt:</Typography>
+            <ul>
+              {selectedOrder.items.map((item) => (
+                <li key={item.productId}>
+                  ID sản phẩm: {item.productId} - Số lượng: {item.quantity}
+                </li>
+              ))}
+            </ul>
           </DialogContent>
         </Dialog>
       )}
     </Box>
-    </>
   );
 };
 

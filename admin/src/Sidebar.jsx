@@ -1,38 +1,50 @@
-import React from 'react';
-import './Sidebar.css'; 
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './Sidebar.css';
 
-const Sidebar = ({ onSelect, selectedContent }) => {
+const Sidebar = () => {
+  const navigate = useNavigate();
+  
+  // Manage active state locally
+  const [activeMenu, setActiveMenu] = useState('dashboard');
+
+  // Handle navigation and update active menu
+  const handleNavigation = (path, menu) => {
+    setActiveMenu(menu);
+    navigate(path);
+  };
+
   return (
     <div className="sidebar">
       <input type="text" placeholder="Nhập chức năng cần tìm..." className="search-bar" />
       <ul className="sidebar-menu">
-        <li className={`menu-item ${selectedContent === 'dashboard' ? 'active' : ''}`} onClick={() => onSelect('dashboard')}>
+        <li className={`menu-item ${activeMenu === 'dashboard' ? 'active' : ''}`} onClick={() => handleNavigation('/', 'dashboard')}>
           <img className="menu-icon" src="src/img/icon/dashboard.png" alt="Dashboard" />
           <span>Dashboard</span>
         </li>
-        <li className={`menu-item ${selectedContent === 'product' ? 'active' : ''}`} onClick={() => onSelect('product')}>
+        <li className={`menu-item ${activeMenu === 'product' ? 'active' : ''}`} onClick={() => handleNavigation('/product-management', 'product')}>
           <img className="menu-icon" src="src/img/icon/smartphone.png" alt="Quản lý sản phẩm" />
-          <span>Quản lý sản phẩm</span>
+          <span>Quản sản phẩm</span>
         </li>
-        <li className={`menu-item ${selectedContent === 'order' ? 'active' : ''}`} onClick={() => onSelect('order')}>
+        <li className={`menu-item ${activeMenu === 'order' ? 'active' : ''}`} onClick={() => handleNavigation('/order-management', 'order')}>
           <img className="menu-icon" src="src/img/icon/checklist.png" alt="Quản lý đơn hàng" />
           <span>Quản lý đơn hàng</span>
         </li>
-        <li className={`menu-item ${selectedContent === 'user' ? 'active' : ''}`} onClick={() => onSelect('user')}>
+        <li className={`menu-item ${activeMenu === 'user' ? 'active' : ''}`} onClick={() => handleNavigation('/user-management', 'user')}>
           <img className="menu-icon" src="src/img/icon/user.png" alt="Quản lý người dùng" />
           <span>Quản lý người dùng</span>
         </li>
-        <li className={`menu-item ${selectedContent === 'report' ? 'active' : ''}`} onClick={() => onSelect('report')}>
+        <li className={`menu-item ${activeMenu === 'statics' ? 'active' : ''}`} onClick={() => handleNavigation('/reports', 'statics')}>
           <img className="menu-icon" src="src/img/icon/statics.png" alt="Báo cáo & thống kê" />
           <span>Báo cáo & thống kê</span>
         </li>
-        <li className={`menu-item ${selectedContent === 'review' ? 'active' : ''}`} onClick={() => onSelect('review')}>
-          <img className="menu-icon" src="src/img/icon/rating.png" alt="Quản lý đánh giá và bình luận" />
-          <span>Quản lý đánh giá và bình luận</span>
+        <li className={`menu-item ${activeMenu === 'rating' ? 'active' : ''}`} onClick={() => handleNavigation('/reviews', 'rating')}>
+          <img className="menu-icon" src="src/img/icon/rating.png" alt="Quản lý đánh giá & bình luận" />
+          <span>Quản lý đánh giá & bình luận</span>
         </li>
-        <li className={`menu-item ${selectedContent === 'inventory' ? 'active' : ''}`} onClick={() => onSelect('inventory')}>
-          <img className="menu-icon" src="src/img/icon/box.png" alt="Quản lý kho hàng" />
-          <span>Quản lý kho hàng</span>
+        <li className={`menu-item ${activeMenu === 'phieu' ? 'active' : ''}`} onClick={() => handleNavigation('/inventory-management', 'phieu')}>
+          <img className="menu-icon" src="src/img/icon/user.png" alt="Quản lý phiếu nhập kho" />
+          <span>Quản lý phiếu nhập kho</span>
         </li>
       </ul>
       <div className="sidebar-footer">
