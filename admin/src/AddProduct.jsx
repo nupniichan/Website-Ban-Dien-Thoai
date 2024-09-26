@@ -3,7 +3,7 @@ import { Box, TextField, Button, Typography, Grid, IconButton } from '@mui/mater
 import { useNavigate } from 'react-router-dom';
 
 const AddProduct = () => {
-  const history = useNavigate();
+  const navigate = useNavigate();
   const [product, setProduct] = useState({
     name: '',
     color: '',
@@ -73,7 +73,7 @@ const AddProduct = () => {
         const result = await response.json();
         setProductId(result.id);
         alert('Sản phẩm đã được thêm thành công');
-        history.push('/product-management'); // Chuyển hướng sau khi thêm thành công
+        navigate('/product-management'); // Chuyển hướng sau khi thêm thành công
       } else {
         const result = await response.json();
         alert('Lỗi khi thêm sản phẩm: ' + result.message);
@@ -85,7 +85,7 @@ const AddProduct = () => {
   };
 
   const handleCancel = () => {
-    history.push('/product-management'); // Quay lại /product-management
+    navigate('/product-management'); // Quay lại /product-management
   };
 
   return (

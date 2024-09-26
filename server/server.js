@@ -5,6 +5,7 @@ const { loginAdmin } = require('./module/adminLogin.js');
 const Product = require('./module/Product.js');
 const Counter = require('./module/Counter.js');
 const Order = require('./module/Order.js');
+const Kho = require('./module/Kho.js');
 const multer = require('multer');
 const path = require('path');
 
@@ -277,6 +278,103 @@ app.get('/api/products/:id', async (req, res) => {
     res.json(product);
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin sản phẩm', error: err.message });
+  }
+});
+
+// Get all kho entries
+app.get('/api/kho', async (req, res) => {
+  console.log("Received request to get all kho entries");
+  try {
+    const khoEntries = await Kho.find();
+    console.log("Fetched kho entries:", khoEntries);
+    res.json(khoEntries);
+  } catch (err) {
+    console.error('Error fetching kho entries:', err.message);
+    res.status(500).json({ message: 'Error fetching kho entries', error: err.message });
+  }
+});
+
+// Get kho entry by ID
+app.get('/api/kho/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`Received request to get kho entry with ID: ${id}`);
+  try {
+    const khoEntry = await Kho.findOne({ id });
+    if (!khoEntry) {
+      console.warn(`Kho entry with ID ${id} not found`);
+      return res.status(404).json({ message: 'Kho entry not found' });
+    }
+    console.log("Fetched kho entry:", khoEntry);
+    res.json(khoEntry);
+  } catch (err) {
+    console.error('Error fetching kho entry:', err.message);
+    res.status(500).json({ message: 'Error fetching kho entry', error: err.message });
+  }
+});
+
+// Create new kho entry
+app.post('/api/kho', async (req, res) => {
+  console.log("Received request to create new kho entry:", req.body);
+  const { id, type, managementPerson, responsiblePerson, date, warehouseCode, location, notes, products} = req.body;
+
+  const newKhoEntry = new Kho({
+    id,
+    type,
+    managementPerson,
+    responsiblePerson,
+    date,
+    warehouseCode,
+    location,
+    notes,
+    products
+  });
+
+  try {
+    await newKhoEntry.save();
+    console.log("Kho entry created successfully:", newKhoEntry);
+    res.status(201).json({ message: 'Kho entry created successfully', khoEntry: newKhoEntry });
+  } catch (err) {
+    console.error('Error creating kho entry:', err.message);
+    res.status(500).json({ message: 'Error creating kho entry', error: err.message });
+  }
+});
+
+// Update kho entry
+app.put('/api/kho/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`Received request to update kho entry with ID: ${id}`, req.body);
+  const updateData = req.body;
+
+  try {
+    const updatedKhoEntry = await Kho.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedKhoEntry) {
+      console.warn(`Kho entry with ID ${id} not found for update`);
+      return res.status(404).json({ message: 'Kho entry not found' });
+    }
+    console.log("Kho entry updated successfully:", updatedKhoEntry);
+    res.json({ message: 'Kho entry updated successfully', khoEntry: updatedKhoEntry });
+  } catch (err) {
+    console.error('Error updating kho entry:', err.message);
+    res.status(500).json({ message: 'Error updating kho entry', error: err.message });
+  }
+});
+
+// Delete kho entry
+app.delete('/api/kho/:id', async (req, res) => {
+  const { id } = req.params;
+  console.log(`Received request to delete kho entry with ID: ${id}`);
+
+  try {
+    const deletedKhoEntry = await Kho.findOneAndDelete({ id });
+    if (!deletedKhoEntry) {
+      console.warn(`Kho entry with ID ${id} not found for deletion`);
+      return res.status(404).json({ message: 'Kho entry not found' });
+    }
+    console.log("Kho entry deleted successfully:", deletedKhoEntry);
+    res.json({ message: 'Kho entry deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting kho entry:', err.message);
+    res.status(500).json({ message: 'Error deleting kho entry', error: err.message });
   }
 });
 
