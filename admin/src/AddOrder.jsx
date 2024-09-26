@@ -98,44 +98,42 @@ const AddOrder = () => {
   // Submit the form and place the order
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const updatedOrder = { ...order };
-
+    const formData = new FormData();
+    formData.append('name', product.name);
+    formData.append('color', product.color);
+    formData.append('quantity', product.quantity);
+    formData.append('price', product.price);
+    formData.append('os', product.os);
+    formData.append('brand', product.brand);
+    formData.append('description', product.description);
+  
+    if (product.image) {
+      formData.append('image', product.image);
+    }
+  
+    // Thay đổi phần này: Gửi `cauhinh` dưới dạng chuỗi JSON
+    formData.append('cauhinh', JSON.stringify(product.cauhinh));
+  
     try {
-      // Send the order data to the server
-      const response = await fetch('http://localhost:5000/api/orders', {
+      const response = await fetch('http://localhost:5000/api/addProduct', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedOrder),
+        body: formData,
       });
-
+  
       if (response.ok) {
-        // Update stock after order creation
-        for (const item of updatedOrder.items) {
-          const product = products.find((p) => p.id === item.productId);
-          if (product) {
-            const updatedProductQuantity = product.quantity - item.quantity;
-            await fetch(`http://localhost:5000/api/products/${item.productId}`, {
-              method: 'PUT',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ quantity: updatedProductQuantity }),
-            });
-          }
-        }
-
-        alert('Order created successfully');
-        navigate('/order-management');
+        const result = await response.json();
+        setProductId(result.id);
+        alert('Sản phẩm đã được thêm thành công');
+        navigate('/product-management');
       } else {
-        alert('Failed to create order');
+        const result = await response.json();
+        alert('Lỗi khi thêm sản phẩm: ' + result.message);
       }
     } catch (error) {
-      console.error('Error creating order:', error);
+      console.error('Lỗi khi thêm sản phẩm:', error);
+      alert('Lỗi kết nối đến server');
     }
-  };
+  };  
 
   return (
     <Box padding={3}>

@@ -210,7 +210,7 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
       brand,
       description,
       image: req.file ? req.file.path : null,
-      cauhinh: JSON.parse(cauhinh),
+      cauhinh: JSON.parse(cauhinh),  // Chuyển từ chuỗi JSON sang object
     });
 
     await newProduct.save();
@@ -235,10 +235,13 @@ app.put('/api/products/:id', upload.single('image'), async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
-  if (req.file) {
-    updateData.image = req.file.path; // Cập nhật đường dẫn hình ảnh nếu có
+  // Nếu có dữ liệu cauhinh, parse chuỗi JSON thành object
+  if (updateData.cauhinh) {
+    updateData.cauhinh = JSON.parse(updateData.cauhinh);
   }
-
+  if (req.file) {
+    updateData.image = req.file.path;
+  }
   try {
     const updatedProduct = await Product.findOneAndUpdate({ id }, updateData, { new: true });
     if (!updatedProduct) {
@@ -249,6 +252,7 @@ app.put('/api/products/:id', upload.single('image'), async (req, res) => {
     res.status(500).json({ message: 'Lỗi khi cập nhật sản phẩm', error: err.message });
   }
 });
+
 
 // Xóa sản phẩm
 app.delete('/api/products/:id', async (req, res) => {

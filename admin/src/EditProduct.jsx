@@ -67,22 +67,24 @@ const EditProduct = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    Object.keys(product).forEach(key => {
+  
+    // Lặp qua các trường của product và thêm vào formData
+    Object.keys(product).forEach((key) => {
       if (key === 'cauhinh') {
-        formData.append(key, JSON.stringify(product[key]));
+        formData.append(key, JSON.stringify(product[key])); // Chuyển cauhinh thành JSON string
       } else if (key === 'image' && product[key] instanceof File) {
-        formData.append(key, product[key]);
+        formData.append(key, product[key]); // Nếu là hình ảnh mới, thêm vào formData
       } else {
-        formData.append(key, product[key]);
+        formData.append(key, product[key]); // Các trường khác
       }
     });
-
+  
     try {
       const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
         method: 'PUT',
         body: formData,
       });
-
+  
       if (response.ok) {
         alert('Sản phẩm đã được cập nhật thành công');
         navigate('/product-management');
@@ -94,7 +96,7 @@ const EditProduct = () => {
       console.error('Lỗi khi cập nhật sản phẩm:', error);
       alert('Lỗi khi cập nhật sản phẩm: ' + error.message);
     }
-  };
+  };  
 
   const handleCancel = () => {
     navigate('/product-management'); // Quay lại trang quản lý sản phẩm
