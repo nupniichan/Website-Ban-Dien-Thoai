@@ -175,7 +175,7 @@ const AddOrder = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Customer ID"
+              label="Id khách hàng"
               name="customerId"
               value={order.customerId}
               onChange={handleChange}
@@ -186,7 +186,7 @@ const AddOrder = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Customer Name"
+              label="Tên khách hàng"
               name="customerName"
               value={order.customerName}
               onChange={handleChange}
@@ -198,7 +198,7 @@ const AddOrder = () => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Shipping Address"
+              label="Địa chỉ giao hàng"
               name="shippingAddress"
               value={order.shippingAddress}
               onChange={handleChange}
@@ -211,7 +211,7 @@ const AddOrder = () => {
           {/* Order Date and Time */}
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Order Date"
+              label="Ngày đặt hàng"
               name="orderDate"
               type="datetime-local"
               value={order.orderDate}
@@ -230,7 +230,7 @@ const AddOrder = () => {
               <Grid container spacing={2} key={index}>
                 <Grid item xs={6}>
                   <TextField
-                    label="Product"
+                    label="Sản phẩm"
                     value={item.productId}
                     onChange={(e) => handleProductFilter(index, e.target.value)} // Filter products based on input
                     fullWidth
@@ -238,7 +238,7 @@ const AddOrder = () => {
                   />
                   <TextField
                     select
-                    label="Select Product"
+                    label="Chọn sản phẩm"
                     value={item.productId}
                     onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
                     fullWidth
@@ -253,7 +253,7 @@ const AddOrder = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
-                    label="Quantity"
+                    label="Số lượng"
                     type="number"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
@@ -277,21 +277,21 @@ const AddOrder = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               select
-              label="Payment Method"
+              label="Phương thức thanh toán"
               name="paymentMethod"
               value={order.paymentMethod}
               onChange={handleChange}
               fullWidth
               margin="normal"
             >
-              <MenuItem value="Cash">Tiền mặt</MenuItem>
-              <MenuItem value="Credit Card">Thẻ tín dụng</MenuItem>
-              <MenuItem value="Online Payment">Thanh toán trực tuyến</MenuItem>
+              <MenuItem value="Tiền mặt">Tiền mặt</MenuItem>
+              <MenuItem value="Thẻ tín dụng">Thẻ tín dụng</MenuItem>
+              <MenuItem value="Thanh toán trực tuyến">Thanh toán trực tuyến</MenuItem>
             </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Total Amount"
+              label="Tổng tiền"
               name="totalAmount"
               value={formatVND(order.totalAmount)} // Format total amount as VND
               fullWidth
@@ -302,7 +302,7 @@ const AddOrder = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               select
-              label="Order Status"
+              label="Trạng thái đơn hàng"
               name="status"
               value={order.status}
               onChange={handleChange}
@@ -317,7 +317,7 @@ const AddOrder = () => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Notes"
+              label="Ghi chú"
               name="notes"
               value={order.notes}
               onChange={handleChange}

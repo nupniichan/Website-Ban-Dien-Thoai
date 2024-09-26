@@ -503,6 +503,7 @@ app.post('/api/users', async (req, res) => {
 // Lấy thông tin người dùng theo ID
 app.put('/api/users/:id', async (req, res) => {
   const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { id } = req.params; // Get the id from the URL parameters
 
   try {
     const updateData = { 
@@ -517,7 +518,7 @@ app.put('/api/users/:id', async (req, res) => {
       role 
     };
 
-    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
+    const updatedUser = await User.findOneAndUpdate({ _id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
     if (!updatedUser) {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
