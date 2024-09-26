@@ -6,6 +6,7 @@ const Product = require('./module/Product.js');
 const Counter = require('./module/Counter.js');
 const Order = require('./module/Order.js');
 const Kho = require('./module/Kho.js');
+const User = require('./module/user.js');
 const multer = require('multer');
 const path = require('path');
 
@@ -381,6 +382,162 @@ app.delete('/api/kho/:id', async (req, res) => {
     res.status(500).json({ message: 'Error deleting kho entry', error: err.message });
   }
 });
+
+
+// Hiển thị tất cả người dùng
+app.get('/api/users', async (req, res) => {
+  try {
+    const user = await User.find();
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy sản phẩm', error: err.message });
+  }
+});
+
+// generate unique ID cho User (dạng KHxxx)
+const generateCustomerId = async () => {
+  const counter = await Counter.findByIdAndUpdate(
+    { _id: 'customerId' },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  return `KH${String(counter.seq).padStart(3, '0')}`;
+};
+
+// Thêm người dùng mới
+app.post('/api/addUser', async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+
+  try {
+    // Kiểm tra xem email đã tồn tại hay chưa
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email đã được sử dụng' });
+    }
+
+    // Tạo ID cho khách hàng mới
+    const userId = await generateCustomerId();
+
+    // Tạo người dùng mới
+    const newUser = new User({
+      id: userId,
+      name,
+      email,
+      phoneNumber,
+      dayOfBirth,
+      gender,
+      address,
+      accountName,
+      password, 
+      role: role || 'user',
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: 'Người dùng đã được thêm thành công', user: newUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi thêm người dùng', error: err.message });
+  }
+});
+
+// Sửa thông tin người dùng
+app.put('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+
+  try {
+    const updateData = { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role };
+
+    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
+  }
+});
+
+// Xóa người dùng
+app.delete('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedUser = await User.findOneAndDelete({ id });
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.json({ message: 'Người dùng đã được xóa thành công!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi xóa người dùng', error: err.message });
+  }
+});
+
+// Lấy danh sách tất cả người dùng
+app.post('/api/users', async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+
+  try {
+    // Kiểm tra xem email đã tồn tại hay chưa
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email đã được sử dụng' });
+    }
+
+    // Tạo ID cho khách hàng mới
+    const userId = await generateCustomerId();
+
+    // Tạo người dùng mới với tất cả các trường
+    const newUser = new User({
+      id: userId,
+      name,
+      email,
+      phoneNumber,
+      dayOfBirth, 
+      gender,     
+      address,     
+      accountName, 
+      password, 
+      role: role || 'user',
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: 'Người dùng đã được thêm thành công', user: newUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi thêm người dùng', error: err.message });
+  }
+});
+
+
+// Lấy thông tin người dùng theo ID
+app.put('/api/users/:id', async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+
+  try {
+    const updateData = { 
+      name, 
+      email, 
+      phoneNumber,    
+      dayOfBirth,     
+      gender,       
+      address, 
+      accountName, 
+      password, 
+      role 
+    };
+
+    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
+  }
+});
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
