@@ -6,6 +6,10 @@ import Dashboard from './Dashboard.jsx';
 import ProductManagement from './ProductManagement.jsx';
 import OrderManagement from './OrderManagement.jsx';
 import AdminLogin from './AdminLogin.jsx';
+import UserManagement from './UserManagement.jsx';
+import InventoryManagement from './InventoryManagement.jsx';
+import ReviewManagement from './ReviewManagement.jsx';
+import Statistics from './Statistics.jsx';
 import AddProduct from './AddProduct.jsx';
 import EditProduct from './EditProduct.jsx';
 import AddOrder from './AddOrder.jsx';
@@ -13,6 +17,7 @@ import EditOrder from './EditOrder.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);

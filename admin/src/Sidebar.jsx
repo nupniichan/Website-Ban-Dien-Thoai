@@ -1,3 +1,5 @@
+
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Sidebar.css';
@@ -61,6 +63,10 @@ const Sidebar = () => {
       </div>
     </div>
   );
+};
+Sidebar.propTypes = {
+  onSelect: PropTypes.func.isRequired,
+  selectedContent: PropTypes.string.isRequired,
 };
 
 export default Sidebar;
