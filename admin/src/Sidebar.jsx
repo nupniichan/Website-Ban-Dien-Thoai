@@ -36,6 +36,10 @@ const Sidebar = () => {
           <img className="menu-icon" src="src/img/icon/user.png" alt="Quản lý người dùng" />
           <span>Quản lý người dùng</span>
         </li>
+        <li className={`menu-item ${activeMenu === 'voucher' ? 'active' : ''}`} onClick={() => handleNavigation('/voucher-management', 'voucher')}>
+          <img className="menu-icon" src="src/img/icon/voucher.png" alt="Quản lý mã giảm giá" />
+          <span>Quản lý mã giảm giá</span>
+        </li>
         <li className={`menu-item ${activeMenu === 'statics' ? 'active' : ''}`} onClick={() => handleNavigation('/reports', 'statics')}>
           <img className="menu-icon" src="src/img/icon/statics.png" alt="Báo cáo & thống kê" />
           <span>Báo cáo & thống kê</span>
