@@ -1,13 +1,18 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Sidebar from './Sidebar.jsx';
 import Header from './Header.jsx';
 import Dashboard from './Dashboard.jsx';
 import ProductManagement from './ProductManagement.jsx';
 import OrderManagement from './OrderManagement.jsx';
 import AdminLogin from './AdminLogin.jsx';
+import UserManagement from './UserManagement.jsx';
+import InventoryManagement from './InventoryManagement.jsx';
+import ReviewManagement from './ReviewManagement.jsx';
+import Statistics from './Statistics.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
+
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -41,10 +46,10 @@ function App() {
                   {selectedContent === 'dashboard' && <Dashboard />}
                   {selectedContent === 'product' && <ProductManagement />}
                   {selectedContent === 'order' && <OrderManagement />}
-                  {selectedContent === 'user' && <h1>Quản lý người dùng</h1>}
-                  {selectedContent === 'report' && <h1>Báo cáo & thống kê</h1>}
-                  {selectedContent === 'review' && <h1>Quản lý đánh giá và bình luận</h1>}
-                  {selectedContent === 'inventory' && <h1>Quản lý kho hàng</h1>}
+                  {selectedContent === 'user' && <UserManagement />}
+                  {selectedContent === 'report' && <Statistics />}
+                  {selectedContent === 'review' && <ReviewManagement />}
+                  {selectedContent === 'inventory' && <InventoryManagement />}
                 </div>
               </main>
             </div>

@@ -1,5 +1,5 @@
-import React from 'react';
-import './Sidebar.css'; 
+import PropTypes from 'prop-types';
+import './Sidebar.css';
 
 const Sidebar = ({ onSelect, selectedContent }) => {
   return (
@@ -49,6 +49,10 @@ const Sidebar = ({ onSelect, selectedContent }) => {
       </div>
     </div>
   );
+};
+Sidebar.propTypes = {
+  onSelect: PropTypes.func.isRequired,
+  selectedContent: PropTypes.string.isRequired,
 };
 
 export default Sidebar;
