@@ -7,6 +7,7 @@ const Counter = require('./module/Counter.js');
 const Order = require('./module/Order.js');
 const Kho = require('./module/Kho.js');
 const User = require('./module/user.js');
+const DiscountCode = require('./module/DiscountCode.js');
 const multer = require('multer');
 const path = require('path');
 
@@ -538,6 +539,100 @@ app.put('/api/users/:id', async (req, res) => {
   }
 });
 
+// Helper để tạo ID tự động cho mã giảm giá (VC000)
+const generateDiscountId = async () => {
+  const counter = await Counter.findByIdAndUpdate(
+    { _id: 'discountCodeId' },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  return `VC${String(counter.seq).padStart(3, '0')}`;
+};
+
+// Lấy danh sách tất cả mã giảm giá
+app.get('/api/discountCodes', async (req, res) => {
+  try {
+    const discountCodes = await DiscountCode.find();
+    res.json(discountCodes);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy danh sách mã giảm giá', error: err.message });
+  }
+});
+
+// Thêm mã giảm giá mới
+app.post('/api/addDiscountCode', async (req, res) => {
+  const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
+
+  try {
+    // Tạo ID cho mã giảm giá mới
+    const discountId = await generateDiscountId();
+
+    // Tạo mã giảm giá mới
+    const newDiscountCode = new DiscountCode({
+      id: discountId,
+      name,
+      usageDate,
+      expirationDate,
+      discountRate,
+      applicableCode
+    });
+
+    await newDiscountCode.save();
+    res.status(201).json({ message: 'Mã giảm giá đã được tạo thành công!', discountCode: newDiscountCode });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi tạo mã giảm giá', error: err.message });
+  }
+});
+
+// Sửa thông tin mã giảm giá
+app.put('/api/discountCodes/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
+
+  try {
+    const updateData = { name, usageDate, expirationDate, discountRate, applicableCode };
+
+    const updatedDiscountCode = await DiscountCode.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedDiscountCode) {
+      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
+    }
+
+    res.json({ message: 'Mã giảm giá đã được cập nhật thành công', discountCode: updatedDiscountCode });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật mã giảm giá', error: err.message });
+  }
+});
+
+// Xóa mã giảm giá
+app.delete('/api/discountCodes/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedDiscountCode = await DiscountCode.findOneAndDelete({ id });
+    if (!deletedDiscountCode) {
+      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
+    }
+
+    res.json({ message: 'Mã giảm giá đã được xóa thành công!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi xóa mã giảm giá', error: err.message });
+  }
+});
+
+// Lấy thông tin mã giảm giá theo ID
+app.get('/api/discountCodes/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const discountCode = await DiscountCode.findOne({ id });
+    if (!discountCode) {
+      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
+    }
+    res.json(discountCode);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin mã giảm giá', error: err.message });
+  }
+});
 
 // Start the server
 const PORT = process.env.PORT || 5000;
