@@ -1,22 +1,27 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Sidebar from './Sidebar.jsx';
-import Header from './Header.jsx';
-import Dashboard from './Dashboard.jsx';
-import ProductManagement from './ProductManagement.jsx';
-import OrderManagement from './OrderManagement.jsx';
+import Sidebar from './components/Sidebar.jsx';
+import Header from './components/Header.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import ProductManagement from './pages/ProductManagement/ProductManagement.jsx';
+import OrderManagement from './pages/OrderManagement/OrderManagement.jsx';
 import AdminLogin from './AdminLogin.jsx';
-import UserManagement from './UserManagement.jsx';
-import InventoryManagement from './InventoryManagement.jsx';
-import ReviewManagement from './ReviewManagement.jsx';
-import Statistics from './Statistics.jsx';
-import AddProduct from './AddProduct.jsx';
-import EditProduct from './EditProduct.jsx';
-import AddOrder from './AddOrder.jsx';
-import EditOrder from './EditOrder.jsx';
+import UserManagement from './pages/UserManagement/UserManagement.jsx';
+import InventoryManagement from './pages/InventoryManagement/InventoryManagement.jsx';
+import ReviewManagement from './pages/ReviewManagement/ReviewManagement.jsx';
+import Statistics from './pages/Statistics.jsx';
+import AddProduct from './pages/ProductManagement/AddProduct.jsx';
+import EditProduct from './pages/ProductManagement/EditProduct.jsx';
+import AddOrder from './pages/OrderManagement/AddOrder.jsx';
+import EditOrder from './pages/OrderManagement/EditOrder.jsx';
+import VoucherManagement from './pages/VoucherManagement/VoucherManagement.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
+import AddVoucher from './pages/VoucherManagement/AddVoucher.jsx';
+import EditVoucher from './pages/VoucherManagement/EditVoucher.jsx';
+import AddUser from './pages/UserManagement/AddUser.jsx';
+
 
 
 function App() {
@@ -50,17 +55,21 @@ function App() {
               <div className="main-content">
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/product-management" element={<ProductManagement />} />
-                  <Route path="/order-management" element={<OrderManagement />} />
-                  <Route path="/add-product" element={<AddProduct />} />
-                  <Route path="/edit-product/:productId" element={<EditProduct />} />
-                  <Route path="/add-order" element={<AddOrder />} />
-                  <Route path="/edit-order/:orderId" element={<EditOrder />} />
-                  <Route path="/user-management" element={<h1>Quản lý người dùng</h1>} />
-                  <Route path="/reports" element={<h1>Báo cáo & thống kê</h1>} />
-                  <Route path="/reviews" element={<h1>Quản lý đánh giá và bình luận</h1>} />
-                  <Route path="/inventory-management" element={<h1>Quản lý kho hàng</h1>} />
+                  <Route path="/dashboard" element= <Dashboard /> />
+                  <Route path="/product-management" element= <ProductManagement /> />
+                  <Route path="/order-management" element= <OrderManagement /> />
+                  <Route path="/add-product" element= <AddProduct /> />
+                  <Route path="/edit-product/:productId" element= <EditProduct /> />
+                  <Route path="/add-order" element= <AddOrder /> />
+                  <Route path="/edit-order/:orderId" element= <EditOrder /> />
+                  <Route path="/user-management" element= <UserManagement /> />
+                  <Route path="/add-user" element= <AddUser /> />
+                  <Route path="/voucher-management" element= <VoucherManagement /> />
+                  <Route path="/add-voucher" element= <AddVoucher /> />
+                  <Route path="/edit-voucher/:voucherId" element= <EditVoucher /> />
+                  <Route path="/reports" element= <Statistics /> />
+                  <Route path="/reviews" element= <ReviewManagement/> />
+                  <Route path="/inventory-management" element= <InventoryManagement /> />
                 </Routes>
               </div>
             </main>

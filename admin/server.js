@@ -17,7 +17,7 @@ mongoose.connect('mongodb://localhost:27017/Web', {
 // Define Admin model for the "Web" collection
 const Admin = mongoose.model('Admin', new mongoose.Schema({
   email: { type: String, required: true },
-  password: { type: String, required: true }, 
+  password: { type: String, required: true },
 }), 'Web');
 
 // Login endpoint
