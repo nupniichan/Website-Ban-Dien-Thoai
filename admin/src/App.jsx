@@ -17,7 +17,9 @@ import EditOrder from './EditOrder.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
-
+import KhoManagement from './KhoManagement.jsx';
+import AddKho from './AddKho.jsx';
+import EditKho from './EditKho.jsx';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -60,7 +62,9 @@ function App() {
                   <Route path="/user-management" element={<h1>Quản lý người dùng</h1>} />
                   <Route path="/reports" element={<h1>Báo cáo & thống kê</h1>} />
                   <Route path="/reviews" element={<h1>Quản lý đánh giá và bình luận</h1>} />
-                  <Route path="/inventory-management" element={<h1>Quản lý kho hàng</h1>} />
+                  <Route path="/inventory-management" element={<KhoManagement/>} />
+                  <Route path="/add-inout" element={<AddKho/>}/>
+                  <Route path="/edit-kho/:id" element={<EditKho />} />
                 </Routes>
               </div>
             </main>
