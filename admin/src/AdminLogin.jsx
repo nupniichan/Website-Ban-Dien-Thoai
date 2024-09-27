@@ -1,5 +1,5 @@
 import { useState } from "react";
-import './AdminLogin.css';
+import './styles/AdminLogin.css';
 
 // eslint-disable-next-line react/prop-types
 const AdminLogin = ({ onLoginSuccess }) => {

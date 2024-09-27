@@ -109,7 +109,7 @@ app.post('/api/orders', async (req, res) => {
     });
 
     await newOrder.save();
-    
+
     // Reduce stock of products
     await adjustProductStock(items);
 
