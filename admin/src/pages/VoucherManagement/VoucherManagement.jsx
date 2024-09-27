@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton} from "@mui/material";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import {format} from "date-fns"
 import axios from "axios";
 
 const exampleVouchers = [
     {
         id: "V001",
         name: "GIAM10",
-        startDate: "24/11/2023",
+        startDate: "2024/09/09",
         endDate: "31/12/2023",
         discountRate: 10,
         applyCode: "ALL"
@@ -167,7 +168,7 @@ const VoucherManagement = () => {
                         <Typography>ID: {selectedVoucher.id}</Typography>
                         <Typography>Tên mã: {selectedVoucher.name}</Typography>
                         <Typography>
-                            Ngày sử dụng: {selectedVoucher.startDate}
+                            Ngày sử dụng: {new Date(selectedVoucher.startDate).toLocaleDateString('vi-VN')}
                         </Typography>
                         <Typography>
                             Ngày hết hạn: {selectedVoucher.endDate}

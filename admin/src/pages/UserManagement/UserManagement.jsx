@@ -1,37 +1,35 @@
 import { useState, useEffect } from "react";
-import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton} from "@mui/material";
+import {
+    Box,
+    TextField,
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    IconButton,
+} from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-
-const exampleUsers = [
-    {
-        id: "U001",
-        name: "Nguyễn Văn A",
-        creationDate: "01/01/2023",
-        shippingAddress: "Hà Nội",
-    },
-    {
-        id: "U003",
-        name: "Lê Văn C",
-        creationDate: "22/05/2023",
-        shippingAddress: "TP Hồ Chí Minh",
-    },
-];
 
 const UserManagement = () => {
     const navigate = useNavigate();
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedUser, setSelectedUser] = useState(null);
-    const [users, setUsers] = useState(exampleUsers);
+    const [users, setUsers] = useState([]);
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/users");
-                if (response.status === 200) {
-                    const data = response.data;
-                    console.log("Fetched users:", data); // Log the users
+                const response = await fetch("http://localhost:5000/api/users");
+                if (response.ok) {
+                    const data = await response.json();
                     setUsers(data);
                 } else {
                     console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
@@ -95,11 +93,7 @@ const UserManagement = () => {
             />
 
             <Box marginY={2}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleAddUser}
-                >
+                <Button variant="contained" color="primary" onClick={handleAddUser}>
                     Thêm người dùng
                 </Button>
             </Box>
@@ -109,9 +103,10 @@ const UserManagement = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
-                            <TableCell>Tên</TableCell>
-                            <TableCell>Ngày tạo tài khoản</TableCell>
+                            <TableCell>Họ tên</TableCell>
+                            <TableCell>Số điện thoại liên lạc</TableCell>
                             <TableCell>Địa chỉ giao hàng</TableCell>
+                            <TableCell>Quyền truy cập</TableCell>
                             <TableCell>Hành động</TableCell>
                         </TableRow>
                     </TableHead>
@@ -120,8 +115,9 @@ const UserManagement = () => {
                             <TableRow key={user.id}>
                                 <TableCell>{user.id}</TableCell>
                                 <TableCell>{user.name}</TableCell>
-                                <TableCell>{user.creationDate}</TableCell>
-                                <TableCell>{user.shippingAddress}</TableCell>
+                                <TableCell>{user.phoneNumber}</TableCell>
+                                <TableCell>{user.address}</TableCell>
+                                <TableCell>{user.role}</TableCell>
                                 <TableCell>
                                     <IconButton
                                         onClick={() => handleViewDetails(user)}
@@ -130,9 +126,7 @@ const UserManagement = () => {
                                         <Visibility />
                                     </IconButton>
                                     <IconButton
-                                        onClick={() =>
-                                            handleDeleteUser(user.id)
-                                        }
+                                        onClick={() => handleDeleteUser(user.id)}
                                         color="error"
                                     >
                                         <Delete />
@@ -145,17 +139,21 @@ const UserManagement = () => {
             </TableContainer>
 
             {selectedUser && (
-            <Dialog open={true} onClose={handleCloseDialog}>
-                <DialogTitle>Chi tiết người dùng</DialogTitle>
-                <DialogContent>
-                    <Typography>ID: {selectedUser.id}</Typography>
-                    <Typography>Tên: {selectedUser.name}</Typography>
-                    <Typography>Ngày tạo tài khoản: {selectedUser.creationDate}</Typography>
-                    <Typography>Địa chỉ giao hàng: {selectedUser.shippingAddress}</Typography>
-                </DialogContent>
-            </Dialog>
-)}
-
+                <Dialog open={true} onClose={handleCloseDialog}>
+                    <DialogTitle>Chi tiết người dùng</DialogTitle>
+                    <DialogContent>
+                        <Typography>ID: {selectedUser.id}</Typography>
+                        <Typography>Tên: {selectedUser.name}</Typography>
+                        <Typography>Ngày sinh: {selectedUser.dayOfBirth}</Typography>
+                        <Typography>Giới tính: {selectedUser.gender}</Typography>
+                        <Typography>Email: {selectedUser.email}</Typography>
+                        <Typography>Số điện thoại: {selectedUser.phoneNumber}</Typography>
+                        <Typography>Địa chỉ giao hàng: {selectedUser.address}</Typography>
+                        <Typography>Tên tài khoản: {selectedUser.accountName}</Typography>
+                        <Typography>Mật khẩu: {selectedUser.password}</Typography>
+                    </DialogContent>
+                </Dialog>
+            )}
         </Box>
     );
 };
