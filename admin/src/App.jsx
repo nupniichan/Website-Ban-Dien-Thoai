@@ -18,24 +18,10 @@ import VoucherManagement from './pages/VoucherManagement/VoucherManagement.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
-<<<<<<< HEAD
-<<<<<<< HEAD
-import KhoManagement from './KhoManagement.jsx';
-import AddKho from './AddKho.jsx';
-import EditKho from './EditKho.jsx';
-=======
-import AddVoucher from './pages/VoucherManagement/AddVoucher.jsx';
-import EditVoucher from './pages/VoucherManagement/EditVoucher.jsx';
-import AddUser from './pages/UserManagement/AddUser.jsx';
-=======
 import AddVoucher from './pages/VoucherManagement/AddVoucher.jsx';
 import EditVoucher from './pages/VoucherManagement/EditVoucher.jsx';
 import AddUser from './pages/UserManagement/AddUser.jsx';
 
->>>>>>> 495ff152dd40bbc566237a8d8b1a3967d2bc1bbe
-
-
->>>>>>> 495ff15 (tèm tẹm)
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -68,24 +54,6 @@ function App() {
               <div className="main-content">
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" />} />
-<<<<<<< HEAD
-<<<<<<< HEAD
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/product-management" element={<ProductManagement />} />
-                  <Route path="/order-management" element={<OrderManagement />} />
-                  <Route path="/add-product" element={<AddProduct />} />
-                  <Route path="/edit-product/:productId" element={<EditProduct />} />
-                  <Route path="/add-order" element={<AddOrder />} />
-                  <Route path="/edit-order/:orderId" element={<EditOrder />} />
-                  <Route path="/user-management" element={<h1>Quản lý người dùng</h1>} />
-                  <Route path="/reports" element={<h1>Báo cáo & thống kê</h1>} />
-                  <Route path="/reviews" element={<h1>Quản lý đánh giá và bình luận</h1>} />
-                  <Route path="/inventory-management" element={<KhoManagement/>} />
-                  <Route path="/add-inout" element={<AddKho/>}/>
-                  <Route path="/edit-kho/:id" element={<EditKho />} />
-=======
-=======
->>>>>>> 495ff152dd40bbc566237a8d8b1a3967d2bc1bbe
                   <Route path="/dashboard" element= <Dashboard /> />
                   <Route path="/product-management" element= <ProductManagement /> />
                   <Route path="/order-management" element= <OrderManagement /> />
@@ -101,10 +69,6 @@ function App() {
                   <Route path="/reports" element= <Statistics /> />
                   <Route path="/reviews" element= <ReviewManagement/> />
                   <Route path="/inventory-management" element= <InventoryManagement /> />
-<<<<<<< HEAD
->>>>>>> 495ff15 (tèm tẹm)
-=======
->>>>>>> 495ff152dd40bbc566237a8d8b1a3967d2bc1bbe
                 </Routes>
               </div>
             </main>
