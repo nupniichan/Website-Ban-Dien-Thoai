@@ -48,7 +48,7 @@ const Sidebar = () => {
           <img className="menu-icon" src="src/img/icon/rating.png" alt="Quản lý đánh giá & bình luận" />
           <span>Quản lý đánh giá & bình luận</span>
         </li>
-        <li className={`menu-item ${activeMenu === 'phieu' ? 'active' : ''}`} onClick={() => handleNavigation('/inventory-management', 'phieu')}>
+        <li className={`menu-item ${activeMenu === 'phieu' ? 'active' : ''}`} onClick={() => handleNavigation('/kho-management', 'phieu')}>
           <img className="menu-icon" src="src/img/icon/user.png" alt="Quản lý phiếu nhập kho" />
           <span>Quản lý phiếu nhập kho</span>
         </li>

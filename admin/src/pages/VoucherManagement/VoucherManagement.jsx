@@ -17,8 +17,8 @@ const exampleVouchers = [
     {
         id: "V002",
         name: "MUADOI",
-        startDate: "01/12/2023",
-        endDate: "10/12/2023",
+        startDate: "2023/12/01",
+        endDate: "2023/12/10",
         discountRate: 50,
         applyCode: "SP001"
     }
@@ -125,8 +125,8 @@ const VoucherManagement = () => {
                             <TableRow key={voucher.id}>
                                 <TableCell>{voucher.id}</TableCell>
                                 <TableCell>{voucher.name}</TableCell>
-                                <TableCell>{voucher.startDate}</TableCell>
-                                <TableCell>{voucher.endDate}</TableCell>
+                                <TableCell>{(new Date(voucher.startDate).toLocaleDateString("vi-VN"))}</TableCell>
+                                <TableCell>{(new Date(voucher.endDate).toLocaleDateString("vi-VN"))}</TableCell>
                                 <TableCell>{voucher.discountRate}%</TableCell>
                                 <TableCell>{voucher.applyCode}</TableCell>
                                 <TableCell>
@@ -171,7 +171,7 @@ const VoucherManagement = () => {
                             Ngày sử dụng: {new Date(selectedVoucher.startDate).toLocaleDateString('vi-VN')}
                         </Typography>
                         <Typography>
-                            Ngày hết hạn: {selectedVoucher.endDate}
+                            Ngày hết hạn: {(new Date(selectedVoucher.endDate).toLocaleDateString("vi-VN"))}
                         </Typography>
                         <Typography>
                             Tỉ lệ chiết khấu: {selectedVoucher.discountRate}%
