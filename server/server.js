@@ -6,6 +6,8 @@ const Product = require('./module/Product.js');
 const Counter = require('./module/Counter.js');
 const Order = require('./module/Order.js');
 const Kho = require('./module/Kho.js');
+const User = require('./module/user.js');
+const DiscountCode = require('./module/DiscountCode.js');
 const multer = require('multer');
 const path = require('path');
 
@@ -211,7 +213,7 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
       brand,
       description,
       image: req.file ? req.file.path : null,
-      cauhinh: JSON.parse(cauhinh),
+      cauhinh: JSON.parse(cauhinh),  // Chuyển từ chuỗi JSON sang object
     });
 
     await newProduct.save();
@@ -236,10 +238,13 @@ app.put('/api/products/:id', upload.single('image'), async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;
 
-  if (req.file) {
-    updateData.image = req.file.path; // Cập nhật đường dẫn hình ảnh nếu có
+  // Nếu có dữ liệu cauhinh, parse chuỗi JSON thành object
+  if (updateData.cauhinh) {
+    updateData.cauhinh = JSON.parse(updateData.cauhinh);
   }
-
+  if (req.file) {
+    updateData.image = req.file.path;
+  }
   try {
     const updatedProduct = await Product.findOneAndUpdate({ id }, updateData, { new: true });
     if (!updatedProduct) {
@@ -250,6 +255,7 @@ app.put('/api/products/:id', upload.single('image'), async (req, res) => {
     res.status(500).json({ message: 'Lỗi khi cập nhật sản phẩm', error: err.message });
   }
 });
+
 
 // Xóa sản phẩm
 app.delete('/api/products/:id', async (req, res) => {
@@ -283,10 +289,8 @@ app.get('/api/products/:id', async (req, res) => {
 
 // Get all kho entries
 app.get('/api/kho', async (req, res) => {
-  console.log("Received request to get all kho entries");
   try {
     const khoEntries = await Kho.find();
-    console.log("Fetched kho entries:", khoEntries);
     res.json(khoEntries);
   } catch (err) {
     console.error('Error fetching kho entries:', err.message);
@@ -297,14 +301,12 @@ app.get('/api/kho', async (req, res) => {
 // Get kho entry by ID
 app.get('/api/kho/:id', async (req, res) => {
   const { id } = req.params;
-  console.log(`Received request to get kho entry with ID: ${id}`);
   try {
     const khoEntry = await Kho.findOne({ id });
     if (!khoEntry) {
       console.warn(`Kho entry with ID ${id} not found`);
       return res.status(404).json({ message: 'Kho entry not found' });
     }
-    console.log("Fetched kho entry:", khoEntry);
     res.json(khoEntry);
   } catch (err) {
     console.error('Error fetching kho entry:', err.message);
@@ -314,7 +316,6 @@ app.get('/api/kho/:id', async (req, res) => {
 
 // Create new kho entry
 app.post('/api/kho', async (req, res) => {
-  console.log("Received request to create new kho entry:", req.body);
   const { id, type, managementPerson, responsiblePerson, date, warehouseCode, location, notes, products} = req.body;
 
   const newKhoEntry = new Kho({
@@ -331,7 +332,6 @@ app.post('/api/kho', async (req, res) => {
 
   try {
     await newKhoEntry.save();
-    console.log("Kho entry created successfully:", newKhoEntry);
     res.status(201).json({ message: 'Kho entry created successfully', khoEntry: newKhoEntry });
   } catch (err) {
     console.error('Error creating kho entry:', err.message);
@@ -342,7 +342,6 @@ app.post('/api/kho', async (req, res) => {
 // Update kho entry
 app.put('/api/kho/:id', async (req, res) => {
   const { id } = req.params;
-  console.log(`Received request to update kho entry with ID: ${id}`, req.body);
   const updateData = req.body;
 
   try {
@@ -351,7 +350,6 @@ app.put('/api/kho/:id', async (req, res) => {
       console.warn(`Kho entry with ID ${id} not found for update`);
       return res.status(404).json({ message: 'Kho entry not found' });
     }
-    console.log("Kho entry updated successfully:", updatedKhoEntry);
     res.json({ message: 'Kho entry updated successfully', khoEntry: updatedKhoEntry });
   } catch (err) {
     console.error('Error updating kho entry:', err.message);
@@ -362,7 +360,6 @@ app.put('/api/kho/:id', async (req, res) => {
 // Delete kho entry
 app.delete('/api/kho/:id', async (req, res) => {
   const { id } = req.params;
-  console.log(`Received request to delete kho entry with ID: ${id}`);
 
   try {
     const deletedKhoEntry = await Kho.findOneAndDelete({ id });
@@ -370,11 +367,275 @@ app.delete('/api/kho/:id', async (req, res) => {
       console.warn(`Kho entry with ID ${id} not found for deletion`);
       return res.status(404).json({ message: 'Kho entry not found' });
     }
-    console.log("Kho entry deleted successfully:", deletedKhoEntry);
     res.json({ message: 'Kho entry deleted successfully' });
   } catch (err) {
-    console.error('Error deleting kho entry:', err.message);
     res.status(500).json({ message: 'Error deleting kho entry', error: err.message });
+  }
+});
+
+
+// Hiển thị tất cả người dùng
+app.get('/api/users', async (req, res) => {
+  try {
+    const user = await User.find();
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy sản phẩm', error: err.message });
+  }
+});
+
+// generate unique ID cho User (dạng KHxxx)
+const generateCustomerId = async () => {
+  const counter = await Counter.findByIdAndUpdate(
+    { _id: 'customerId' },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  return `KH${String(counter.seq).padStart(3, '0')}`;
+};
+
+// Thêm người dùng mới
+app.post('/api/addUser', async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+
+  try {
+    // Kiểm tra xem email đã tồn tại hay chưa
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email đã được sử dụng' });
+    }
+
+    // Tạo ID cho khách hàng mới
+    const userId = await generateCustomerId();
+
+    // Tạo người dùng mới
+    const newUser = new User({
+      id: userId,
+      name,
+      email,
+      phoneNumber,
+      dayOfBirth,
+      gender,
+      address,
+      accountName,
+      password, 
+      role: role || 'user',
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: 'Người dùng đã được thêm thành công', user: newUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi thêm người dùng', error: err.message });
+  }
+});
+
+// Sửa thông tin người dùng
+app.put('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+
+  try {
+    const updateData = { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role };
+
+    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
+  }
+});
+
+// Xóa người dùng
+app.delete('/api/users/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedUser = await User.findOneAndDelete({ id });
+    if (!deletedUser) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.json({ message: 'Người dùng đã được xóa thành công!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi xóa người dùng', error: err.message });
+  }
+});
+
+// Lấy danh sách tất cả người dùng
+app.post('/api/users', async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+
+  try {
+    // Kiểm tra xem email đã tồn tại hay chưa
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({ message: 'Email đã được sử dụng' });
+    }
+
+    // Tạo ID cho khách hàng mới
+    const userId = await generateCustomerId();
+
+    // Tạo người dùng mới với tất cả các trường
+    const newUser = new User({
+      id: userId,
+      name,
+      email,
+      phoneNumber,
+      dayOfBirth, 
+      gender,     
+      address,     
+      accountName, 
+      password, 
+      role: role || 'user',
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: 'Người dùng đã được thêm thành công', user: newUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi thêm người dùng', error: err.message });
+  }
+});
+
+
+// Lấy thông tin người dùng theo ID
+app.put('/api/users/:id', async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { id } = req.params; // Get the id from the URL parameters
+
+  try {
+    const updateData = { 
+      name, 
+      email, 
+      phoneNumber,    
+      dayOfBirth,     
+      gender,       
+      address, 
+      accountName, 
+      password, 
+      role 
+    };
+
+    const updatedUser = await User.findOneAndUpdate({ _id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
+  }
+});
+
+// Lấy thông tin người dùng theo ID
+app.get('/api/users/:id', async (req, res) => {
+  const { id } = req.params; // Lấy ID từ params
+
+  try {
+    const user = await User.findOne({ id }); // Tìm theo trường id
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+    res.json(user);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
+  }
+});
+
+// Helper để tạo ID tự động cho mã giảm giá (VC000)
+const generateDiscountId = async () => {
+  const counter = await Counter.findByIdAndUpdate(
+    { _id: 'discountCodeId' },
+    { $inc: { seq: 1 } },
+    { new: true, upsert: true }
+  );
+  return `VC${String(counter.seq).padStart(3, '0')}`;
+};
+
+// Lấy danh sách tất cả mã giảm giá
+app.get('/api/discountCodes', async (req, res) => {
+  try {
+    const discountCodes = await DiscountCode.find();
+    res.json(discountCodes);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy danh sách mã giảm giá', error: err.message });
+  }
+});
+
+// Thêm mã giảm giá mới
+app.post('/api/addDiscountCode', async (req, res) => {
+  const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
+
+  try {
+    // Tạo ID cho mã giảm giá mới
+    const discountId = await generateDiscountId();
+
+    // Tạo mã giảm giá mới
+    const newDiscountCode = new DiscountCode({
+      id: discountId,
+      name,
+      usageDate,
+      expirationDate,
+      discountRate,
+      applicableCode
+    });
+
+    await newDiscountCode.save();
+    res.status(201).json({ message: 'Mã giảm giá đã được tạo thành công!', discountCode: newDiscountCode });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi tạo mã giảm giá', error: err.message });
+  }
+});
+
+// Sửa thông tin mã giảm giá
+app.put('/api/discountCodes/:id', async (req, res) => {
+  const { id } = req.params;
+  const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
+
+  try {
+    const updateData = { name, usageDate, expirationDate, discountRate, applicableCode };
+
+    const updatedDiscountCode = await DiscountCode.findOneAndUpdate({ id }, updateData, { new: true });
+    if (!updatedDiscountCode) {
+      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
+    }
+
+    res.json({ message: 'Mã giảm giá đã được cập nhật thành công', discountCode: updatedDiscountCode });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật mã giảm giá', error: err.message });
+  }
+});
+
+// Xóa mã giảm giá
+app.delete('/api/discountCodes/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedDiscountCode = await DiscountCode.findOneAndDelete({ id });
+    if (!deletedDiscountCode) {
+      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
+    }
+
+    res.json({ message: 'Mã giảm giá đã được xóa thành công!' });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi xóa mã giảm giá', error: err.message });
+  }
+});
+
+// Lấy thông tin mã giảm giá theo ID
+app.get('/api/discountCodes/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const discountCode = await DiscountCode.findOne({ id });
+    if (!discountCode) {
+      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
+    }
+    res.json(discountCode);
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin mã giảm giá', error: err.message });
   }
 });
 

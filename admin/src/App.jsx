@@ -13,6 +13,8 @@ import AddProduct from './pages/ProductManagement/AddProduct.jsx';
 import EditProduct from './pages/ProductManagement/EditProduct.jsx';
 import AddOrder from './pages/OrderManagement/AddOrder.jsx';
 import EditOrder from './pages/OrderManagement/EditOrder.jsx';
+import AddKho from './pages/InventoryManagement/AddKho.jsx'
+import EditKho from './pages/InventoryManagement/EditKho.jsx'
 import VoucherManagement from './pages/VoucherManagement/VoucherManagement.jsx';
 import AddVoucher from './pages/VoucherManagement/AddVoucher.jsx';
 import EditVoucher from './pages/VoucherManagement/EditVoucher.jsx';
@@ -72,7 +74,7 @@ function App() {
                   <Route path="/reviews" element= <ReviewManagement/> />
                   <Route path="/kho-management" element= <KhoManagement /> />
                   <Route path="/add-kho" element= <AddKho /> />
-                  <Route path="/edit-kho" element= <EditKho /> />
+                  <Route path="/edit-kho/:id" element= <EditKho /> />
                 </Routes>
               </div>
             </main>
