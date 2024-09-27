@@ -2,15 +2,15 @@ import { useState, useEffect } from "react";
 import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton} from "@mui/material";
 import { Edit, Delete, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import {format} from "date-fns"
 import axios from "axios";
 
 const exampleVouchers = [
     {
         id: "V001",
         name: "GIAM10",
-        startDate: "2023/11/24",
-        endDate: "2023/12/31",
+        startDate: "2024/09/09",
+        endDate: "31/12/2023",
         discountRate: 10,
         applyCode: "ALL"
     },
@@ -33,7 +33,7 @@ const VoucherManagement = () => {
     useEffect(() => {
         const fetchVouchers = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/vouchers");
+                const response = await axios.get("http://localhost:5000/api/discountCodes");
                 if (response.status === 200) {
                     const data = response.data;
                     setVouchers(data);
@@ -57,7 +57,7 @@ const VoucherManagement = () => {
 
     const handleDeleteVoucher = async (voucherId) => {
         try {
-            const response = await axios.delete(`http://localhost:5000/api/vouchers/${voucherId}`);
+            const response = await axios.delete(`http://localhost:5000/api/discountCodes/${voucherId}`);
             if (response.status === 200) {
                 setVouchers(vouchers.filter((voucher) => voucher.id !== voucherId));
             } else {
@@ -168,7 +168,7 @@ const VoucherManagement = () => {
                         <Typography>ID: {selectedVoucher.id}</Typography>
                         <Typography>Tên mã: {selectedVoucher.name}</Typography>
                         <Typography>
-                            Ngày sử dụng: {(new Date(selectedVoucher.startDate).toLocaleDateString("vi-VN"))}
+                            Ngày sử dụng: {new Date(selectedVoucher.startDate).toLocaleDateString('vi-VN')}
                         </Typography>
                         <Typography>
                             Ngày hết hạn: {(new Date(selectedVoucher.endDate).toLocaleDateString("vi-VN"))}

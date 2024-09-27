@@ -10,9 +10,10 @@ const AddUser = () => {
         email: "",
         password: "",
         phoneNumber: "",
-        shippingAddress: "",
-        creationDate: new Date().toISOString(),
-        userId: "",
+        dayOfBirth: "",
+        gender: "",
+        address: "",
+        accountName: "",
     });
 
     const handleChange = (e) => {
@@ -24,7 +25,7 @@ const AddUser = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:5000/api/users", {
+            const response = await axios.post("http://localhost:5000/api/addUser", user, {
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -61,6 +62,32 @@ const AddUser = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
+                            label="Ngày sinh"
+                            name="dayOfBirth"
+                            type="date"
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            value={user.dayOfBirth}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            label="Giới tính"
+                            name="gender"
+                            value={user.gender}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
                             label="Email"
                             name="email"
                             type="email"
@@ -71,7 +98,29 @@ const AddUser = () => {
                             margin="normal"
                         />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="Số điện thoại"
+                            name="phoneNumber"
+                            value={user.phoneNumber}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            label="Tên tài khoản"
+                            name="accountName"
+                            value={user.accountName}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            margin="normal"
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
                         <TextField
                             label="Mật khẩu"
                             name="password"
@@ -85,20 +134,9 @@ const AddUser = () => {
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="Số điện thoại"
-                            name="phoneNumber"
-                            value={user.phoneNumber}
-                            onChange={handleChange}
-                            fullWidth
-                            required
-                            margin="normal"
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            label="Địa chỉ giao hàng"
-                            name="shippingAddress"
-                            value={user.shippingAddress}
+                            label="Địa chỉ"
+                            name="address"
+                            value={user.address}
                             onChange={handleChange}
                             fullWidth
                             required

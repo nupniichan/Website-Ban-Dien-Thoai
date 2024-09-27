@@ -8,13 +8,10 @@ import OrderManagement from './pages/OrderManagement/OrderManagement.jsx';
 import AdminLogin from './AdminLogin.jsx';
 import UserManagement from './pages/UserManagement/UserManagement.jsx';
 import ReviewManagement from './pages/ReviewManagement/ReviewManagement.jsx';
-import Statistics from './pages/Statistics.jsx';
 import AddProduct from './pages/ProductManagement/AddProduct.jsx';
 import EditProduct from './pages/ProductManagement/EditProduct.jsx';
 import AddOrder from './pages/OrderManagement/AddOrder.jsx';
 import EditOrder from './pages/OrderManagement/EditOrder.jsx';
-import AddKho from './pages/InventoryManagement/AddKho.jsx'
-import EditKho from './pages/InventoryManagement/EditKho.jsx'
 import VoucherManagement from './pages/VoucherManagement/VoucherManagement.jsx';
 import AddVoucher from './pages/VoucherManagement/AddVoucher.jsx';
 import EditVoucher from './pages/VoucherManagement/EditVoucher.jsx';
@@ -22,7 +19,6 @@ import AddUser from './pages/UserManagement/AddUser.jsx';
 import KhoManagement from './pages/KhoManagement/KhoManagement.jsx';
 import AddKho from './pages/KhoManagement/AddKho.jsx';
 import EditKho from './pages/KhoManagement/EditKho.jsx';
-
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import './index.css';
@@ -70,10 +66,9 @@ function App() {
                   <Route path="/voucher-management" element= <VoucherManagement /> />
                   <Route path="/add-voucher" element= <AddVoucher /> />
                   <Route path="/edit-voucher/:voucherId" element= <EditVoucher /> />
-                  <Route path="/reports" element= <Statistics /> />
                   <Route path="/reviews" element= <ReviewManagement/> />
                   <Route path="/kho-management" element= <KhoManagement /> />
-                  <Route path="/add-kho" element= <AddKho /> />
+                  <Route path="/add-inout" element= <AddKho /> />
                   <Route path="/edit-kho/:id" element= <EditKho /> />
                 </Routes>
               </div>
