@@ -2,9 +2,9 @@ import React, { useEffect, useRef } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Button, ButtonGroup } from '@mui/material';
-import './Dashboard.css';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { TrendingUp, TrendingDown, Users, Package, DollarSign, Clock } from 'lucide-react';
+import '../styles/Dashboard.css';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
