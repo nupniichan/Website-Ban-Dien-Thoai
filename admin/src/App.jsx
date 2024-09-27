@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar.jsx';
 import Header from './components/Header.jsx';
@@ -7,7 +7,6 @@ import ProductManagement from './pages/ProductManagement/ProductManagement.jsx';
 import OrderManagement from './pages/OrderManagement/OrderManagement.jsx';
 import AdminLogin from './AdminLogin.jsx';
 import UserManagement from './pages/UserManagement/UserManagement.jsx';
-import InventoryManagement from './pages/InventoryManagement/InventoryManagement.jsx';
 import ReviewManagement from './pages/ReviewManagement/ReviewManagement.jsx';
 import Statistics from './pages/Statistics.jsx';
 import AddProduct from './pages/ProductManagement/AddProduct.jsx';
@@ -15,13 +14,16 @@ import EditProduct from './pages/ProductManagement/EditProduct.jsx';
 import AddOrder from './pages/OrderManagement/AddOrder.jsx';
 import EditOrder from './pages/OrderManagement/EditOrder.jsx';
 import VoucherManagement from './pages/VoucherManagement/VoucherManagement.jsx';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
-import './index.css';
 import AddVoucher from './pages/VoucherManagement/AddVoucher.jsx';
 import EditVoucher from './pages/VoucherManagement/EditVoucher.jsx';
 import AddUser from './pages/UserManagement/AddUser.jsx';
+import KhoManagement from './pages/KhoManagement/KhoManagement.jsx';
+import AddKho from './pages/KhoManagement/AddKho.jsx';
+import EditKho from './pages/KhoManagement/EditKho.jsx';
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './App.css';
+import './index.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -68,7 +70,9 @@ function App() {
                   <Route path="/edit-voucher/:voucherId" element= <EditVoucher /> />
                   <Route path="/reports" element= <Statistics /> />
                   <Route path="/reviews" element= <ReviewManagement/> />
-                  <Route path="/inventory-management" element= <InventoryManagement /> />
+                  <Route path="/kho-management" element= <KhoManagement /> />
+                  <Route path="/add-kho" element= <AddKho /> />
+                  <Route path="/edit-kho" element= <EditKho /> />
                 </Routes>
               </div>
             </main>

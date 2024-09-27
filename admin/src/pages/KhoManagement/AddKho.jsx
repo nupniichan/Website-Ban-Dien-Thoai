@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, TextField, Button, Grid, Typography, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -61,7 +61,7 @@ const AddKho = () => {
   const handleProductFilter = (index, value) => {
     const selectedProduct = products.find(product => product.name === value);
     const updatedItems = [...kho.products];
-    
+
     if (selectedProduct) {
       updatedItems[index]['productId'] = selectedProduct.id;
       updatedItems[index]['color'] = selectedProduct.color; // Set color based on the selected product
@@ -93,7 +93,7 @@ const AddKho = () => {
 
       if (response.ok) {
         alert('Phiếu đã được tạo thành công');
-        navigate('/inventory-management');
+        navigate('/kho-management');
       } else {
         alert('Failed to create phiếu');
       }
@@ -263,7 +263,7 @@ const AddKho = () => {
           <Button type="submit" variant="contained" color="primary" size="large">
             Thêm phiếu
           </Button>
-          <Button onClick={() => navigate('/inventory-management')} variant="outlined" color="secondary" size="large" style={{ marginLeft: '16px' }}>
+          <Button onClick={() => navigate('/kho-management')} variant="outlined" color="secondary" size="large" style={{ marginLeft: '16px' }}>
             Huỷ
           </Button>
         </Box>

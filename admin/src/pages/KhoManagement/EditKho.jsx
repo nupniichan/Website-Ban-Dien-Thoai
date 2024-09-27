@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, TextField, Button, Grid, Typography, MenuItem } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -107,7 +107,7 @@ const EditKho = () => {
 
       if (response.ok) {
         alert('Phiếu đã được cập nhật thành công');
-        navigate('/inventory-management');
+        navigate('/kho-management');
       } else {
         alert('Failed to update phiếu');
       }
@@ -266,7 +266,7 @@ const EditKho = () => {
           <Button type="submit" variant="contained" color="primary" size="large">
             Cập nhật phiếu
           </Button>
-          <Button onClick={() => navigate('/inventory-management')} variant="outlined" color="secondary" size="large" style={{ marginLeft: '16px' }}>
+          <Button onClick={() => navigate('/kho-management')} variant="outlined" color="secondary" size="large" style={{ marginLeft: '16px' }}>
             Huỷ
           </Button>
         </Box>

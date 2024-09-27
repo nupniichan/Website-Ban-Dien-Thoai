@@ -12,7 +12,7 @@ const AddUser = () => {
         phoneNumber: "",
         shippingAddress: "",
         creationDate: new Date().toISOString(),
-        userId: "", // left empty for backend to generate
+        userId: "",
     });
 
     const handleChange = (e) => {
@@ -23,15 +23,8 @@ const AddUser = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Generate temporary userId in the format U001, U208, etc. if needed (if backend doesn't handle)
-        const generateUserId = () => {
-            const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // Replace with actual ID logic if needed
-            return `U${randomNum}`;
-        };
-        const updatedUser = { ...user, userId: user.userId || generateUserId() };
-
         try {
-            const response = await axios.post("http://localhost:5000/api/users", updatedUser, {
+            const response = await axios.post("http://localhost:5000/api/users", {
                 headers: {
                     "Content-Type": "application/json",
                 },

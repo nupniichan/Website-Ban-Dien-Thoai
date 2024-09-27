@@ -8,13 +8,13 @@ const exampleUsers = [
     {
         id: "U001",
         name: "Nguyễn Văn A",
-        creationDate: "01/01/2023",
+        creationDate: "2024/05/23",
         shippingAddress: "Hà Nội",
     },
     {
         id: "U003",
         name: "Lê Văn C",
-        creationDate: "22/05/2023",
+        creationDate: "2023/09/12",
         shippingAddress: "TP Hồ Chí Minh",
     },
 ];
@@ -31,7 +31,6 @@ const UserManagement = () => {
                 const response = await axios.get("http://localhost:5000/api/users");
                 if (response.status === 200) {
                     const data = response.data;
-                    console.log("Fetched users:", data); // Log the users
                     setUsers(data);
                 } else {
                     console.error(`Failed to fetch users: ${response.status} ${response.statusText}`);
@@ -120,7 +119,7 @@ const UserManagement = () => {
                             <TableRow key={user.id}>
                                 <TableCell>{user.id}</TableCell>
                                 <TableCell>{user.name}</TableCell>
-                                <TableCell>{user.creationDate}</TableCell>
+                                <TableCell>{(new Date(user.creationDate).toLocaleDateString("vi-VN"))}</TableCell>
                                 <TableCell>{user.shippingAddress}</TableCell>
                                 <TableCell>
                                     <IconButton
@@ -150,7 +149,7 @@ const UserManagement = () => {
                 <DialogContent>
                     <Typography>ID: {selectedUser.id}</Typography>
                     <Typography>Tên: {selectedUser.name}</Typography>
-                    <Typography>Ngày tạo tài khoản: {selectedUser.creationDate}</Typography>
+                    <Typography>Ngày tạo tài khoản: {(new Date(selectedUser.creationDate).toLocaleDateString("vi-VN"))}</Typography>
                     <Typography>Địa chỉ giao hàng: {selectedUser.shippingAddress}</Typography>
                 </DialogContent>
             </Dialog>
