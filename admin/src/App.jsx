@@ -8,7 +8,6 @@ import OrderManagement from './pages/OrderManagement/OrderManagement.jsx';
 import AdminLogin from './AdminLogin.jsx';
 import UserManagement from './pages/UserManagement/UserManagement.jsx';
 import ReviewManagement from './pages/ReviewManagement/ReviewManagement.jsx';
-import Statistics from './pages/Statistics.jsx';
 import AddProduct from './pages/ProductManagement/AddProduct.jsx';
 import EditProduct from './pages/ProductManagement/EditProduct.jsx';
 import AddOrder from './pages/OrderManagement/AddOrder.jsx';
@@ -67,10 +66,9 @@ function App() {
                   <Route path="/voucher-management" element= <VoucherManagement /> />
                   <Route path="/add-voucher" element= <AddVoucher /> />
                   <Route path="/edit-voucher/:voucherId" element= <EditVoucher /> />
-                  <Route path="/reports" element= <Statistics /> />
                   <Route path="/reviews" element= <ReviewManagement/> />
                   <Route path="/kho-management" element= <KhoManagement /> />
-                  <Route path="/add-kho" element= <AddKho /> />
+                  <Route path="/add-inout" element= <AddKho /> />
                   <Route path="/edit-kho/:id" element= <EditKho /> />
                 </Routes>
               </div>
