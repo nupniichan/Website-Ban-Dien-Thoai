@@ -7,13 +7,15 @@ import ProductManagement from './pages/ProductManagement/ProductManagement.jsx';
 import OrderManagement from './pages/OrderManagement/OrderManagement.jsx';
 import AdminLogin from './AdminLogin.jsx';
 import UserManagement from './pages/UserManagement/UserManagement.jsx';
-import InventoryManagement from './pages/InventoryManagement/InventoryManagement.jsx';
+import KhoManagement from './pages/InventoryManagement/KhoManagement.jsx';
 import ReviewManagement from './pages/ReviewManagement/ReviewManagement.jsx';
 import Statistics from './pages/Statistics.jsx';
 import AddProduct from './pages/ProductManagement/AddProduct.jsx';
 import EditProduct from './pages/ProductManagement/EditProduct.jsx';
 import AddOrder from './pages/OrderManagement/AddOrder.jsx';
 import EditOrder from './pages/OrderManagement/EditOrder.jsx';
+import AddKho from './pages/InventoryManagement/AddKho.jsx'
+import EditKho from './pages/InventoryManagement/EditKho.jsx'
 import VoucherManagement from './pages/VoucherManagement/VoucherManagement.jsx';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
@@ -68,7 +70,9 @@ function App() {
                   <Route path="/edit-voucher/:voucherId" element= <EditVoucher /> />
                   <Route path="/reports" element= <Statistics /> />
                   <Route path="/reviews" element= <ReviewManagement/> />
-                  <Route path="/inventory-management" element= <InventoryManagement /> />
+                  <Route path="/inventory-management" element= <KhoManagement /> />
+                  <Route path="/add-inout" element= <AddKho /> />
+                  <Route path="/edit-kho/:id" element= <EditKho /> />
                 </Routes>
               </div>
             </main>

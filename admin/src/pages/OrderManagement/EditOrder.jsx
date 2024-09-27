@@ -109,7 +109,7 @@ const EditOrder = () => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Customer Name"
+              label="Tên khách hàng"
               name="customerName"
               value={order.customerName}
               onChange={handleInputChange}
@@ -120,7 +120,7 @@ const EditOrder = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Shipping Address"
+              label="Địa chỉ giao hàng"
               name="shippingAddress"
               value={order.shippingAddress}
               onChange={handleInputChange}
@@ -133,7 +133,7 @@ const EditOrder = () => {
           {/* Order Date and Time Field */}
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Order Date"
+              label="Ngày đặt hàng"
               name="orderDate"
               type="datetime-local"
               value={formatDateTime(order.orderDate)}
@@ -169,7 +169,7 @@ const EditOrder = () => {
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
-                    label="Quantity"
+                    label="Số lượng"
                     type="number"
                     value={item.quantity}
                     onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
@@ -193,21 +193,21 @@ const EditOrder = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               select
-              label="Payment Method"
+              label="Phương thức thanh toán"
               name="paymentMethod"
               value={order.paymentMethod}
               onChange={handleInputChange}
               fullWidth
               margin="normal"
             >
-              <MenuItem value="Cash">Tiền mặt</MenuItem>
-              <MenuItem value="Credit Card">Thẻ tín dụng</MenuItem>
-              <MenuItem value="Online Payment">Thanh toán trực tuyến</MenuItem>
+              <MenuItem value="Tiền mặt">Tiền mặt</MenuItem>
+              <MenuItem value="Thẻ tín dụng">Thẻ tín dụng</MenuItem>
+              <MenuItem value="Thanh toán trực tuyến">Thanh toán trực tuyến</MenuItem>
             </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField
-              label="Total Amount"
+              label="Tổng tiền"
               name="totalAmount"
               value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}
               fullWidth
@@ -218,7 +218,7 @@ const EditOrder = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               select
-              label="Order Status"
+              label="Trạng thái đơn hàng"
               name="status"
               value={order.status}
               onChange={handleInputChange}
@@ -233,7 +233,7 @@ const EditOrder = () => {
           </Grid>
           <Grid item xs={12}>
             <TextField
-              label="Notes"
+              label="Ghi chú"
               name="notes"
               value={order.notes}
               onChange={handleInputChange}
