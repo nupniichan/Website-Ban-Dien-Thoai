@@ -49,11 +49,11 @@ const EditVoucher = () => {
     };
 
     // Format date to 'YYYY-MM-DD' for date input
-    const formatDate = (date) => {
+    /* const formatDate = (date) => {
         const d = new Date(date);
         const formattedDate = d.toISOString().split("T")[0]; // Extract YYYY-MM-DD
         return formattedDate;
-    };
+    }; */
 
     if (loading) return <CircularProgress />;
     if (!voucher) return <div>Voucher không tồn tại</div>;
@@ -81,7 +81,7 @@ const EditVoucher = () => {
                             label="Start Date"
                             name="startDate"
                             type="date"
-                            value={formatDate(voucher.startDate)}
+                            value={(new Date(voucher.startDate).toLocaleDateString("vi-VN"))}
                             onChange={handleInputChange}
                             fullWidth
                             required
@@ -96,7 +96,7 @@ const EditVoucher = () => {
                             label="End Date"
                             name="endDate"
                             type="date"
-                            value={formatDate(voucher.endDate)}
+                            value={(new Date(voucher.endDate).toLocaleDateString("vi-VN"))}
                             onChange={handleInputChange}
                             fullWidth
                             required
