@@ -1,6 +1,5 @@
-import React from 'react';
-import { Navbar, Nav, Form, FormControl, Button, Badge } from 'react-bootstrap';
-import { Bell, MessageSquare, ChevronDown } from 'lucide-react';
+import { Navbar, Nav, Button } from 'react-bootstrap';
+import { ChevronDown } from 'lucide-react';
 
 const Header = () => {
   return (

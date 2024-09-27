@@ -21,10 +21,8 @@ const AddVoucher = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const newVoucher = { ...voucher };
-
         try {
-            const response = await axios.post("http://localhost:5000/api/vouchers", newVoucher, {
+            const response = await axios.post("http://localhost:5000/api/addDiscountCodes", {
                 headers: {
                     "Content-Type": "application/json",
                 },
