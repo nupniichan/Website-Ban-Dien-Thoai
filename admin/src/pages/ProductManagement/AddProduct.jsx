@@ -62,13 +62,13 @@ const AddProduct = () => {
       formData.append('image', product.image);
     }
     formData.append('cauhinh', JSON.stringify(product.cauhinh));
-  
+
     try {
       const response = await fetch('http://localhost:5000/api/addProduct', {
         method: 'POST',
         body: formData,
       });
-  
+
       if (response.ok) {
         const result = await response.json();
         setProductId(result.id);
