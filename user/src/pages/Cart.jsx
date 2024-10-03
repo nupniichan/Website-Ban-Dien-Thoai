@@ -48,6 +48,8 @@ const Cart = () => {
 
   // Xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = async (productId) => {
+    const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
+  
     try {
       await fetch(`http://localhost:5000/api/cart/${userId}/remove`, {
         method: 'DELETE',
@@ -56,7 +58,7 @@ const Cart = () => {
         },
         body: JSON.stringify({ productId }),
       });
-
+  
       setCartItems(cartItems.filter((item) => item.productId !== productId));
     } catch (error) {
       console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
