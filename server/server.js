@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
+const crypto = require('crypto');
+const Buffer = require('buffer').Buffer;
 const connectDB = require('./module/db.js');
 const { loginAdmin } = require('./module/adminLogin.js');
 const Product = require('./module/Product.js');
@@ -8,6 +11,7 @@ const Order = require('./module/Order.js');
 const Kho = require('./module/Kho.js');
 const User = require('./module/user.js');
 const DiscountCode = require('./module/DiscountCode.js');
+const config = require('./config.js')
 const multer = require('multer');
 const path = require('path');
 
@@ -26,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173','http://localhost:5174']
 }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads')); // Để truy cập hình ảnh qua đường dẫn
@@ -103,7 +107,7 @@ app.post('/api/orders', async (req, res) => {
       items,
       paymentMethod,
       totalAmount,
-      status: status || 'Chờ xác nhận',
+      status: status || 'Đã thanh toán',
       orderDate: orderDate || new Date(),
       notes,
     });
@@ -131,7 +135,7 @@ app.put('/api/orders/:id', async (req, res) => {
     }
 
     // If status is 'Cancelled' revert the stock quantities
-    if (status === 'Đã hủy' || existingOrder.status !== status) {
+    if (status === 'Đã hủy') {
       await adjustProductStock(existingOrder.items, true); // Revert the original stock changes
     }
 
@@ -639,8 +643,254 @@ app.get('/api/discountCodes/:id', async (req, res) => {
   }
 });
 
+// Thêm sản phẩm vào giỏ hàng
+app.post('/api/cart/:userId/add', async (req, res) => {
+  const { userId } = req.params;
+  const { productId, name, price, color, quantity, image } = req.body; // Đảm bảo bạn truyền đúng số lượng sản phẩm vào body
+
+  try {
+    const user = await User.findOne({ id: userId });
+    const product = await Product.findOne({ id: productId });
+
+    if (!user || !product) {
+      return res.status(404).json({ message: 'Người dùng hoặc sản phẩm không tồn tại' });
+    }
+
+    // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
+    if (quantity > product.quantity) {
+      return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
+    }
+
+    const existingProduct = user.cart.find(item => item.productId === productId);
+
+    if (existingProduct) {
+      const newQuantity = existingProduct.quantity + quantity;
+
+      // Kiểm tra nếu tổng số lượng vượt quá tồn kho
+      if (newQuantity > product.quantity) {
+        return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
+      }
+
+      existingProduct.quantity = newQuantity;
+    } else {
+      // Thêm sản phẩm mới vào giỏ hàng
+      user.cart.push({ productId, name, price,color,quantity, image });
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng', cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', error: error.message });
+  }
+});
+
+// Cập nhật số lượng trong giỏ hàng
+app.put('/api/cart/:userId/update', async (req, res) => {
+  const { userId } = req.params;
+  const { productId, quantity } = req.body;
+
+  try {
+    const user = await User.findOne({ id: userId });
+    const product = await Product.findOne({ id: productId });
+
+    if (!user || !product) {
+      return res.status(404).json({ message: 'Người dùng hoặc sản phẩm không tồn tại' });
+    }
+
+    // Kiểm tra số lượng tồn kho
+    if (quantity > product.quantity) {
+      return res.status(400).json({ message: 'Số lượng vượt quá tồn kho' });
+    }
+
+    const productInCart = user.cart.find(item => item.productId === productId);
+    if (!productInCart) {
+      return res.status(404).json({ message: 'Sản phẩm không có trong giỏ hàng' });
+    }
+
+    productInCart.quantity = quantity;
+
+    await user.save();
+    res.status(200).json({ message: 'Cập nhật số lượng thành công', cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật giỏ hàng', error: error.message });
+  }
+});
+
+// Xóa sản phẩm khỏi giỏ hàng
+app.delete('/api/cart/:userId/remove', async (req, res) => {
+  const { userId } = req.params;
+  const { productId } = req.body;
+
+  try {
+    const user = await User.findOne({ id: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Xóa sản phẩm khỏi giỏ hàng
+    user.cart = user.cart.filter(item => item.productId !== productId);
+
+    await user.save();
+    res.status(200).json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng', cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi xóa sản phẩm khỏi giỏ hàng', error: error.message });
+  }
+});
+
+// Lấy thông tin giỏ hàng của người dùng
+app.get('/api/cart/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findOne({ id: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.status(200).json(user.cart); 
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin giỏ hàng', error: error.message });
+  }
+});
+
+// API MOMO
+// Tạo đơn hàng và trả về payUrl từ MoMo
+app.post('/payment', async (req, res) => {
+  const { totalAmount, extraData } = req.body;  // Lấy extraData từ body
+  const orderId = config.partnerCode + new Date().getTime();
+  const requestId = orderId;
+
+  // Sử dụng extraData từ body thay vì config
+  const rawSignature = `accessKey=${config.accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${config.ipnUrl}&orderId=${orderId}&orderInfo=${config.orderInfo}&partnerCode=${config.partnerCode}&redirectUrl=${config.redirectUrl}&requestId=${requestId}&requestType=${config.requestType}`;
+
+  const signature = crypto.createHmac('sha256', config.secretKey).update(rawSignature).digest('hex');
+
+  const requestBody = JSON.stringify({
+    partnerCode: config.partnerCode,
+    partnerName: 'Test',
+    storeId: 'MomoTestStore',
+    requestId: requestId,
+    amount: totalAmount,
+    orderId: orderId,
+    orderInfo: config.orderInfo,
+    redirectUrl: config.redirectUrl,
+    ipnUrl: config.ipnUrl,
+    lang: config.lang,
+    requestType: config.requestType,
+    extraData: extraData, 
+    signature: signature,
+  });
+
+  try {
+    const result = await axios.post('https://test-payment.momo.vn/v2/gateway/api/create', requestBody, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    res.status(200).json(result.data);
+  } catch (error) {
+    console.error('Error creating payment:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Nhận callback từ MoMo sau khi thanh toán
+app.post('/callback', async (req, res) => {
+  const { resultCode, orderId, amount, orderInfo, extraData } = req.body;
+
+  if (resultCode === 0) {
+    // Thanh toán thành công
+    try {
+      if (extraData) {
+        const orderData = JSON.parse(extraData); 
+
+        // Kiểm tra và gán giá trị mặc định cho notes nếu không có
+        const notes = orderData.notes ? orderData.notes : ''; 
+
+        // Tạo ID cho đơn hàng mới
+        const counter = await Counter.findByIdAndUpdate(
+          { _id: 'orderId' },
+          { $inc: { seq: 1 } },
+          { new: true, upsert: true }
+        );
+        const newOrderId = `OD${String(counter.seq).padStart(3, '0')}`;
+
+        // Lưu đơn hàng vào MongoDB
+        const newOrder = new Order({
+          id: newOrderId, 
+          orderId: orderId,
+          customerId: orderData.customerId,
+          customerName: orderData.customerName,
+          shippingAddress: orderData.shippingAddress,
+          items: orderData.items,
+          paymentMethod: 'MoMo',
+          totalAmount: amount,
+          status: 'Đã thanh toán',
+          orderDate: new Date(),
+          notes: notes, 
+        });
+
+        await newOrder.save();
+
+        // Trừ số lượng tồn kho
+        await adjustProductStock(orderData.items);
+
+        // Xóa các sản phẩm đã thanh toán ra khỏi giỏ hàng
+        const user = await User.findOne({ id: orderData.customerId });
+        if (user) {
+          const updatedCart = user.cart.filter(cartItem => 
+            !orderData.items.some(orderedItem => orderedItem.productId === cartItem.productId)
+          );
+          
+          user.cart = updatedCart;
+          await user.save(); // Lưu giỏ hàng đã được cập nhật
+        }
+
+        res.redirect('http://localhost:5173/payment-history');
+      } else {
+        console.error('ExtraData is missing or empty');
+        res.status(400).send('ExtraData is missing or empty');
+      }
+    } catch (error) {
+      console.error('Error saving order or adjusting stock:', error);
+      res.status(500).send('Error processing order');
+    }
+  } else {
+    res.redirect('http://localhost:5173/cart');
+  }
+});
+
+
+// Kiểm tra trạng thái giao dịch
+app.post('/check-status-transaction', async (req, res) => {
+  const { orderId } = req.body;
+
+  const rawSignature = `accessKey=${config.accessKey}&orderId=${orderId}&partnerCode=${config.partnerCode}&requestId=${orderId}`;
+
+  const signature = crypto.createHmac('sha256', config.secretKey).update(rawSignature).digest('hex');
+
+  const requestBody = JSON.stringify({
+    partnerCode: config.partnerCode,
+    requestId: orderId,
+    orderId: orderId,
+    signature: signature,
+    lang: config.lang,
+  });
+
+  try {
+    const result = await axios.post('https://test-payment.momo.vn/v2/gateway/api/query', requestBody, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    res.status(200).json(result.data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
