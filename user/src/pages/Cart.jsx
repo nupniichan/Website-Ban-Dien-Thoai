@@ -65,6 +65,7 @@ const Cart = () => {
 
   // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
   const updateQuantity = async (productId, newQuantity) => {
+    const userId = sessionStorage.getItem('userId'); 
     const productInCart = cartItems.find((item) => item.productId === productId);
 
     if (newQuantity <= 0) {

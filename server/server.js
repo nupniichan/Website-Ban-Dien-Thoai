@@ -107,7 +107,7 @@ app.post('/api/orders', async (req, res) => {
       items,
       paymentMethod,
       totalAmount,
-      status: status || 'Chờ xác nhận',
+      status: status || 'Đã thanh toán',
       orderDate: orderDate || new Date(),
       notes,
     });
@@ -135,7 +135,7 @@ app.put('/api/orders/:id', async (req, res) => {
     }
 
     // If status is 'Cancelled' revert the stock quantities
-    if (status === 'Đã hủy' || existingOrder.status !== status) {
+    if (status === 'Đã hủy') {
       await adjustProductStock(existingOrder.items, true); // Revert the original stock changes
     }
 
@@ -756,161 +756,136 @@ app.get('/api/cart/:userId', async (req, res) => {
 });
 
 // API MOMO
+// Tạo đơn hàng và trả về payUrl từ MoMo
 app.post('/payment', async (req, res) => {
-  let {
-    accessKey,
-    secretKey,
-    orderInfo,
-    partnerCode,
-    redirectUrl,
-    ipnUrl,
-    requestType,
-    extraData,
-    orderGroupId,
-    autoCapture,
-    lang,
-  } = config;
+  const { totalAmount, extraData } = req.body;  // Lấy extraData từ body
+  const orderId = config.partnerCode + new Date().getTime();
+  const requestId = orderId;
 
-  var amount = '10000';
-  var orderId = partnerCode + new Date().getTime();
-  var requestId = orderId;
+  // Sử dụng extraData từ body thay vì config
+  const rawSignature = `accessKey=${config.accessKey}&amount=${totalAmount}&extraData=${extraData}&ipnUrl=${config.ipnUrl}&orderId=${orderId}&orderInfo=${config.orderInfo}&partnerCode=${config.partnerCode}&redirectUrl=${config.redirectUrl}&requestId=${requestId}&requestType=${config.requestType}`;
 
-  //before sign HMAC SHA256 with format
-  //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
-  var rawSignature =
-    'accessKey=' +
-    accessKey +
-    '&amount=' +
-    amount +
-    '&extraData=' +
-    extraData +
-    '&ipnUrl=' +
-    ipnUrl +
-    '&orderId=' +
-    orderId +
-    '&orderInfo=' +
-    orderInfo +
-    '&partnerCode=' +
-    partnerCode +
-    '&redirectUrl=' +
-    redirectUrl +
-    '&requestId=' +
-    requestId +
-    '&requestType=' +
-    requestType;
+  const signature = crypto.createHmac('sha256', config.secretKey).update(rawSignature).digest('hex');
 
-  //signature
-  var signature = crypto
-    .createHmac('sha256', secretKey)
-    .update(rawSignature)
-    .digest('hex');
-
-  //json object send to MoMo endpoint
   const requestBody = JSON.stringify({
-    partnerCode: partnerCode,
+    partnerCode: config.partnerCode,
     partnerName: 'Test',
     storeId: 'MomoTestStore',
     requestId: requestId,
-    amount: amount,
+    amount: totalAmount,
     orderId: orderId,
-    orderInfo: orderInfo,
-    redirectUrl: redirectUrl,
-    ipnUrl: ipnUrl,
-    lang: lang,
-    requestType: requestType,
-    autoCapture: autoCapture,
-    extraData: extraData,
-    orderGroupId: orderGroupId,
+    orderInfo: config.orderInfo,
+    redirectUrl: config.redirectUrl,
+    ipnUrl: config.ipnUrl,
+    lang: config.lang,
+    requestType: config.requestType,
+    extraData: extraData, 
     signature: signature,
   });
 
-  // options for axios
-  const options = {
-    method: 'POST',
-    url: 'https://test-payment.momo.vn/v2/gateway/api/create',
-    headers: {
-      'Content-Type': 'application/json',
-      'Content-Length': Buffer.byteLength(requestBody),
-    },
-    data: requestBody,
-  };
-
-  // Send the request and handle the response
-  let result;
   try {
-    result = await axios(options);
-    return res.status(200).json(result.data);
+    const result = await axios.post('https://test-payment.momo.vn/v2/gateway/api/create', requestBody, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    res.status(200).json(result.data);
   } catch (error) {
-    return res.status(500).json({ statusCode: 500, message: error.message });
+    console.error('Error creating payment:', error.response ? error.response.data : error.message);
+    res.status(500).json({ message: error.message });
   }
 });
 
+// Nhận callback từ MoMo sau khi thanh toán
 app.post('/callback', async (req, res) => {
-  /**
-    resultCode = 0: giao dịch thành công.
-    resultCode = 9000: giao dịch được cấp quyền (authorization) thành công .
-    resultCode <> 0: giao dịch thất bại.
-   */
-  console.log('callback: ');
-  console.log(req.body);
-  /**
-   * Dựa vào kết quả này để update trạng thái đơn hàng
-   * Kết quả log:
-   * {
-        partnerCode: 'MOMO',
-        orderId: 'MOMO1712108682648',
-        requestId: 'MOMO1712108682648',
-        amount: 10000,
-        orderInfo: 'pay with MoMo',
-        orderType: 'momo_wallet',
-        transId: 4014083433,
-        resultCode: 0,
-        message: 'Thành công.',
-        payType: 'qr',
-        responseTime: 1712108811069,
-        extraData: '',
-        signature: '10398fbe70cd3052f443da99f7c4befbf49ab0d0c6cd7dc14efffd6e09a526c0'
-      }
-   */
+  const { resultCode, orderId, amount, orderInfo, extraData } = req.body;
 
-  return res.status(204).json(req.body);
+  if (resultCode === 0) {
+    // Thanh toán thành công
+    try {
+      if (extraData) {
+        const orderData = JSON.parse(extraData); 
+
+        // Kiểm tra và gán giá trị mặc định cho notes nếu không có
+        const notes = orderData.notes ? orderData.notes : ''; 
+
+        // Tạo ID cho đơn hàng mới
+        const counter = await Counter.findByIdAndUpdate(
+          { _id: 'orderId' },
+          { $inc: { seq: 1 } },
+          { new: true, upsert: true }
+        );
+        const newOrderId = `OD${String(counter.seq).padStart(3, '0')}`;
+
+        // Lưu đơn hàng vào MongoDB
+        const newOrder = new Order({
+          id: newOrderId, 
+          orderId: orderId,
+          customerId: orderData.customerId,
+          customerName: orderData.customerName,
+          shippingAddress: orderData.shippingAddress,
+          items: orderData.items,
+          paymentMethod: 'MoMo',
+          totalAmount: amount,
+          status: 'Đã thanh toán',
+          orderDate: new Date(),
+          notes: notes, 
+        });
+
+        await newOrder.save();
+
+        // Trừ số lượng tồn kho
+        await adjustProductStock(orderData.items);
+
+        // Xóa các sản phẩm đã thanh toán ra khỏi giỏ hàng
+        const user = await User.findOne({ id: orderData.customerId });
+        if (user) {
+          const updatedCart = user.cart.filter(cartItem => 
+            !orderData.items.some(orderedItem => orderedItem.productId === cartItem.productId)
+          );
+          
+          user.cart = updatedCart;
+          await user.save(); // Lưu giỏ hàng đã được cập nhật
+        }
+
+        res.redirect('http://localhost:5173/payment-history');
+      } else {
+        console.error('ExtraData is missing or empty');
+        res.status(400).send('ExtraData is missing or empty');
+      }
+    } catch (error) {
+      console.error('Error saving order or adjusting stock:', error);
+      res.status(500).send('Error processing order');
+    }
+  } else {
+    res.redirect('http://localhost:5173/cart');
+  }
 });
 
+
+// Kiểm tra trạng thái giao dịch
 app.post('/check-status-transaction', async (req, res) => {
   const { orderId } = req.body;
 
-  // const signature = accessKey=$accessKey&orderId=$orderId&partnerCode=$partnerCode
-  // &requestId=$requestId
-  var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
-  var accessKey = 'F8BBA842ECF85';
-  const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`;
+  const rawSignature = `accessKey=${config.accessKey}&orderId=${orderId}&partnerCode=${config.partnerCode}&requestId=${orderId}`;
 
-  const signature = crypto
-    .createHmac('sha256', secretKey)
-    .update(rawSignature)
-    .digest('hex');
+  const signature = crypto.createHmac('sha256', config.secretKey).update(rawSignature).digest('hex');
 
   const requestBody = JSON.stringify({
-    partnerCode: 'MOMO',
+    partnerCode: config.partnerCode,
     requestId: orderId,
     orderId: orderId,
     signature: signature,
-    lang: 'vi',
+    lang: config.lang,
   });
 
-  // options for axios
-  const options = {
-    method: 'POST',
-    url: 'https://test-payment.momo.vn/v2/gateway/api/query',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    data: requestBody,
-  };
-
-  const result = await axios(options);
-
-  return res.status(200).json(result.data);
+  try {
+    const result = await axios.post('https://test-payment.momo.vn/v2/gateway/api/query', requestBody, {
+      headers: { 'Content-Type': 'application/json' },
+    });
+    res.status(200).json(result.data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Start the server

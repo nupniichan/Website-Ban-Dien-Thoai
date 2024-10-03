@@ -8,8 +8,10 @@ const Checkout = () => {
     address: '',
   });
   const [shippingOption, setShippingOption] = useState('store');
+  const [paymentMethod, setPaymentMethod] = useState('Thanh toán qua MOMO'); // Lưu trữ phương thức thanh toán
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [notes, setNotes] = useState(''); // Lưu trữ ghi chú từ người dùng
 
   const userId = sessionStorage.getItem('userId');
 
@@ -56,9 +58,44 @@ const Checkout = () => {
     }
   }, [userId]);
 
-  const handleContinue = () => {
-    console.log('Proceeding to payment');
-  };
+  const handleContinue = async () => {
+    const orderData = {
+      customerId: userId,
+      customerName: customerInfo.name,
+      shippingAddress: customerInfo.address,
+      items: cartItems,
+      paymentMethod: paymentMethod,
+      totalAmount: totalAmount,
+      notes: notes, // Ghi chú của người dùng
+    };
+  
+    if (paymentMethod === 'Thanh toán qua MOMO') {
+      try {
+        const response = await fetch('http://localhost:5000/payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            totalAmount, // Tổng tiền thanh toán
+            extraData: JSON.stringify(orderData), // Truyền toàn bộ dữ liệu đơn hàng dưới dạng chuỗi JSON
+          }),
+        });
+  
+        const data = await response.json();
+        if (data.payUrl) {
+          window.location.href = data.payUrl; // Chuyển hướng người dùng đến trang thanh toán của MoMo
+        } else {
+          console.error('Failed to get payment URL:', data);
+        }
+      } catch (error) {
+        console.error('Error initiating payment:', error);
+      }
+    } else {
+      console.log('Thanh toán bằng tiền mặt');
+      alert('Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.');
+    }
+  };  
 
   const storeAddress = '806 QL22, ấp Mỹ Hoà 3, Hóc Môn, Hồ Chí Minh';
 
@@ -98,7 +135,7 @@ const Checkout = () => {
       ) : (
         <p>Giỏ hàng của bạn trống. Hãy mua gì đó rồi quay lại nhé</p>
       )}
-      
+
       {/* Thông tin giao / nhận hàng */}
       <div className="bg-white p-4 rounded-lg shadow mb-4">
         <h3 className="text-lg font-semibold mb-2">Thông tin nhận hàng</h3>
@@ -156,9 +193,30 @@ const Checkout = () => {
             />
           </>
         )}
+      </div>
 
-        <label className="block mb-2">Ghi chú khác (nếu có)</label>
-        <input type="text" className="w-full p-2 border rounded-lg" placeholder="Nhập ghi chú" />
+      {/* Thêm ghi chú */}
+      <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <h3 className="text-lg font-semibold mb-2">Ghi chú khác (nếu có)</h3>
+        <textarea
+          className="w-full p-2 border rounded-lg"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)} // Cập nhật ghi chú
+          placeholder="Nhập ghi chú"
+        />
+      </div>
+
+      {/* Dropdown phương thức thanh toán */}
+      <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <h3 className="text-lg font-semibold mb-2">Phương thức thanh toán</h3>
+        <select
+          className="w-full p-2 border rounded-lg"
+          value={paymentMethod}
+          onChange={(e) => setPaymentMethod(e.target.value)}
+        >
+          <option value="Thanh toán qua MOMO">Thanh toán qua MOMO</option>
+          <option value="Thanh toán qua VNpay">Thanh toán qua VNpay</option>
+        </select>
       </div>
 
       {/* Tóm tắt hoá đơn thanh toán */}
