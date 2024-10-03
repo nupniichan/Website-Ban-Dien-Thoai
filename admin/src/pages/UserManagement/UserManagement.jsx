@@ -150,7 +150,6 @@ const UserManagement = () => {
                         <Typography>Số điện thoại: {selectedUser.phoneNumber}</Typography>
                         <Typography>Địa chỉ giao hàng: {selectedUser.address}</Typography>
                         <Typography>Tên tài khoản: {selectedUser.accountName}</Typography>
-                        <Typography>Mật khẩu: {selectedUser.password}</Typography>
                     </DialogContent>
                 </Dialog>
             )}

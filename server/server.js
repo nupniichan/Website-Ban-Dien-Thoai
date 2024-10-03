@@ -1,5 +1,8 @@
 const express = require('express');
 const cors = require('cors');
+const axios = require('axios');
+const crypto = require('crypto');
+const Buffer = require('buffer').Buffer;
 const connectDB = require('./module/db.js');
 const { loginAdmin } = require('./module/adminLogin.js');
 const Product = require('./module/Product.js');
@@ -8,6 +11,7 @@ const Order = require('./module/Order.js');
 const Kho = require('./module/Kho.js');
 const User = require('./module/user.js');
 const DiscountCode = require('./module/DiscountCode.js');
+const config = require('./config.js')
 const multer = require('multer');
 const path = require('path');
 
@@ -26,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: ['http://localhost:5173','http://localhost:5174']
 }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads')); // Để truy cập hình ảnh qua đường dẫn
@@ -639,8 +643,279 @@ app.get('/api/discountCodes/:id', async (req, res) => {
   }
 });
 
+// Thêm sản phẩm vào giỏ hàng
+app.post('/api/cart/:userId/add', async (req, res) => {
+  const { userId } = req.params;
+  const { productId, name, price, color, quantity, image } = req.body; // Đảm bảo bạn truyền đúng số lượng sản phẩm vào body
+
+  try {
+    const user = await User.findOne({ id: userId });
+    const product = await Product.findOne({ id: productId });
+
+    if (!user || !product) {
+      return res.status(404).json({ message: 'Người dùng hoặc sản phẩm không tồn tại' });
+    }
+
+    // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
+    if (quantity > product.quantity) {
+      return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
+    }
+
+    const existingProduct = user.cart.find(item => item.productId === productId);
+
+    if (existingProduct) {
+      const newQuantity = existingProduct.quantity + quantity;
+
+      // Kiểm tra nếu tổng số lượng vượt quá tồn kho
+      if (newQuantity > product.quantity) {
+        return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
+      }
+
+      existingProduct.quantity = newQuantity;
+    } else {
+      // Thêm sản phẩm mới vào giỏ hàng
+      user.cart.push({ productId, name, price,color,quantity, image });
+    }
+
+    await user.save();
+    res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng', cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', error: error.message });
+  }
+});
+
+// Cập nhật số lượng trong giỏ hàng
+app.put('/api/cart/:userId/update', async (req, res) => {
+  const { userId } = req.params;
+  const { productId, quantity } = req.body;
+
+  try {
+    const user = await User.findOne({ id: userId });
+    const product = await Product.findOne({ id: productId });
+
+    if (!user || !product) {
+      return res.status(404).json({ message: 'Người dùng hoặc sản phẩm không tồn tại' });
+    }
+
+    // Kiểm tra số lượng tồn kho
+    if (quantity > product.quantity) {
+      return res.status(400).json({ message: 'Số lượng vượt quá tồn kho' });
+    }
+
+    const productInCart = user.cart.find(item => item.productId === productId);
+    if (!productInCart) {
+      return res.status(404).json({ message: 'Sản phẩm không có trong giỏ hàng' });
+    }
+
+    productInCart.quantity = quantity;
+
+    await user.save();
+    res.status(200).json({ message: 'Cập nhật số lượng thành công', cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi cập nhật giỏ hàng', error: error.message });
+  }
+});
+
+// Xóa sản phẩm khỏi giỏ hàng
+app.delete('/api/cart/:userId/remove', async (req, res) => {
+  const { userId } = req.params;
+  const { productId } = req.body;
+
+  try {
+    const user = await User.findOne({ id: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Xóa sản phẩm khỏi giỏ hàng
+    user.cart = user.cart.filter(item => item.productId !== productId);
+
+    await user.save();
+    res.status(200).json({ message: 'Sản phẩm đã được xóa khỏi giỏ hàng', cart: user.cart });
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi xóa sản phẩm khỏi giỏ hàng', error: error.message });
+  }
+});
+
+// Lấy thông tin giỏ hàng của người dùng
+app.get('/api/cart/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const user = await User.findOne({ id: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    res.status(200).json(user.cart); 
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin giỏ hàng', error: error.message });
+  }
+});
+
+// API MOMO
+app.post('/payment', async (req, res) => {
+  let {
+    accessKey,
+    secretKey,
+    orderInfo,
+    partnerCode,
+    redirectUrl,
+    ipnUrl,
+    requestType,
+    extraData,
+    orderGroupId,
+    autoCapture,
+    lang,
+  } = config;
+
+  var amount = '10000';
+  var orderId = partnerCode + new Date().getTime();
+  var requestId = orderId;
+
+  //before sign HMAC SHA256 with format
+  //accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType
+  var rawSignature =
+    'accessKey=' +
+    accessKey +
+    '&amount=' +
+    amount +
+    '&extraData=' +
+    extraData +
+    '&ipnUrl=' +
+    ipnUrl +
+    '&orderId=' +
+    orderId +
+    '&orderInfo=' +
+    orderInfo +
+    '&partnerCode=' +
+    partnerCode +
+    '&redirectUrl=' +
+    redirectUrl +
+    '&requestId=' +
+    requestId +
+    '&requestType=' +
+    requestType;
+
+  //signature
+  var signature = crypto
+    .createHmac('sha256', secretKey)
+    .update(rawSignature)
+    .digest('hex');
+
+  //json object send to MoMo endpoint
+  const requestBody = JSON.stringify({
+    partnerCode: partnerCode,
+    partnerName: 'Test',
+    storeId: 'MomoTestStore',
+    requestId: requestId,
+    amount: amount,
+    orderId: orderId,
+    orderInfo: orderInfo,
+    redirectUrl: redirectUrl,
+    ipnUrl: ipnUrl,
+    lang: lang,
+    requestType: requestType,
+    autoCapture: autoCapture,
+    extraData: extraData,
+    orderGroupId: orderGroupId,
+    signature: signature,
+  });
+
+  // options for axios
+  const options = {
+    method: 'POST',
+    url: 'https://test-payment.momo.vn/v2/gateway/api/create',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(requestBody),
+    },
+    data: requestBody,
+  };
+
+  // Send the request and handle the response
+  let result;
+  try {
+    result = await axios(options);
+    return res.status(200).json(result.data);
+  } catch (error) {
+    return res.status(500).json({ statusCode: 500, message: error.message });
+  }
+});
+
+app.post('/callback', async (req, res) => {
+  /**
+    resultCode = 0: giao dịch thành công.
+    resultCode = 9000: giao dịch được cấp quyền (authorization) thành công .
+    resultCode <> 0: giao dịch thất bại.
+   */
+  console.log('callback: ');
+  console.log(req.body);
+  /**
+   * Dựa vào kết quả này để update trạng thái đơn hàng
+   * Kết quả log:
+   * {
+        partnerCode: 'MOMO',
+        orderId: 'MOMO1712108682648',
+        requestId: 'MOMO1712108682648',
+        amount: 10000,
+        orderInfo: 'pay with MoMo',
+        orderType: 'momo_wallet',
+        transId: 4014083433,
+        resultCode: 0,
+        message: 'Thành công.',
+        payType: 'qr',
+        responseTime: 1712108811069,
+        extraData: '',
+        signature: '10398fbe70cd3052f443da99f7c4befbf49ab0d0c6cd7dc14efffd6e09a526c0'
+      }
+   */
+
+  return res.status(204).json(req.body);
+});
+
+app.post('/check-status-transaction', async (req, res) => {
+  const { orderId } = req.body;
+
+  // const signature = accessKey=$accessKey&orderId=$orderId&partnerCode=$partnerCode
+  // &requestId=$requestId
+  var secretKey = 'K951B6PE1waDMi640xX08PD3vg6EkVlz';
+  var accessKey = 'F8BBA842ECF85';
+  const rawSignature = `accessKey=${accessKey}&orderId=${orderId}&partnerCode=MOMO&requestId=${orderId}`;
+
+  const signature = crypto
+    .createHmac('sha256', secretKey)
+    .update(rawSignature)
+    .digest('hex');
+
+  const requestBody = JSON.stringify({
+    partnerCode: 'MOMO',
+    requestId: orderId,
+    orderId: orderId,
+    signature: signature,
+    lang: 'vi',
+  });
+
+  // options for axios
+  const options = {
+    method: 'POST',
+    url: 'https://test-payment.momo.vn/v2/gateway/api/query',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: requestBody,
+  };
+
+  const result = await axios(options);
+
+  return res.status(200).json(result.data);
+});
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
