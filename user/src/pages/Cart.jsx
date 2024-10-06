@@ -7,49 +7,80 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
-  const [overStockError, setOverStockError] = useState(null); 
-  const navigate = useNavigate(); 
+  const [overStockError, setOverStockError] = useState(null);
+  const navigate = useNavigate();
+
+  const fetchUserData = async () => {
+    const userEmail = localStorage.getItem('userEmail');
+    console.log("Fetching user data for email:", userEmail);
+    
+    if (userEmail) {
+      try {
+        const response = await fetch(`http://localhost:5000/api/users/email/${userEmail}`);
+        const data = await response.json();
+        
+        console.log("User data response:", data);
+
+        if (response.ok) {
+          return data.id; // Return the user ID
+        } else {
+          throw new Error("Error fetching user ID");
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Error fetching user data");
+      }
+    } else {
+      setError("User email not found");
+      console.error("User email not found");
+    }
+    return null; // Return null if user email is not found
+  };
+
+  const fetchCartItems = async (userId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/cart/${userId}`);
+      const data = await response.json();
+      
+      console.log("Fetched cart items:", data);
+
+      if (response.ok) {
+        setCartItems(data); // Set the cart items to the fetched data
+      } else {
+        throw new Error(data.message || "Error fetching cart items");
+      }
+    } catch (err) {
+      console.error("Error fetching cart items:", err);
+      setError("Error fetching cart items");
+    }
+  };
 
   useEffect(() => {
-    // Lưu vào session tạm thời tại cái login chưa làm xong
-    sessionStorage.setItem('userId', 'KH001');
-
-    const fetchCartItems = async () => {
-      const userId = sessionStorage.getItem('userId');
+    const loadCartItems = async () => {
+      const userId = await fetchUserData(); // Fetch the user ID
 
       if (!userId) {
-        console.error('Xin hãy đăng nhập để sử dụng tính năng này');
-        navigate('/login'); 
+        navigate('/login'); // Redirect to login if userId is not found
         return;
       }
 
-      try {
-        const response = await fetch(`http://localhost:5000/api/cart/${userId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch cart items');
-        }
-        const data = await response.json();
-        setCartItems(data);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching cart items:', error);
-        setError(error.message);
-        setLoading(false);
-      }
+      console.log("User ID fetched:", userId);
+      await fetchCartItems(userId); // Fetch the cart items using the user ID
+      setLoading(false); // Set loading to false after fetching
     };
 
-    fetchCartItems();
+    loadCartItems();
   }, [navigate]);
 
-  // Tính tổng giá tiền
+  // Calculate total price
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  // Xóa sản phẩm khỏi giỏ hàng
+  // Remove item from cart
   const removeFromCart = async (productId) => {
-    const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
-  
+    const userId = await fetchUserData(); // Fetch user ID
+
     try {
       await fetch(`http://localhost:5000/api/cart/${userId}/remove`, {
         method: 'DELETE',
@@ -58,21 +89,23 @@ const Cart = () => {
         },
         body: JSON.stringify({ productId }),
       });
-  
-      setCartItems(cartItems.filter((item) => item.productId !== productId));
+
+      const updatedCartItems = cartItems.filter((item) => item.productId !== productId);
+      setCartItems(updatedCartItems);
+      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems)); // Update localStorage
     } catch (error) {
-      console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
+      console.error('Error removing item from cart:', error);
     }
   };
 
-  // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
+  // Update item quantity and check stock
   const updateQuantity = async (productId, newQuantity) => {
-    const userId = sessionStorage.getItem('userId'); 
+    const userId = await fetchUserData(); // Fetch user ID
     const productInCart = cartItems.find((item) => item.productId === productId);
 
     if (newQuantity <= 0) {
       setItemToRemove(productInCart);
-      setShowConfirmDialog(true); // Hiển thị hộp thoại xác nhận xóa sản phẩm
+      setShowConfirmDialog(true); // Show confirmation dialog
     } else {
       try {
         const response = await fetch(`http://localhost:5000/api/cart/${userId}/update`, {
@@ -85,28 +118,28 @@ const Cart = () => {
 
         const data = await response.json();
         if (response.status === 400) {
-          setOverStockError(data.message); // Hiển thị lỗi nếu vượt quá tồn kho
+          setOverStockError(data.message); // Show error if overstock
         } else {
-          setCartItems((prevItems) =>
-            prevItems.map((item) =>
-              item.productId === productId ? { ...item, quantity: newQuantity } : item
-            )
+          const updatedCartItems = cartItems.map((item) =>
+            item.productId === productId ? { ...item, quantity: newQuantity } : item
           );
-          setOverStockError(null); // Xóa lỗi nếu cập nhật thành công
+          setCartItems(updatedCartItems);
+          localStorage.setItem('cartItems', JSON.stringify(updatedCartItems)); // Update localStorage
+          setOverStockError(null); // Clear error if updated successfully
         }
       } catch (error) {
-        console.error('Lỗi khi cập nhật số lượng:', error);
+        console.error('Error updating quantity:', error);
       }
     }
   };
 
-  // Xác nhận xóa sản phẩm
+  // Confirm item removal
   const handleConfirmRemove = () => {
     removeFromCart(itemToRemove.productId);
     setShowConfirmDialog(false);
   };
 
-  // Giao diện khi giỏ hàng trống
+  // Loading state
   if (loading) {
     return <div>Đang tải...</div>;
   }
@@ -133,7 +166,7 @@ const Cart = () => {
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-semibold mb-4">Giỏ hàng của bạn</h2>
-      <div className="grid grid-cols-1 gap-4">
+      <div className="">
         {cartItems.map((item) => (
           <div
             key={item.productId}
@@ -176,14 +209,14 @@ const Cart = () => {
         ))}
       </div>
 
-      {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
+      {/* Show overstock error */}
       {overStockError && (
         <div className="bg-red-100 text-red-700 p-4 rounded-lg mt-4">
           {overStockError}
         </div>
       )}
 
-      {/* Hiển thị hộp thoại xác nhận xóa sản phẩm */}
+      {/* Confirmation dialog for removing item */}
       {showConfirmDialog && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
           <div className="bg-white p-6 rounded-lg">
@@ -204,10 +237,10 @@ const Cart = () => {
           </span>
         </p>
         <button
-        className="mt-4 bg-red-500 text-white px-6 py-2 rounded-lg"
-        onClick={() => navigate('/checkout', { state: { cartItems, total: calculateTotal() } })} 
+          className="mt-4 bg-red-500 text-white px-6 py-2 rounded-lg"
+          onClick={() => {/* Handle checkout logic */}}
         >
-        Mua ngay ({cartItems.length})
+          Thanh toán
         </button>
       </div>
     </div>

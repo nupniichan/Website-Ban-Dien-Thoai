@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import Header from "./Header&Footer/Header";
 import Footer from "./Header&Footer/Footer";
@@ -11,7 +12,8 @@ import Profile from "./pages/Profile";
 import MyOrders from "./pages/MyOrders";
 import PathNames from "./PathNames";
 import "./App.css";
-
+import Register from "./components/Register";
+import Login from "./components/Login";
 function App() {
     return (
         <>
@@ -25,6 +27,8 @@ function App() {
                 <Route path={PathNames.SEARCH_RESULTS} element={<SearchResults />} />
                 <Route path={PathNames.PROFILE} element={<Profile />} />
                 <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
+                <Route path={PathNames.REGISTER} element={<Register/>} />
+                <Route path={PathNames.LOGIN} element={<Login/>} />
             </Routes>
             <Footer />
         </>

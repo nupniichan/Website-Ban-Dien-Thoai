@@ -1,0 +1,32 @@
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Full height */
+  background-color: #f0f2f5; /* Same as account sidebar */
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar-item {
+  margin: 10px 0; /* Space between items */
+  padding: 10px;
+  border-radius: 5px; /* Rounded corners for items */
+  transition: background-color 0.3s; /* Smooth transition */
+}
+
+.sidebar-item:hover {
+  background-color: #e6f7ff; /* Light blue on hover */
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+.sidebar-title {
+  font-size: 18px; /* Larger font size for title */
+  font-weight: bold; /* Bold title */
+}
+
+/* Style for the active item */
+.sidebar-item.active {
+  background-color: #b3d7ff; /* Highlight color for active item */
+  font-weight: bold; /* Optional: make active item bold */
+  color: #0056b3; /* Optional: change text color for active item */
+}
