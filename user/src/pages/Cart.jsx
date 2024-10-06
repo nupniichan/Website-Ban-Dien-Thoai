@@ -122,7 +122,7 @@ const Cart = () => {
         <p className="mt-4">Hãy chọn thêm sản phẩm để mua sắm nhé</p>
         <button
           onClick={() => (window.location.href = '/')}
-          className="mt-6 bg-red-500 text-white px-6 py-2 rounded-lg"
+          className="mt-6 bg-blue-400 text-white px-6 py-2 rounded-lg"
         >
           Quay lại trang chủ
         </button>
@@ -167,7 +167,7 @@ const Cart = () => {
               </button>
               <button
                 onClick={() => removeFromCart(item.productId)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
               >
                 Xóa
               </button>
@@ -190,7 +190,7 @@ const Cart = () => {
             <h3>Bạn có chắc muốn xóa sản phẩm khỏi giỏ hàng?</h3>
             <div className="flex justify-end space-x-4 mt-4">
               <button onClick={() => setShowConfirmDialog(false)} className="bg-gray-500 text-white px-4 py-2 rounded-lg">Hủy</button>
-              <button onClick={handleConfirmRemove} className="bg-red-500 text-white px-4 py-2 rounded-lg">Xác nhận</button>
+              <button onClick={handleConfirmRemove} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Xác nhận</button>
             </div>
           </div>
         </div>
@@ -204,7 +204,7 @@ const Cart = () => {
           </span>
         </p>
         <button
-        className="mt-4 bg-red-500 text-white px-6 py-2 rounded-lg"
+        className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg"
         onClick={() => navigate('/checkout', { state: { cartItems, total: calculateTotal() } })} 
         >
         Mua ngay ({cartItems.length})

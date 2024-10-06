@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import NeonSign from "../components/BrandLogos/NeonSign";
+import PhonyBaloney  from "../components/BrandLogos/Phony Baloney.jsx"
 import UserMenu from "../components/UserMenu";
 import "./Header.css";
 
@@ -19,7 +20,7 @@ const Header = () => {
                     {/* Logo and Links section */}
                     <div>
                         <Link to="#" className="">
-                            <NeonSign text="PHONY BALONEY" />
+                            <PhonyBaloney text="PHONY BALONEY" />
                         </Link>
                     </div>
 
