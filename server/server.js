@@ -769,7 +769,7 @@ app.post('/payment', async (req, res) => {
 
   const requestBody = JSON.stringify({
     partnerCode: config.partnerCode,
-    partnerName: 'Test',
+    partnerName: 'SphoneC',
     storeId: 'MomoTestStore',
     requestId: requestId,
     amount: totalAmount,

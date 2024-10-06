@@ -8,7 +8,7 @@ const Checkout = () => {
     address: '',
   });
   const [shippingOption, setShippingOption] = useState('store');
-  const [paymentMethod, setPaymentMethod] = useState('Thanh toán qua MOMO'); // Lưu trữ phương thức thanh toán
+  const [paymentMethod, setPaymentMethod] = useState('Thanh toán qua MOMO');
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [notes, setNotes] = useState(''); // Lưu trữ ghi chú từ người dùng
@@ -66,7 +66,7 @@ const Checkout = () => {
       items: cartItems,
       paymentMethod: paymentMethod,
       totalAmount: totalAmount,
-      notes: notes, // Ghi chú của người dùng
+      notes: notes,
     };
   
     if (paymentMethod === 'Thanh toán qua MOMO') {
@@ -77,7 +77,7 @@ const Checkout = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            totalAmount, // Tổng tiền thanh toán
+            totalAmount,
             extraData: JSON.stringify(orderData), // Truyền toàn bộ dữ liệu đơn hàng dưới dạng chuỗi JSON
           }),
         });
@@ -143,7 +143,7 @@ const Checkout = () => {
           <div className="flex items-center cursor-pointer" onClick={() => setShippingOption('store')}>
             <div
               className={`w-5 h-5 rounded-full border-2 ${
-                shippingOption === 'store' ? 'border-red-500 bg-red-500' : 'border-gray-500'
+                shippingOption === 'store' ? 'border-blue-500 bg-blue-500' : 'border-gray-500'
               } mr-2 flex items-center justify-center`}
             >
               {shippingOption === 'store' && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
@@ -153,7 +153,7 @@ const Checkout = () => {
           <div className="flex items-center cursor-pointer" onClick={() => setShippingOption('delivery')}>
             <div
               className={`w-5 h-5 rounded-full border-2 ${
-                shippingOption === 'delivery' ? 'border-red-500 bg-red-500' : 'border-gray-500'
+                shippingOption === 'delivery' ? 'border-blue-500 bg-blue-500' : 'border-gray-500'
               } mr-2 flex items-center justify-center`}
             >
               {shippingOption === 'delivery' && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
@@ -227,7 +227,7 @@ const Checkout = () => {
 
       <button
         onClick={handleContinue}
-        className="w-full bg-red-500 text-white p-4 rounded-lg text-center text-lg font-semibold"
+        className="w-full bg-blue-500 text-white p-4 rounded-lg text-center text-lg font-semibold"
       >
         Tiếp tục
       </button>
