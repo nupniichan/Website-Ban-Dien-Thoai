@@ -4,10 +4,11 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "bunx --bun vite",
+    "build": "bunx --bun vite build",
+    "serve": "vite preview",
+    "test": "bun test",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
