@@ -1,4 +1,5 @@
-.header-content-container {
+/*     THE COOL UNUSED BG FOR HEADER    */
+/* .header-content-container {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,4 +13,4 @@
         rgba(0, 0, 0, 0.8) 13px,
         transparent 13px
     );
-} 
+}
