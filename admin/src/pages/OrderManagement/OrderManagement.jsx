@@ -64,9 +64,10 @@ const OrderManagement = () => {
   // Function to determine color based on status
   const getStatusColor = (status) => {
     switch (status) {
-      case 'Chờ xác nhận':
-        return { color: 'orange' };
+      case 'Đã thanh toán':
+        return { color: 'blue' };
       case 'Đã xác nhận':
+        return { color: 'green' };
       case 'Đã giao':
         return { color: 'green' };
       case 'Đã hủy':

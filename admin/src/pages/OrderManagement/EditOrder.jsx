@@ -201,8 +201,8 @@ const EditOrder = () => {
               margin="normal"
             >
               <MenuItem value="Tiền mặt">Tiền mặt</MenuItem>
-              <MenuItem value="Thẻ tín dụng">Thẻ tín dụng</MenuItem>
-              <MenuItem value="Thanh toán trực tuyến">Thanh toán trực tuyến</MenuItem>
+              <MenuItem value="MoMo">Momo</MenuItem>
+              <MenuItem value="VNPay">VNPay</MenuItem>
             </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -225,7 +225,8 @@ const EditOrder = () => {
               fullWidth
               margin="normal"
             >
-              <MenuItem value="Chờ xác nhận">Chờ xác nhận</MenuItem>
+              <MenuItem value="Đã thanh toán">Đã thanh toán</MenuItem>
+              <MenuItem value="Đã xác nhận">Đã xác nhận</MenuItem>
               <MenuItem value="Đang giao">Đang giao</MenuItem>
               <MenuItem value="Đã giao">Đã giao</MenuItem>
               <MenuItem value="Đã hủy">Đã hủy</MenuItem>

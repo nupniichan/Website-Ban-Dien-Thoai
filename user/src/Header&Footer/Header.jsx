@@ -1,10 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { SearchOutlined } from "@ant-design/icons";
 import NeonSign from "../assets/BrandLogos/NeonSign.jsx";
 import UserMenu from "../components/UserMenu.jsx";
 import PathNames from "../PathNames.js";
 import "./Header.css";
-import { SearchOutlined } from "@ant-design/icons";
-import { useState } from "react";
 
 const MenuItems = [
     {

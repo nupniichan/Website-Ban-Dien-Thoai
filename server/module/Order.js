@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema({
   id: { type: String, required: true, unique: true },
   customerId: { type: String, required: true },
   customerName: { type: String, required: true },
-  shippingAddress: { type: String, required: true }, // Added field
+  shippingAddress: { type: String, required: true }, 
   items: [
     {
       productId: { type: String, required: true },
@@ -13,8 +13,8 @@ const orderSchema = new mongoose.Schema({
   ],
   paymentMethod: { type: String, required: true },
   totalAmount: { type: Number, required: true },
-  status: { type: String, required: true, default: 'Chờ xác nhận' }, // Updated default
-  orderDate: { type: Date, required: true, default: Date.now }, // Default current date and time
+  status: { type: String, required: true, default: 'Chờ xác nhận' },
+  orderDate: { type: Date, required: true, default: Date.now }, 
   notes: { type: String },
 });
 
