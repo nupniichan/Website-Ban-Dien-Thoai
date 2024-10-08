@@ -22,7 +22,8 @@ const UserMenu = () => {
         <Dropdown
             menu={{ items }}
             trigger={["click"]}
-            className="border-2 border-[#dddddd] rounded-[30px] p-[0.5rem] cursor-pointer"
+            className="gap-[0.25rem] border-[1px] border-[#dddddd] rounded-[30px] p-[0.5rem] m-[2rem] cursor-pointer"
+            overlayStyle={{ fontSize: "0.875rem", lineHeight: "1.43" }}
         >
             <Link to="#" >
                 <Space>
