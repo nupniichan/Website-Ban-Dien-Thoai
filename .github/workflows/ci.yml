@@ -16,7 +16,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2.0.1
         with:
-          bun-version: 'latest'
+          bun-version: latest
 
       - name: Install dependencies for admin
         working-directory: ./admin
@@ -63,7 +63,7 @@ jobs:
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2.0.1
         with:
-          bun-version: 'latest'
+          bun-version: latest
 
       - name: Install dependencies for server
         working-directory: ./server
