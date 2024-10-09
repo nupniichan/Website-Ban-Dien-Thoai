@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps: 
       - name: Checkout code
-        uses: action/checkout@v3
+        uses: actions/checkout@v3
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2.0.1
@@ -35,6 +35,7 @@ jobs:
 
 ## Stage 2: Build and push docker
   push_to_registry:
+    needs: build-react-vite
     name: push admin docker image to hub
     runs-on: ubuntu-latest
     steps:
@@ -56,6 +57,7 @@ jobs:
 
 ## Stage 3: Pull docker file
   pull_project:
+    needs: push_to_registry
     name: pull project from registry
     runs-on: [self-hosted, iZt4nflaq4tt0yxixcqf7gZ]
     steps:
@@ -70,6 +72,7 @@ jobs:
 
 ## Stage 4: Deploy
   deploy:
+    needs: pull_project
     name: Deploy project
     runs-on: [self-hosted, iZt4nflaq4tt0yxixcqf7gZ]
     steps:
