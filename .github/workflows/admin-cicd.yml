@@ -59,7 +59,7 @@ jobs:
   pull_project:
     needs: push_to_registry
     name: pull project from registry
-    runs-on: [self-hosted, iZt4nflaq4tt0yxixcqf7gZ]
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - name: login to docker registry
         uses: docker/login-action@v3
@@ -74,7 +74,7 @@ jobs:
   deploy:
     needs: pull_project
     name: Deploy project
-    runs-on: [self-hosted, iZt4nflaq4tt0yxixcqf7gZ]
+    runs-on: [self-hosted, Linux, X64]
     steps:
       - name: Remove current running Docker container
         run: |
