@@ -16,21 +16,24 @@ import "./App.css";
 function App() {
     return (
         <>
-            <Header />
+            <Header />  {/* Phần Header hiển thị cố định trên tất cả các trang */}
 
             <Routes>
+                {/* Các route tương ứng với các trang */}
                 <Route path={PathNames.HOMEPAGE} element={<Homepage />} />
                 <Route path={PathNames.ABOUT} element={<About />} />
                 <Route path={PathNames.SUPPORT} element={<Support />} />
                 <Route path={PathNames.CART} element={<Cart />} />
                 <Route path={PathNames.CHECKOUT} element={<Checkout />} />
-                <Route path={PathNames.PRODUCT_DETAILS} element={<ProductDetails />} />
-                <Route path={PathNames.SEARCH_RESULTS} element={<SearchResults />} />
                 <Route path={PathNames.PROFILE} element={<Profile />} />
                 <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
+                <Route path={PathNames.SEARCH_RESULTS} element={<SearchResults />} />
+                
+                {/* Route chi tiết sản phẩm với tham số productId */}
+                <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>
 
-            <Footer />
+            <Footer />  {/* Phần Footer hiển thị cố định trên tất cả các trang */}
         </>
     );
 }
