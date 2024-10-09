@@ -68,7 +68,9 @@ jobs:
           password: ${{secrets.DOCKERHUB_TOKEN}}
 
       - name: pull docker image from registry
-        run: docker pull nupniichan/wbdt-admin:latest
+        run: |
+          su ${{secrets.RUNNER_USER}}
+          docker pull nupniichan/wbdt-admin:latest
 
 ## Stage 4: Deploy
   deploy:
@@ -78,5 +80,6 @@ jobs:
     steps:
       - name: Remove current running Docker container
         run: |
+          su ${{secrets.RUNNER_USER}}
           docker rm -f wbdt-admin || true
           docker run --name wbdt-admin -dp 5174:5174 nupniichan/wbdt-admin:latest
