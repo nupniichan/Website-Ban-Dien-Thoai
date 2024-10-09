@@ -1,17 +1,9 @@
-:root {
-  --border-radius: 2rem;
-  --card-border-radius: 1rem;
-  --btn-padding: 0.6rem 2rem;
-  --search-padding: 0.6rem 1rem;
-  --card-padding: 1rem;
-  --color-white: hsl(252, 30%, 100%);
-  --color-gray: hsl(252, 15%, 65%);
-  --color-light: hsl(252, 30%, 90%);
-  --color-dark: hsl(252, 30%, 17%);
-  --color-primary: hsl(252, 75%, 60%);
-  --color-success: hsl(120, 95%, 60%);
-  --color-danger: hsl(0, 95%, 65%);
-  --color-black: hsl(252, 30%, 10%);
-  --sticky-top-left: 5.4rem;
-  --sticky-top-right: -18rem;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    /* .search-bar {
+        @apply w-0 group-hover:w-[300px] transition-all duration-300 rounded-full group-hover:border group-hover:border-gray-500 px-3 py-1 focus:outline-none dark:border-gray-800 dark:bg-gray-900 group-hover:dark:bg-gray-800;
+    } */
 }
