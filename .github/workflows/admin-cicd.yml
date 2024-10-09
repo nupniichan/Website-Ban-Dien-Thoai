@@ -1,0 +1,79 @@
+name: CI/CD for admin
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+## Stage 1: Check code quality
+jobs:
+  build-react-vite:
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Checkout code
+        uses: action/checkout@v3
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2.0.1
+        with:
+          bun-version: latest
+      
+      - name: Install dependencies for admin
+        working-directory: ./admin
+        run: bun install
+
+      - name: Run ESLint for admin
+        working-directory: ./admin
+        run: |
+          echo "Running ESLint in normal mode"
+          bunx eslint .
+          echo "Running ESLint in debug mode"
+          bunx eslint . --debug
+          echo "Running ESLint with auto-fix"
+          bunx eslint . --fix
+
+## Stage 2: Build and push docker
+  push_to_registry:
+    name: push admin docker image to hub
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout respository
+        uses: actions/checkout@v4
+
+      - name: login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+      
+      - name: build and push docker image to registry
+        uses: docker/build-push-action@v5
+        with:
+          context: ./admin
+          push: true
+          tags: nupniichan/wbdt-admin:latest
+
+## Stage 3: Pull docker file
+  pull_project:
+    name: pull project from registry
+    runs-on: [self-hosted, iZt4nflaq4tt0yxixcqf7gZ]
+    steps:
+      - name: login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+
+      - name: pull docker image from registry
+        run: docker pull nupniichan/wbdt-admin:latest
+
+## Stage 4: Deploy
+  deploy:
+    name: Deploy project
+    runs-on: [self-hosted, iZt4nflaq4tt0yxixcqf7gZ]
+    steps:
+      - name: Remove current running Docker container
+        run: |
+          docker rm -f wbdt-admin || true
+          docker run --name wbdt-admin -dp 5174:5174 nupniichan/wbdt-admin:latest
