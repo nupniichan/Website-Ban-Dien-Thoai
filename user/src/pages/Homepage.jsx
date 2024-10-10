@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Homepage.css'; // Import CSS cho Homepage
-import BASE_URL from '../config'
+import { BASE_URL } from '../config.js'
 const Homepage = () => {
   const [products, setProducts] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState(10); // Số lượng sản phẩm hiển thị mặc định
