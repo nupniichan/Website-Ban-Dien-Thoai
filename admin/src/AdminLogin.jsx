@@ -1,6 +1,6 @@
 import { useState } from "react";
 import './styles/AdminLogin.css';
-import { BASE_URL } from "../../user/src/config";
+import { BASE_URL } from "./config";
 // eslint-disable-next-line react/prop-types
 const AdminLogin = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
