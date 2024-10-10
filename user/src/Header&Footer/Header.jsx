@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, ShoppingOutlined } from "@ant-design/icons";
 import NeonSign from "../assets/BrandLogos/NeonSign.jsx";
 import UserMenu from "../components/UserMenu.jsx";
 import PathNames from "../PathNames.js";
@@ -84,13 +84,24 @@ const Header = () => {
                         </div>
 
                         {/* Cart */}
+                        <button className="relative p-3">
+                            <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400"/>
+                            {/* TODO: SHOW CURRENT AMOUNT OF ITEMS IN CART */}
+                            <div className="w-4 h-4 bg-red-500 text-white rounded-full absolute top-0 right-0 flex items-center justify-center text-xs">
+                                4
+                            </div>
+                        </button>
+
+                        {/* Dark mode toggle */}
+                        {/* <div style={{scale: '15%'}}>
+                            <DarkModeBtn />
+                        </div> */}
 
                         {/* User Menu */}
                         <div>
                             <UserMenu />
                         </div>
 
-                        {/* Dark mode toggle */}
                     </div>
                 </div>
             </div>
