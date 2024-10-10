@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { Delete, Visibility } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { BASE_URL } from '../../config.js';
 
 const UserManagement = () => {
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ const UserManagement = () => {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/users");
+                const response = await fetch(`${BASE_URL}/api/users`);
                 if (response.ok) {
                     const data = await response.json();
                     setUsers(data);
@@ -52,7 +53,7 @@ const UserManagement = () => {
     const handleDeleteUser = async (userId) => {
         try {
             const response = await fetch(
-                `http://localhost:5000/api/users/${userId}`,
+                `${BASE_URL}/api/users/${userId}`,
                 {
                     method: "DELETE",
                 }

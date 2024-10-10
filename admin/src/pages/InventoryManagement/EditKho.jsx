@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Grid, Typography, MenuItem } from '@mui/material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const EditKho = () => {
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const EditKho = () => {
   useEffect(() => {
     const fetchKho = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/kho/${id}`);
+        const response = await fetch(`${BASE_URL}/api/kho/${id}`);
         if (response.ok) {
           const data = await response.json();
           setKho(data);
@@ -34,7 +35,7 @@ const EditKho = () => {
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch(`${BASE_URL}/api/products`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -97,7 +98,7 @@ const EditKho = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch(`http://localhost:5000/api/kho/${id}`, {
+      const response = await fetch(`${BASE_URL}/api/kho/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
