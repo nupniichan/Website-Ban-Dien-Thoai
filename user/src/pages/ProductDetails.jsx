@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import './ProductDetails.css'; // Tạo và import file CSS riêng cho trang chi tiết
+import { BASE_URL } from '../config';
 
 const ProductDetails = () => {
   const { productId } = useParams(); // Lấy productId từ URL
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [error, setError] = useState(''); // Trạng thái để lưu thông báo lỗi
+  const userId = 'KH001' // Tui chờ có session mới lấy full được
 
   useEffect(() => {
     // Gọi API để lấy thông tin chi tiết của sản phẩm
-    fetch(`http://localhost:5000/api/products/${productId}`)
+    fetch(`${BASE_URL}/api/products/${productId}`)
       .then(response => response.json())
       .then(data => setProduct(data))
       .catch(error => {
@@ -34,12 +36,37 @@ const ProductDetails = () => {
 
   const handleBuyNow = () => {
     if (quantity <= product.quantity) {
-      alert(`Bạn đã mua ${quantity} sản phẩm ${product.name}`);
-      // Thêm logic xử lý thanh toán hoặc thêm vào giỏ hàng ở đây
+      // Gọi API thêm vào giỏ hàng
+      fetch(`${BASE_URL}/api/cart/${userId}/add`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          name: product.name,
+          price: product.price,
+          color: product.color, 
+          quantity: quantity,
+          image: product.image,
+        }),
+      })
+        .then(response => response.json())
+        .then(data => {
+          if (data.message) {
+            alert(data.message);
+          } else {
+            alert('Đã thêm sản phẩm vào giỏ hàng');
+          }
+        })
+        .catch(error => {
+          console.error('Lỗi khi thêm sản phẩm vào giỏ hàng:', error);
+          alert('Đã xảy ra lỗi, vui lòng thử lại sau');
+        });
     } else {
       alert('Số lượng vượt quá hàng tồn kho!');
     }
-  };
+  };  
 
   if (!product) {
     return <div>Đang tải thông tin sản phẩm...</div>;
@@ -47,7 +74,7 @@ const ProductDetails = () => {
 
   return (
     <div className="product-details">
-      <img src={`http://localhost:5000/${product.image}`} alt={product.name} className="product-image" />
+      <img src={`${BASE_URL}/${product.image}`} alt={product.name} className="product-image" />
       <div className="product-info">
         <h1>{product.name}</h1>
         <p>Giá: {product.price.toLocaleString()} VND</p>
@@ -66,7 +93,7 @@ const ProductDetails = () => {
               onChange={handleQuantityChange}
             />
             <button className="buy-button" onClick={handleBuyNow}>
-              Mua ngay
+              Thêm vào giỏ hàng
             </button>
           </div>
         )}

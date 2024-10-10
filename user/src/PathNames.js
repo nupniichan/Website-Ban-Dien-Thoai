@@ -11,6 +11,9 @@ const PathNames = {
     LOGIN: '/user/login',
     PROFILE: '/user/profile',
     MY_ORDERS: '/my-orders',
+    PAYMENTRESULT: '/payment-result',
+    PAYMENTSUCCESS: '/payment-success',
+    PAYMENTFAILED: '/payment-failed'
 };
 
 export default PathNames;
