@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton, Button, TextField } from '@mui/material';
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const OrderManagement = () => {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ const OrderManagement = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/orders');
+        const response = await fetch(`${BASE_URL}/api/orders`);
         if (response.ok) {
           const data = await response.json();
           setOrders(data);
@@ -37,7 +38,7 @@ const OrderManagement = () => {
 
   const handleDeleteOrder = async (orderId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await fetch(`${BASE_URL}/api/orders/${orderId}`, {
         method: 'DELETE',
       });
       if (response.ok) {
