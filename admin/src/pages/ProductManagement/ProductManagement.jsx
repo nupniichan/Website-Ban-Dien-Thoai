@@ -3,6 +3,7 @@ import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, Ta
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { BASE_URL } from '../../config.js';
 
 const ProductManagement = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ const ProductManagement = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products');
+        const response = await axios.get(`${BASE_URL}/api/products`);
         if (response.status === 200) {
           const data = response.data;
           console.log('Fetched products:', data); // Log the products
@@ -42,7 +43,7 @@ const ProductManagement = () => {
 
   const handleDeleteProduct = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
         method: 'DELETE',
       });
       if (response.ok) {
@@ -133,7 +134,7 @@ const ProductManagement = () => {
             <Typography>Mô tả: {selectedProduct.description}</Typography>
             <Box marginTop={2}>
             <img
-              src={`http://localhost:5000/${selectedProduct.image.replace(/\\/g, '/')}`}
+              src={`${BASE_URL}/${selectedProduct.image.replace(/\\/g, '/')}`}
               alt={selectedProduct.name}
               style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }}
             />

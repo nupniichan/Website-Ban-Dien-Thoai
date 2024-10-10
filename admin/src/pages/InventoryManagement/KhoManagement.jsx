@@ -16,6 +16,7 @@ import {
   MenuItem,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const KhoManagement = () => {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ const KhoManagement = () => {
   useEffect(() => {
     const fetchEntries = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/kho');
+        const response = await fetch(`${BASE_URL}/api/kho`);
         if (response.ok) {
           const data = await response.json();
           setEntries(data);
@@ -42,7 +43,7 @@ const KhoManagement = () => {
 
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch(`${BASE_URL}/api/products`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -60,7 +61,7 @@ const KhoManagement = () => {
 
   const handleViewDetails = async (entryId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/kho/${entryId}`);
+      const response = await fetch(`${BASE_URL}/api/kho/${entryId}`);
       if (response.ok) {
         const data = await response.json();
         setSelectedEntry(data);
@@ -78,7 +79,7 @@ const KhoManagement = () => {
 
   const handleDeleteEntry = async (entryId) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/kho/${entryId}`, {
+      const response = await fetch(`${BASE_URL}/api/kho/${entryId}`, {
         method: 'DELETE',
       });
       if (response.ok) {

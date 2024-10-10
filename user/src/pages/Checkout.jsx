@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BASE_URL } from '../config';
 
 const Checkout = () => {
   const [customerInfo, setCustomerInfo] = useState({
@@ -18,7 +19,7 @@ const Checkout = () => {
   useEffect(() => {
     const fetchCustomerInfo = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/${userId}`);
+        const response = await fetch(`${BASE_URL}/api/users/${userId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch customer info');
         }
@@ -36,7 +37,7 @@ const Checkout = () => {
 
     const fetchCartItems = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/cart/${userId}`);
+        const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch cart items');
         }
@@ -71,7 +72,7 @@ const Checkout = () => {
   
     if (paymentMethod === 'Thanh toán qua MOMO') {
       try {
-        const response = await fetch('http://localhost:5000/payment', {
+        const response = await fetch(`${BASE_URL}/payment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -117,7 +118,7 @@ const Checkout = () => {
           <div key={item.productId} className="bg-white p-4 rounded-lg shadow mb-4">
             <div className="flex items-center">
               <img
-                src={item.image ? `http://localhost:5000/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
+                src={item.image ? `${BASE_URL}/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
                 alt={item.name}
                 className="w-20 h-20 object-cover"
               />

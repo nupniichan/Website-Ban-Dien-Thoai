@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Box, TextField, Button, Grid, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { BASE_URL } from '../../config.js';
 
 const AddUser = () => {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ const AddUser = () => {
         e.preventDefault();
 
         try {
-            const response = await axios.post("http://localhost:5000/api/addUser", user, {
+            const response = await axios.post(`${BASE_URL}/api/addUser`, user, {
                 headers: {
                     "Content-Type": "application/json",
                 },

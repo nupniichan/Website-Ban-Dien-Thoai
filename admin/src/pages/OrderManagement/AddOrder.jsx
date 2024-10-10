@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'; 
 import { Box, TextField, Button, Grid, Typography, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const AddOrder = () => {
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ const AddOrder = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch(`${BASE_URL}/api/products`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -44,7 +45,7 @@ const AddOrder = () => {
     const fetchCustomerInfo = async () => {
       if (order.customerId) {
         try {
-          const response = await fetch(`http://localhost:5000/api/users/${order.customerId}`);
+          const response = await fetch(`${BASE_URL}/api/users/${order.customerId}`);
           if (response.ok) {
             const data = await response.json();
             setOrder((prevOrder) => ({ ...prevOrder, customerName: data.name }));
@@ -145,7 +146,7 @@ const AddOrder = () => {
       formData.append('cauhinh', JSON.stringify(product.cauhinh));
 
       try {
-        const response = await fetch('http://localhost:5000/api/addProduct', {
+        const response = await fetch(`${BASE_URL}/api/addProduct`, {
           method: 'POST',
           body: formData,
         });
