@@ -1,14 +1,13 @@
-name: CI/CD for admin
+name: CI/CD for server
 
 on:
   push:
     branches: [main]
 
 ## Stage 1: Check code quality
-jobs:
   check-code-quality:
-    runs-on: ubuntu-latest
-    steps: 
+    run-on: ubuntu-latest
+    steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
@@ -16,13 +15,13 @@ jobs:
         uses: oven-sh/setup-bun@v2.0.1
         with:
           bun-version: latest
-      
-      - name: Install dependencies for admin
-        working-directory: ./admin
+
+      - name: Install dependencies for server
+        working-directory: ./server
         run: bun install
 
-      - name: Run ESLint for admin
-        working-directory: ./admin
+      - name: Run ESLint for server
+        working-directory: ./server
         run: |
           echo "Running ESLint in normal mode"
           bunx eslint .
@@ -32,31 +31,31 @@ jobs:
           bunx eslint . --fix
 
 ## Stage 2: Build and push docker
-  push_to_registry:
+  push-to-registry:
     needs: check-code-quality
-    name: build and push admin docker image to hub
+    name: build and push server docker image to hub
     runs-on: ubuntu-latest
     steps:
       - name: Checkout respository
         uses: actions/checkout@v4
 
       - name: login to docker registry
-        uses: docker/login-action@v3
+        uese: docker/login-action@v3
         with:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_TOKEN}}
       
-      - name: build and push docker image to registry
+      - name: build and push docker
         uses: docker/build-push-action@v5
         with:
-          context: ./admin
+          context: ./server
           push: true
-          tags: nupniichan/wbdt-admin:latest
+          tags: nupniichan/wbdt-server:latest
 
-## Stage 3: Pull docker file
-  pull_project:
-    needs: push_to_registry
-    name: pull project from registry
+## Stage 3: Pull docker
+  pull-project:
+    need: push-to-registry
+    name: Pull server from registry
     runs-on: [self-hosted, Linux, X64]
     steps:
       - name: login to docker registry
@@ -67,15 +66,15 @@ jobs:
 
       - name: pull docker image from registry
         run: |
-          docker pull nupniichan/wbdt-admin:latest
-
+          docker pull nupniichan/wbdt-server:latest
+  
 ## Stage 4: Deploy
   deploy:
-    needs: pull_project
-    name: Deploy project
+    needs: pull-project
     runs-on: [self-hosted, Linux, X64]
+    name: Deploy to runner
     steps:
-      - name: Remove current running Docker container and run docker
+      - name: Remove current running Docker container and run
         run: |
-          docker rm -f wbdt-admin || true
-          docker run --name wbdt-admin -dp 5174:5174 nupniichan/wbdt-admin:latest
+          docker rm -f nupniichan/wbdt-server || true
+          docker run --name nupniichan/wbdt-server -dp 5000:5000 nupniichan/wbdt-server:latest
