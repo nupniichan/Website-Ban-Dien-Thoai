@@ -63,6 +63,40 @@ app.post('/loginAdmin', async (req, res) => {
     res.status(401).json({ message: err.message });
   }
 });
+// Đăng nhập người dùng
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email, password });
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Assuming the user is found, send the accountName and userId in the response
+    res.status(200).json({
+      message: 'Đăng nhập thành công',
+      user: {
+        accountName: user.accountName,
+        userId: user.id,
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+
+// Get orders by customer ID
+app.get('/api/orders/customer/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const orders = await Order.find({ customerId });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching orders', error: err.message });
+  }
+});
 
 // Get all orders
 app.get('/api/orders', async (req, res) => {
@@ -122,6 +156,7 @@ app.post('/api/orders', async (req, res) => {
     res.status(500).json({ message: 'Error creating order', error: err.message });
   }
 });
+  
 
 // Update order, adjust stock if necessary
 app.put('/api/orders/:id', async (req, res) => {
@@ -374,6 +409,26 @@ app.delete('/api/kho/:id', async (req, res) => {
     res.json({ message: 'Kho entry deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting kho entry', error: err.message });
+  }
+});
+// Get user info by email (including id)
+app.get('/api/users/email/:email', async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+    // Return the user info along with the id
+    res.json({
+      id: user.id, // Include the user's ID
+      email: user.email,
+      name: user.accountName, // Include other fields you want to return
+      // Add any other fields as necessary
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
   }
 });
 
@@ -652,15 +707,17 @@ app.post('/api/cart/:userId/add', async (req, res) => {
     const user = await User.findOne({ id: userId });
     const product = await Product.findOne({ id: productId });
 
-    if (!user || !product) {
-      return res.status(404).json({ message: 'Người dùng hoặc sản phẩm không tồn tại' });
+    if (!user) {
+      return res.status(500).json({ message: 'Xin hãy đăng nhập trước khi thêm vào giỏ hàng' });
     }
-
-    // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
+    else if (!product) {
+      return res.status(500).json({ message: 'Sản phẩm không tồn tại hoặc đã hết hàng' });
+    }
+    else {
+          // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
     if (quantity > product.quantity) {
       return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
     }
-
     const existingProduct = user.cart.find(item => item.productId === productId);
 
     if (existingProduct) {
@@ -679,6 +736,7 @@ app.post('/api/cart/:userId/add', async (req, res) => {
 
     await user.save();
     res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng', cart: user.cart });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', error: error.message });
   }
@@ -804,7 +862,7 @@ app.post('/callback', async (req, res) => {
     try {
       if (extraData) {
         const orderData = JSON.parse(extraData); 
-
+        
         // Kiểm tra và gán giá trị mặc định cho notes nếu không có
         const notes = orderData.notes ? orderData.notes : ''; 
 
@@ -830,7 +888,7 @@ app.post('/callback', async (req, res) => {
           orderDate: new Date(),
           notes: notes, 
         });
-
+        
         await newOrder.save();
 
         // Trừ số lượng tồn kho

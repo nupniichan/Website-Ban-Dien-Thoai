@@ -1,16 +1,117 @@
-/*     THE COOL UNUSED BG FOR HEADER    */
-/* .header-content-container {
+header {
+    background-color: #60A5FA;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    width: 100%;
+}
+
+.container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
-    height: 5vh;
-    padding: 2vw;
-    background: #222;
-    background-image: repeating-linear-gradient(
-        to bottom,
-        transparent 7px,
-        rgba(0, 0, 0, 0.8) 9px,
-        rgba(0, 0, 0, 0.8) 13px,
-        transparent 13px
-    );
-} */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.logo-and-search {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #fff;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.search-input {
+    background-color: white;
+    border: 1px solid white;
+    border-radius: 20px;
+    color: black;
+    padding: 0.5rem;
+    width: 450px; /* Adjust width as needed */
+}
+
+.search-input::placeholder {
+    color: black;
+}
+
+.search-icon {
+    position: absolute;
+    right: -2rem; /* Adjust the space between the input and icon */
+    font-size: 1.5rem;
+    color: white;
+    cursor: pointer;
+}
+
+.menu-items {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.menu-link {
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.icon {
+    font-size: 1.8rem;
+    color: white;
+}
+
+.usermenu-icon-container .anticon {
+    font-size: 1.8rem;
+}
+
+.menu-link:hover {
+    color: var(--primary-color);
+}
+.user-menu {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white; /* Background color for user menu */
+}
+
+.drawer-menu {
+  padding: 16px;
+  font-size: 16px;
+  color: #333; /* Text color */
+  transition: background-color 0.3s; /* Smooth transition for hover */
+}
+
+.drawer-menu:hover {
+  background-color: #e6f7ff; /* Light blue on hover */
+  border-radius: 4px; /* Rounded corners on hover */
+}
+
+/* Optional styling for the links */
+.drawer-menu a {
+  text-decoration: none; /* Remove underline */
+  color: inherit; /* Use parent color */
+}
+
+/* Styling for the Drawer header */
+.ant-drawer-header {
+  background-color: #1890ff; /* Ant Design Primary Color */
+  color: white; /* Text color */
+}
+
+.ant-drawer-title {
+  font-size: 20px; /* Font size for the title */
+  font-weight: bold; /* Bold title */
+}
+
