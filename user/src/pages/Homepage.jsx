@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Homepage.css'; // Import CSS cho Homepage
-
+import { BASE_URL } from '../config.js'
 const Homepage = () => {
   const [products, setProducts] = useState([]);
   const [visibleProducts, setVisibleProducts] = useState(10); // Số lượng sản phẩm hiển thị mặc định
@@ -9,7 +9,7 @@ const Homepage = () => {
 
   useEffect(() => {
     // Gọi API để lấy tất cả sản phẩm
-    fetch('http://localhost:5000/api/products')
+    fetch(`${BASE_URL}/api/products`)
       .then(response => response.json())
       .then(data => {
         setProducts(data); // Lưu toàn bộ danh sách sản phẩm vào state
@@ -40,7 +40,7 @@ const Homepage = () => {
         {filteredProducts.slice(0, visibleProducts).map(product => (
           <div key={product.id} className="product-card" onClick={() => handleProductClick(product.id)}>
             <img
-              src={`http://localhost:5000/${product.image}`}
+              src={`${BASE_URL}/${product.image}`}
               alt={product.name}
               className="product-image"
             />

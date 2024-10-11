@@ -11,6 +11,9 @@ import Profile from "./pages/Profile.jsx";
 import SearchResults from "./pages/SearchResults.jsx";
 import Support from "./pages/Support.jsx";
 import PathNames from "./PathNames.js";
+import PaymentResult from './pages/PaymentResult.jsx'
+import PaymentSuccess from './pages/PaymentSuccess.jsx'
+import PaymentFailed from './pages/PaymentFailed.jsx'
 import "./App.css";
 import Login from "./pages/Login.jsx";
 import Register from "./pages/Register.jsx";
@@ -32,7 +35,9 @@ function App() {
                 <Route path={PathNames.SEARCH_RESULTS} element={<SearchResults />} />
                 <Route path={PathNames.REGISTER} element={<Register />} />
                 <Route path={PathNames.LOGIN} element={<Login />} />
-                {/* Route for product details with parameter productId */}
+                <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
+                <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
+                <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>
 
@@ -42,4 +47,3 @@ function App() {
 }
 
 export default App;
-

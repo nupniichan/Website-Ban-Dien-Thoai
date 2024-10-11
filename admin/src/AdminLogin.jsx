@@ -1,6 +1,6 @@
 import { useState } from "react";
 import './styles/AdminLogin.css';
-
+import { BASE_URL } from "./config";
 // eslint-disable-next-line react/prop-types
 const AdminLogin = ({ onLoginSuccess }) => {
   const [email, setEmail] = useState("");
@@ -12,7 +12,7 @@ const AdminLogin = ({ onLoginSuccess }) => {
 
     try {
       // Gửi yêu cầu POST đến backend
-      const response = await fetch('http://localhost:5000/loginAdmin', {
+      const response = await fetch(`${BASE_URL}/loginAdmin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
