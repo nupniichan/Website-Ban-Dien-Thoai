@@ -21,7 +21,7 @@ function App() {
             <Header />
 
             <Routes>
-                <Route path="/" element={<Login />} /> 
+                <Route path="/" element={<Register />} /> 
                 <Route path={PathNames.HOMEPAGE} element={<Homepage />} />
                 <Route path={PathNames.ABOUT} element={<About />} />
                 <Route path={PathNames.SUPPORT} element={<Support />} />
