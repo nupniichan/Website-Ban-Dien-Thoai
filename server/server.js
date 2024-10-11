@@ -714,13 +714,10 @@ app.post('/api/cart/:userId/add', async (req, res) => {
       return res.status(500).json({ message: 'Sản phẩm không tồn tại hoặc đã hết hàng' });
     }
     else {
-      return res.status(500).json({ message: 'Lỗi không xác định' });
-    }
-    // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
+          // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
     if (quantity > product.quantity) {
       return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
     }
-
     const existingProduct = user.cart.find(item => item.productId === productId);
 
     if (existingProduct) {
@@ -739,6 +736,7 @@ app.post('/api/cart/:userId/add', async (req, res) => {
 
     await user.save();
     res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng', cart: user.cart });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', error: error.message });
   }

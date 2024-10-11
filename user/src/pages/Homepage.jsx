@@ -10,18 +10,18 @@ const Homepage = () => {
   const [visibleProducts, setVisibleProducts] = useState(10); // Số lượng sản phẩm hiển thị mặc định
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchProducts();
+  // useEffect(() => {
+  //   fetchProducts();
     
-    const userEmail = localStorage.getItem('userEmail');
-    if (userEmail) {
-      fetchUserIdByEmail(userEmail).then(userId => {
-        if (userId) {
-          fetchUserCart(userId);
-        }
-      });
-    }
-  }, []);
+  //   const userEmail = localStorage.getItem('userEmail');
+  //   if (userEmail) {
+  //     fetchUserIdByEmail(userEmail).then(userId => {
+  //       if (userId) {
+  //         fetchUserCart(userId);
+  //       }
+  //     });
+  //   }
+  // }, []);
 
   const fetchProducts = async () => {
     try {
