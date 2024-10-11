@@ -884,7 +884,7 @@ app.post('/callback', async (req, res) => {
     try {
       if (extraData) {
         const orderData = JSON.parse(extraData); 
-
+        
         // Kiểm tra và gán giá trị mặc định cho notes nếu không có
         const notes = orderData.notes ? orderData.notes : ''; 
 
@@ -910,7 +910,7 @@ app.post('/callback', async (req, res) => {
           orderDate: new Date(),
           notes: notes, 
         });
-
+        
         await newOrder.save();
 
         // Trừ số lượng tồn kho
