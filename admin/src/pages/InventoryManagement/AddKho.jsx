@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Grid, Typography, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const AddKho = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const AddKho = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/products');
+        const response = await fetch(`${BASE_URL}/api/products`);
         if (response.ok) {
           const data = await response.json();
           setProducts(data);
@@ -83,7 +84,7 @@ const AddKho = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/kho', {
+      const response = await fetch(`${BASE_URL}/api/kho`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

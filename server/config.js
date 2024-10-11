@@ -1,10 +1,10 @@
 module.exports = {
   accessKey: 'F8BBA842ECF85',
   secretKey: 'K951B6PE1waDMi640xX08PD3vg6EkVlz',
-  orderInfo: 'pay with MoMo',
+  orderInfo: 'Thanh toán SPhoneC',
   partnerCode: 'MOMO',
-  redirectUrl: 'http://localhost:5173/payment-success',
-  ipnUrl: 'https://8b85-116-109-66-251.ngrok-free.app/callback', //chú ý: cần dùng ngrok thì momo mới post đến url này được
+  redirectUrl: 'http://localhost:5173/payment-result',
+  ipnUrl: 'http://ngrok..../callback', // Tren develop thi xai ngrok
   requestType: 'payWithMethod',
   extraData: '',
   orderGroupId: '',

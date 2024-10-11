@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BASE_URL } from '../config';
 
 const Checkout = () => {
   const [customerInfo, setCustomerInfo] = useState({
@@ -8,7 +9,7 @@ const Checkout = () => {
     address: '',
   });
   const [shippingOption, setShippingOption] = useState('store');
-  const [paymentMethod, setPaymentMethod] = useState('Thanh toán qua MOMO'); // Lưu trữ phương thức thanh toán
+  const [paymentMethod, setPaymentMethod] = useState('Thanh toán qua MOMO');
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [notes, setNotes] = useState(''); // Lưu trữ ghi chú từ người dùng
@@ -18,7 +19,7 @@ const Checkout = () => {
   useEffect(() => {
     const fetchCustomerInfo = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/${userId}`);
+        const response = await fetch(`${BASE_URL}/api/users/${userId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch customer info');
         }
@@ -36,7 +37,7 @@ const Checkout = () => {
 
     const fetchCartItems = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/cart/${userId}`);
+        const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch cart items');
         }
@@ -66,18 +67,18 @@ const Checkout = () => {
       items: cartItems,
       paymentMethod: paymentMethod,
       totalAmount: totalAmount,
-      notes: notes, // Ghi chú của người dùng
+      notes: notes,
     };
   
     if (paymentMethod === 'Thanh toán qua MOMO') {
       try {
-        const response = await fetch('http://localhost:5000/payment', {
+        const response = await fetch(`${BASE_URL}/payment`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            totalAmount, // Tổng tiền thanh toán
+            totalAmount,
             extraData: JSON.stringify(orderData), // Truyền toàn bộ dữ liệu đơn hàng dưới dạng chuỗi JSON
           }),
         });
@@ -117,7 +118,7 @@ const Checkout = () => {
           <div key={item.productId} className="bg-white p-4 rounded-lg shadow mb-4">
             <div className="flex items-center">
               <img
-                src={item.image ? `http://localhost:5000/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
+                src={item.image ? `${BASE_URL}/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
                 alt={item.name}
                 className="w-20 h-20 object-cover"
               />
@@ -143,7 +144,7 @@ const Checkout = () => {
           <div className="flex items-center cursor-pointer" onClick={() => setShippingOption('store')}>
             <div
               className={`w-5 h-5 rounded-full border-2 ${
-                shippingOption === 'store' ? 'border-red-500 bg-red-500' : 'border-gray-500'
+                shippingOption === 'store' ? 'border-blue-500 bg-blue-500' : 'border-gray-500'
               } mr-2 flex items-center justify-center`}
             >
               {shippingOption === 'store' && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
@@ -153,7 +154,7 @@ const Checkout = () => {
           <div className="flex items-center cursor-pointer" onClick={() => setShippingOption('delivery')}>
             <div
               className={`w-5 h-5 rounded-full border-2 ${
-                shippingOption === 'delivery' ? 'border-red-500 bg-red-500' : 'border-gray-500'
+                shippingOption === 'delivery' ? 'border-blue-500 bg-blue-500' : 'border-gray-500'
               } mr-2 flex items-center justify-center`}
             >
               {shippingOption === 'delivery' && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
@@ -227,7 +228,7 @@ const Checkout = () => {
 
       <button
         onClick={handleContinue}
-        className="w-full bg-red-500 text-white p-4 rounded-lg text-center text-lg font-semibold"
+        className="w-full bg-blue-500 text-white p-4 rounded-lg text-center text-lg font-semibold"
       >
         Tiếp tục
       </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, Typography, Grid, CircularProgress } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const EditProduct = () => {
   const { productId } = useParams();
@@ -25,7 +26,7 @@ const EditProduct = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/products/${productId}`);
+        const response = await fetch(`${BASE_URL}/api/products/${productId}`);
         if (response.ok) {
           const data = await response.json();
   
@@ -33,7 +34,7 @@ const EditProduct = () => {
           const cauhinh = typeof data.cauhinh === 'string' ? JSON.parse(data.cauhinh) : data.cauhinh;
   
           setProduct({ ...data, cauhinh }); // Đặt lại product với cauhinh đã được parse
-          setImagePreview(`http://localhost:5000/${data.image}`); // Đặt preview cho hình ảnh hiện tại
+          setImagePreview(`${BASE_URL}/${data.image}`); // Đặt preview cho hình ảnh hiện tại
         } else {
           throw new Error('Failed to fetch product');
         }
@@ -80,7 +81,7 @@ const EditProduct = () => {
     });
   
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
         method: 'PUT',
         body: formData,
       });

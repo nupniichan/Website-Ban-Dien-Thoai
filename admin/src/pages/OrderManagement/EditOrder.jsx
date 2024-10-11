@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, TextField, Button, CircularProgress, Grid, MenuItem, Typography } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const EditOrder = () => {
   const { orderId } = useParams();
@@ -14,8 +15,8 @@ const EditOrder = () => {
     const fetchOrderAndProducts = async () => {
       try {
         // Fetch the order by ID
-        const orderResponse = await fetch(`http://localhost:5000/api/orders/${orderId}`);
-        const productsResponse = await fetch('http://localhost:5000/api/products');
+        const orderResponse = await fetch(`${BASE_URL}/api/orders/${orderId}`);
+        const productsResponse = await fetch(`${BASE_URL}/api/products`);
         if (orderResponse.ok && productsResponse.ok) {
           const orderData = await orderResponse.json();
           const productsData = await productsResponse.json();
@@ -73,7 +74,7 @@ const EditOrder = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:5000/api/orders/${orderId}`, {
+      const response = await fetch(`${BASE_URL}/api/orders/${orderId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

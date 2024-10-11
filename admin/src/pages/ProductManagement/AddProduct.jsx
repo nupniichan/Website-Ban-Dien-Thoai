@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Grid, IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../../config.js';
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const AddProduct = () => {
     formData.append('cauhinh', JSON.stringify(product.cauhinh));
 
     try {
-      const response = await fetch('http://localhost:5000/api/addProduct', {
+      const response = await fetch(`${BASE_URL}/api/addProduct`, {
         method: 'POST',
         body: formData,
       });

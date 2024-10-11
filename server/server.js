@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(cors({
-  origin: ['http://localhost:5173','http://localhost:5174']
+  origin: ['http://localhost:5173','http://localhost:5174', 'http://8.219.153.7:5174','http://8.219.153.7:5173']
 }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads')); // Để truy cập hình ảnh qua đường dẫn
@@ -78,7 +78,7 @@ app.post('/api/login', async (req, res) => {
       message: 'Đăng nhập thành công',
       user: {
         accountName: user.accountName,
-        userId: user._id
+        userId: user.id,
       }
     });
   } catch (err) {
@@ -422,9 +422,9 @@ app.get('/api/users/email/:email', async (req, res) => {
     }
     // Return the user info along with the id
     res.json({
-      id: user._id, // Include the user's ID
+      id: user.id, // Include the user's ID
       email: user.email,
-      name: user.name, // Include other fields you want to return
+      name: user.accountName, // Include other fields you want to return
       // Add any other fields as necessary
     });
   } catch (err) {
@@ -707,10 +707,15 @@ app.post('/api/cart/:userId/add', async (req, res) => {
     const user = await User.findOne({ id: userId });
     const product = await Product.findOne({ id: productId });
 
-    if (!user || !product) {
-      return res.status(404).json({ message: 'Người dùng hoặc sản phẩm không tồn tại' });
+    if (!user) {
+      return res.status(500).json({ message: 'Xin hãy đăng nhập trước khi thêm vào giỏ hàng' });
     }
-
+    else if (!product) {
+      return res.status(500).json({ message: 'Sản phẩm không tồn tại hoặc đã hết hàng' });
+    }
+    else {
+      return res.status(500).json({ message: 'Lỗi không xác định' });
+    }
     // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
     if (quantity > product.quantity) {
       return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
@@ -824,7 +829,7 @@ app.post('/payment', async (req, res) => {
 
   const requestBody = JSON.stringify({
     partnerCode: config.partnerCode,
-    partnerName: 'Test',
+    partnerName: 'SphoneC',
     storeId: 'MomoTestStore',
     requestId: requestId,
     amount: totalAmount,
@@ -859,7 +864,7 @@ app.post('/callback', async (req, res) => {
     try {
       if (extraData) {
         const orderData = JSON.parse(extraData); 
-
+        
         // Kiểm tra và gán giá trị mặc định cho notes nếu không có
         const notes = orderData.notes ? orderData.notes : ''; 
 
@@ -885,7 +890,7 @@ app.post('/callback', async (req, res) => {
           orderDate: new Date(),
           notes: notes, 
         });
-
+        
         await newOrder.save();
 
         // Trừ số lượng tồn kho

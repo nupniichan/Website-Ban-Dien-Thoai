@@ -1,8 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import UserMenu from "../components/UserMenu";
 import { SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import "./Header.css";
 import { Input } from "antd";
+import pageName from '../PathNames'
 
 const Header = () => {
   return (
@@ -19,7 +21,7 @@ const Header = () => {
           </div>
         </div>
         <div className="menu-items">
-          <Link to="/user/cart" className="menu-link">
+          <Link to={pageName.CART} className="menu-link">
             <ShoppingCartOutlined className="icon" />
           </Link>
           <UserMenu />

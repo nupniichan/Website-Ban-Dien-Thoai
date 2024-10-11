@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
 import { Dropdown, Space } from "antd";
 import { useNavigate } from "react-router-dom";
-
+import { BASE_URL } from "../config.js"
 const UserMenu = () => {
   const [accountName, setAccountName] = useState(null);
   const navigate = useNavigate();
@@ -11,10 +11,10 @@ const UserMenu = () => {
 
   // Function to fetch user data
   const fetchUserData = async () => {
-    const userEmail = localStorage.getItem("userEmail");
+    const userEmail = sessionStorage.getItem("userEmail");
     if (userEmail) {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/email/${userEmail}`);
+        const response = await fetch(`${BASE_URL}/api/users/email/${userEmail}`);
         const data = await response.json();
         if (response.ok) {
           setAccountName(data.accountName);

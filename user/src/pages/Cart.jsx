@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../config';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -7,108 +8,75 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
-  const [overStockError, setOverStockError] = useState(null);
-  const navigate = useNavigate();
-
-  const fetchUserData = async () => {
-    const userEmail = localStorage.getItem('userEmail');
-    console.log("Fetching user data for email:", userEmail);
-    
-    if (userEmail) {
-      try {
-        const response = await fetch(`http://localhost:5000/api/users/email/${userEmail}`);
-        const data = await response.json();
-        
-        console.log("User data response:", data);
-
-        if (response.ok) {
-          return data.id; // Return the user ID
-        } else {
-          throw new Error("Error fetching user ID");
-        }
-      } catch (err) {
-        console.error("Error fetching user data:", err);
-        setError("Error fetching user data");
-      }
-    } else {
-      setError("User email not found");
-      console.error("User email not found");
-    }
-    return null; // Return null if user email is not found
-  };
-
-  const fetchCartItems = async (userId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/cart/${userId}`);
-      const data = await response.json();
-      
-      console.log("Fetched cart items:", data);
-
-      if (response.ok) {
-        setCartItems(data); // Set the cart items to the fetched data
-      } else {
-        throw new Error(data.message || "Error fetching cart items");
-      }
-    } catch (err) {
-      console.error("Error fetching cart items:", err);
-      setError("Error fetching cart items");
-    }
-  };
+  const [overStockError, setOverStockError] = useState(null); 
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    const loadCartItems = async () => {
-      const userId = await fetchUserData(); // Fetch the user ID
+    // Lưu vào session tạm thời tại cái login chưa làm xong
+    sessionStorage.setItem('userId', 'KH001');
+
+    const fetchCartItems = async () => {
+      const userId = sessionStorage.getItem('userId');
 
       if (!userId) {
-        navigate('/login'); // Redirect to login if userId is not found
+        console.error('Xin hãy đăng nhập để sử dụng tính năng này');
+        navigate('/login'); 
         return;
       }
 
-      console.log("User ID fetched:", userId);
-      await fetchCartItems(userId); // Fetch the cart items using the user ID
-      setLoading(false); // Set loading to false after fetching
+      try {
+        const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch cart items');
+        }
+        const data = await response.json();
+        setCartItems(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching cart items:', error);
+        setError(error.message);
+        setLoading(false);
+      }
     };
 
-    loadCartItems();
+    fetchCartItems();
   }, [navigate]);
 
-  // Calculate total price
+  // Tính tổng giá tiền
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  // Remove item from cart
+  // Xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = async (productId) => {
-    const userId = await fetchUserData(); // Fetch user ID
-
+    const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
+  
     try {
-      await fetch(`http://localhost:5000/api/cart/${userId}/remove`, {
+      await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ productId }),
       });
-
-      const updatedCartItems = cartItems.filter((item) => item.productId !== productId);
-      setCartItems(updatedCartItems);
-      localStorage.setItem('cartItems', JSON.stringify(updatedCartItems)); // Update localStorage
+  
+      setCartItems(cartItems.filter((item) => item.productId !== productId));
     } catch (error) {
-      console.error('Error removing item from cart:', error);
+      console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
     }
   };
 
-  // Update item quantity and check stock
+  // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
   const updateQuantity = async (productId, newQuantity) => {
-    const userId = await fetchUserData(); // Fetch user ID
+    const userId = sessionStorage.getItem('userId'); 
     const productInCart = cartItems.find((item) => item.productId === productId);
 
     if (newQuantity <= 0) {
       setItemToRemove(productInCart);
-      setShowConfirmDialog(true); // Show confirmation dialog
+      setShowConfirmDialog(true); // Hiển thị hộp thoại xác nhận xóa sản phẩm
     } else {
       try {
-        const response = await fetch(`http://localhost:5000/api/cart/${userId}/update`, {
+        const response = await fetch(`${BASE_URL}/api/cart/${userId}/update`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -118,28 +86,28 @@ const Cart = () => {
 
         const data = await response.json();
         if (response.status === 400) {
-          setOverStockError(data.message); // Show error if overstock
+          setOverStockError(data.message); // Hiển thị lỗi nếu vượt quá tồn kho
         } else {
-          const updatedCartItems = cartItems.map((item) =>
-            item.productId === productId ? { ...item, quantity: newQuantity } : item
+          setCartItems((prevItems) =>
+            prevItems.map((item) =>
+              item.productId === productId ? { ...item, quantity: newQuantity } : item
+            )
           );
-          setCartItems(updatedCartItems);
-          localStorage.setItem('cartItems', JSON.stringify(updatedCartItems)); // Update localStorage
-          setOverStockError(null); // Clear error if updated successfully
+          setOverStockError(null); // Xóa lỗi nếu cập nhật thành công
         }
       } catch (error) {
-        console.error('Error updating quantity:', error);
+        console.error('Lỗi khi cập nhật số lượng:', error);
       }
     }
   };
 
-  // Confirm item removal
+  // Xác nhận xóa sản phẩm
   const handleConfirmRemove = () => {
     removeFromCart(itemToRemove.productId);
     setShowConfirmDialog(false);
   };
 
-  // Loading state
+  // Giao diện khi giỏ hàng trống
   if (loading) {
     return <div>Đang tải...</div>;
   }
@@ -155,7 +123,7 @@ const Cart = () => {
         <p className="mt-4">Hãy chọn thêm sản phẩm để mua sắm nhé</p>
         <button
           onClick={() => (window.location.href = '/')}
-          className="mt-6 bg-red-500 text-white px-6 py-2 rounded-lg"
+          className="mt-6 bg-blue-400 text-white px-6 py-2 rounded-lg"
         >
           Quay lại trang chủ
         </button>
@@ -166,7 +134,7 @@ const Cart = () => {
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-2xl font-semibold mb-4">Giỏ hàng của bạn</h2>
-      <div className="">
+      <div className="grid grid-cols-1 gap-4">
         {cartItems.map((item) => (
           <div
             key={item.productId}
@@ -174,7 +142,7 @@ const Cart = () => {
           >
             <div className="flex items-center">
               <img
-                src={item.image ? `http://localhost:5000/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
+                src={item.image ? `${BASE_URL}/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
                 alt={item.name}
                 className="w-20 h-20 object-cover"
               />
@@ -200,7 +168,7 @@ const Cart = () => {
               </button>
               <button
                 onClick={() => removeFromCart(item.productId)}
-                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
               >
                 Xóa
               </button>
@@ -209,21 +177,21 @@ const Cart = () => {
         ))}
       </div>
 
-      {/* Show overstock error */}
+      {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
       {overStockError && (
         <div className="bg-red-100 text-red-700 p-4 rounded-lg mt-4">
           {overStockError}
         </div>
       )}
 
-      {/* Confirmation dialog for removing item */}
+      {/* Hiển thị hộp thoại xác nhận xóa sản phẩm */}
       {showConfirmDialog && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
           <div className="bg-white p-6 rounded-lg">
             <h3>Bạn có chắc muốn xóa sản phẩm khỏi giỏ hàng?</h3>
             <div className="flex justify-end space-x-4 mt-4">
               <button onClick={() => setShowConfirmDialog(false)} className="bg-gray-500 text-white px-4 py-2 rounded-lg">Hủy</button>
-              <button onClick={handleConfirmRemove} className="bg-red-500 text-white px-4 py-2 rounded-lg">Xác nhận</button>
+              <button onClick={handleConfirmRemove} className="bg-blue-500 text-white px-4 py-2 rounded-lg">Xác nhận</button>
             </div>
           </div>
         </div>
@@ -237,14 +205,14 @@ const Cart = () => {
           </span>
         </p>
         <button
-          className="mt-4 bg-red-500 text-white px-6 py-2 rounded-lg"
-          onClick={() => {/* Handle checkout logic */}}
+        className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg"
+        onClick={() => navigate('/checkout', { state: { cartItems, total: calculateTotal() } })} 
         >
-          Thanh toán
+        Mua ngay ({cartItems.length})
         </button>
       </div>
     </div>
   );
 };
 
-export default Cart;
+export default Cart;   

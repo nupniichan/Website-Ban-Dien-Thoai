@@ -2,7 +2,7 @@
 import { useState } from "react";
 import "./Auth.css";
 import { Link, useNavigate } from "react-router-dom";
-
+import { BASE_URL } from "../config";
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '', // Change from accountName to email
@@ -17,7 +17,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/login', {
+      const response = await fetch(`${BASE_URL}/api/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -28,13 +28,14 @@ const Login = () => {
         alert('Đăng nhập thành công!');
   
         // Fetch user details after login
-        const userResponse = await fetch(`http://localhost:5000/api/users/email/${formData.email}`);
+        const userResponse = await fetch(`${BASE_URL}/api/users/email/${formData.email}`);
         const userInfo = await userResponse.json();
   
         // Store user info in localStorage
-        localStorage.setItem('userEmail', userInfo.email);
-        localStorage.setItem('userId', userInfo.id); // Save the user's id as well
-  
+        sessionStorage.setItem('userEmail', userInfo.email);
+        sessionStorage.setItem('userId', userInfo.id); // Save the user's id as well
+        sessionStorage.setItem('accountName', userInfo.accountName)
+        console.log(userInfo)
         navigate('/');
       } else {
         alert(data.message || 'Đăng nhập thất bại');
