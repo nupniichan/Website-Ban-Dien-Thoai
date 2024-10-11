@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import AccountSidebar from '../components/AccountSidebar.jsx';
-import './MyOrders.css'; // Import the CSS
 import { Modal } from 'antd'; // Import Modal from Ant Design
 import axios from 'axios'; // Import Axios for API calls
 
@@ -10,13 +9,13 @@ const MyOrders = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [ordersPerPage] = useState(5); // Display 5 orders per page
+  const [ordersPerPage] = useState(3); // Display 5 orders per page
   const [selectedOrder, setSelectedOrder] = useState(null); // Selected order for details
   const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const userId = localStorage.getItem('userId');
+      const userId = sessionStorage.getItem('userId');
       if (!userId) {
         setError('User is not logged in');
         setLoading(false);
@@ -79,36 +78,43 @@ const MyOrders = () => {
   };
 
   return (
-    <div className="account-container">
+    <div className="flex flex-col md:flex-row h-[690px] bg-gray-100 p-5">
       <AccountSidebar />
-      <div className="account-main">
-        <h1>Lịch sử giao dịch</h1>
+      <div className="flex-1 ml-0 md:ml-10 bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-2xl font-semibold mb-6">Lịch sử giao dịch</h1>
         {loading ? (
           <p>Loading...</p>
         ) : error ? (
-          <p className="error-message">Error: {error}</p>
+          <p className="text-red-600">Error: {error}</p>
         ) : (
           <>
             {orders.length === 0 ? (
-              <p className="no-orders">Bạn không có đơn hàng nào.</p>
+              <p className="text-center text-lg">Bạn không có đơn hàng nào.</p>
             ) : (
               <>
-                <ul className="orders-list" style={{ display: 'grid', gridTemplateColumns: 'none' }}>
+                <ul className="grid gap-5">
                   {currentOrders.map((order) => (
-                    <li key={order._id} onClick={() => showOrderDetails(order)}>
+                    <li
+                      key={order._id}
+                      className="bg-gray-50 border border-gray-300 p-4 rounded-lg hover:bg-gray-100 cursor-pointer"
+                      onClick={() => showOrderDetails(order)}
+                    >
                       <p><strong>Mã đơn hàng:</strong> {order.id}</p>
                       <p><strong>Tổng giá:</strong> {order.totalAmount} VND</p>
-                      <p className="order-status"><strong>Trạng thái:</strong> {order.status}</p>
-                      <button className="details-button">Chi tiết đơn hàng</button>
+                      <p><strong>Trạng thái:</strong> {order.status}</p>
+                      <button className="mt-4 bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600">
+                        Chi tiết đơn hàng
+                      </button>
                     </li>
                   ))}
                 </ul>
 
                 {/* Pagination controls */}
-                <div className="pagination">
+                <div className="flex justify-between items-center mt-6">
                   <button
                     onClick={() => paginate(currentPage - 1)}
                     disabled={currentPage === 1}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-300"
                   >
                     Trang trước
                   </button>
@@ -116,6 +122,7 @@ const MyOrders = () => {
                   <button
                     onClick={() => paginate(currentPage + 1)}
                     disabled={indexOfLastOrder >= orders.length}
+                    className="bg-blue-500 text-white px-4 py-2 rounded-md disabled:bg-gray-300"
                   >
                     Trang sau
                   </button>
@@ -128,41 +135,58 @@ const MyOrders = () => {
                     visible={isModalVisible}
                     onCancel={handleCancel}
                     footer={null} // No footer buttons
+                    className="rounded-lg"
+                    style={{ top: '20px' }} // Position it higher on the page
                   >
-                    <p><strong>Mã đơn hàng:</strong> {selectedOrder.id}</p>
-                    <p><strong>Tổng giá:</strong> {selectedOrder.totalAmount} VND</p>
-                    <p><strong>Địa chỉ giao hàng:</strong> {selectedOrder.shippingAddress}</p>
-                    <p><strong>Phương thức thanh toán:</strong> {selectedOrder.paymentMethod}</p>
-                    <p><strong>Ngày đặt hàng:</strong> {new Date(selectedOrder.orderDate).toLocaleDateString()}</p>
-                    <p><strong>Trạng thái:</strong> {selectedOrder.status}</p>
-                    
-                    {/* Table for order items */}
-                    <h3>Sản phẩm trong đơn hàng:</h3>
-                    <table className="order-items-table">
-                      <thead>
-                        <tr>
-                          <th>Mã sản phẩm</th>
-                          <th>Tên sản phẩm</th>
-                          <th>Số lượng</th>
-                          <th>Giá</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {selectedOrder.items.map((item) => {
-                          const product = products.find(prod => prod.id === item.productId); // Get product details using productId
-                          return (
-                            <tr key={item.productId}>
-                              <td>{item.productId}</td>
-                              <td>{product ? product.name : 'Unknown Product'}</td> {/* Show product name */}
-                              <td>{item.quantity}</td>
-                              <td>{product ? product.price : 'N/A'} VND</td> {/* Show product price */}
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
+                    <div className="p-6 bg-white rounded-lg shadow-lg"> {/* Added padding and background */}
+                      <p className="text-lg font-bold mb-2">
+                        <strong>Mã đơn hàng:</strong> {selectedOrder.id}
+                      </p>
+                      <p className="text-lg font-bold mb-2">
+                        <strong>Tổng giá:</strong> {selectedOrder.totalAmount} VND
+                      </p>
+                      <p className="text-lg font-bold mb-2">
+                        <strong>Địa chỉ giao hàng:</strong> {selectedOrder.shippingAddress}
+                      </p>
+                      <p className="text-lg font-bold mb-2">
+                        <strong>Phương thức thanh toán:</strong> {selectedOrder.paymentMethod}
+                      </p>
+                      <p className="text-lg font-bold mb-2">
+                        <strong>Ngày đặt hàng:</strong> {new Date(selectedOrder.orderDate).toLocaleDateString()}
+                      </p>
+                      <p className="text-lg font-bold mb-4">
+                        <strong>Trạng thái:</strong> {selectedOrder.status}
+                      </p>
+
+                      {/* Table for order items */}
+                      <h3 className="text-xl font-semibold mb-4">Sản phẩm trong đơn hàng:</h3>
+                      <table className="min-w-full bg-gray-100 rounded-md shadow-md">
+                        <thead className="bg-blue-200">
+                          <tr>
+                            <th className="border px-4 py-2 text-left">Mã sản phẩm</th>
+                            <th className="border px-4 py-2 text-left">Tên sản phẩm</th>
+                            <th className="border px-4 py-2 text-left">Số lượng</th>
+                            <th className="border px-4 py-2 text-left">Giá</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {selectedOrder.items.map((item) => {
+                            const product = products.find(prod => prod.id === item.productId); // Get product details using productId
+                            return (
+                              <tr key={item.productId} className="hover:bg-gray-200 transition-colors duration-200">
+                                <td className="border px-4 py-2">{item.productId}</td>
+                                <td className="border px-4 py-2">{product ? product.name : 'Unknown Product'}</td>
+                                <td className="border px-4 py-2">{item.quantity}</td>
+                                <td className="border px-4 py-2">{product ? product.price : 'N/A'} VND</td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
                   </Modal>
                 )}
+
               </>
             )}
           </>

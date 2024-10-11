@@ -1,28 +1,28 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import UserMenu from "../components/UserMenu";
 import { SearchOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import "./Header.css";
 import { Input } from "antd";
-import pageName from '../PathNames'
+import pageName from '../PathNames';
 
 const Header = () => {
   return (
-    <header>
-      <div className="container header-content">
-        <div className="logo-and-search">
-        <Link to="/" className="menu-link"><h1 className="logo">SPhoneC</h1></Link>
-          <div className="search-bar">
+    <header className="bg-blue-400 shadow-md sticky top-0 z-100 w-full py-4">
+      <div className="container mx-auto flex justify-between items-center max-w-6xl px-8">
+        <div className="flex items-center gap-4">
+          <Link to="/" className="menu-link">
+            <h1 className="text-2xl text-white font-bold">SPhoneC</h1>
+          </Link>
+          <div className="relative">
             <Input
               placeholder="Search..."
-              className="search-input"
+              className="bg-white border border-white rounded-full text-black py-2 pl-4 pr-10 w-96"
             />
-            <SearchOutlined className="search-icon" />
+            <SearchOutlined className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black text-xl cursor-pointer" />
           </div>
         </div>
-        <div className="menu-items">
+        <div className="flex gap-6 items-center">
           <Link to={pageName.CART} className="menu-link">
-            <ShoppingCartOutlined className="icon" />
+            <ShoppingCartOutlined className="text-white text-2xl" />
           </Link>
           <UserMenu />
         </div>

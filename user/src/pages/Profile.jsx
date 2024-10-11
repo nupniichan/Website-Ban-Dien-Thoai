@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate for redirect
 import AccountSidebar from '../components/AccountSidebar.jsx';
-import './Profile.css'; // Import the CSS file
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -10,13 +9,14 @@ const Profile = () => {
   const navigate = useNavigate(); // Initialize useNavigate
 
   const fetchUserData = async () => {
-    const userEmail = localStorage.getItem('userEmail');
+    const userEmail = sessionStorage.getItem('userEmail');
     if (userEmail) {
       try {
         const response = await fetch(`http://localhost:5000/api/users/email/${userEmail}`);
         const data = await response.json();
         if (response.ok) {
           setUserData(data);
+          console.log(data);
         } else {
           setError("Error fetching user data");
         }
@@ -35,9 +35,10 @@ const Profile = () => {
 
   // Logout function
   const handleLogout = () => {
-    localStorage.removeItem('userEmail'); // Clear the user email
-    localStorage.removeItem('userId'); // Clear the user id if stored
-    navigate('/login'); // Redirect to the login page
+    sessionStorage.removeItem('userEmail'); // Clear the user email
+    sessionStorage.removeItem('userId'); // Clear the user id if stored
+    sessionStorage.removeItem('accountName');
+    navigate('/user/login'); // Redirect to the login page
   };
 
   // Toggle editing mode
@@ -48,7 +49,7 @@ const Profile = () => {
   // Handle form submission to update user data
   const handleUpdateUserData = async (e) => {
     e.preventDefault();
-    const userId = localStorage.getItem('userId'); // Get the user ID from local storage
+    const userId = sessionStorage.getItem('userId');
 
     try {
       const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
@@ -75,91 +76,116 @@ const Profile = () => {
   };
 
   return (
-    <div className="account-container">
+    <div className="flex flex-col md:flex-row h-[690px] bg-gray-100 p-5">
       <AccountSidebar />
-      <div className="account-main">
-        <h1>Thông tin tài khoản</h1>
-        {error && <p className="error-message">{error}</p>}
+      <div className="flex-1 ml-0 md:ml-10 bg-white p-6 rounded-lg shadow-lg">
+        <h1 className="text-3xl font-bold mb-6">Thông tin tài khoản</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
         {userData ? (
-          <div className="account-info-card">
-            {isEditing ? (
-              <form onSubmit={handleUpdateUserData} className="edit-form">
-                <input
-                  type="text"
-                  name="name"
-                  value={userData.name}
-                  onChange={(e) => setUserData({ ...userData, name: e.target.value })}
-                  placeholder="Tên"
-                  required
-                />
-                <input
-                  type="email"
-                  name="email"
-                  value={userData.email}
-                  onChange={(e) => setUserData({ ...userData, email: e.target.value })}
-                  placeholder="Email"
-                  required
-                />
-                <input
-                  type="text"
-                  name="phoneNumber"
-                  value={userData.phoneNumber}
-                  onChange={(e) => setUserData({ ...userData, phoneNumber: e.target.value })}
-                  placeholder="Số điện thoại"
-                  required
-                />
-                <input
-                  type="date"
-                  name="dayOfBirth"
-                  value={userData.dayOfBirth}
-                  onChange={(e) => setUserData({ ...userData, dayOfBirth: e.target.value })}
-                  required
-                />
-                <select
-                  name="gender"
-                  value={userData.gender}
-                  onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
-                  required
-                >
-                  <option value="">Chọn giới tính</option>
-                  <option value="Nam">Nam</option>
-                  <option value="Nữ">Nữ</option>
-                  <option value="Khác">Khác</option>
-                </select>
-                <input
-                  type="text"
-                  name="address"
-                  value={userData.address}
-                  onChange={(e) => setUserData({ ...userData, address: e.target.value })}
-                  placeholder="Địa chỉ"
-                  required
-                />
-                <input
-                  type="text"
-                  name="accountName"
-                  value={userData.accountName}
-                  onChange={(e) => setUserData({ ...userData, accountName: e.target.value })}
-                  placeholder="Tên tài khoản"
-                  required
-                />
-                <button type="submit" className="submit-button">Lưu</button>
-                <button type="button" onClick={handleEditToggle} className="cancel-button">Hủy</button>
-              </form>
-            ) : (
-              <div className="account-info">
-                <p><strong>Tên:</strong> {userData.name}</p>
-                <p><strong>Email:</strong> {userData.email}</p>
-                <p><strong>Số điện thoại:</strong> {userData.phoneNumber}</p>
-                <p><strong>Ngày sinh:</strong> {userData.dayOfBirth}</p>
-                <p><strong>Giới tính:</strong> {userData.gender}</p>
-                <p><strong>Địa chỉ:</strong> {userData.address}</p>
-                <p><strong>Tên tài khoản:</strong> {userData.accountName}</p>
-                <div className="button-container">
-                  <button onClick={handleEditToggle} className="edit-button">Sửa thông tin tài khoản</button>
-                  <button onClick={handleLogout} className="logout-button">Đăng Xuất</button>
-                </div>
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Tên:</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    className="border rounded-lg p-2 w-1/2"
+                    name="name"
+                    value={userData.name}
+                    onChange={(e) => setUserData({ ...userData, name: e.target.value })}
+                    placeholder="Tên"
+                    required
+                  />
+                ) : (
+                  <p>{userData.name}</p>
+                )}
               </div>
-            )}
+
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Email:</label>
+                <p>{userData.email}</p>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Số điện thoại:</label>
+                <p>{userData.phoneNumber}</p>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Ngày sinh:</label>
+                <p>{userData.dayOfBirth}</p>
+              </div>
+
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Giới tính:</label>
+                {isEditing ? (
+                  <select
+                    className="border rounded-lg p-2 w-1/2"
+                    name="gender"
+                    value={userData.gender}
+                    onChange={(e) => setUserData({ ...userData, gender: e.target.value })}
+                    required
+                  >
+                    <option value="">Chọn giới tính</option>
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                    <option value="Khác">Khác</option>
+                  </select>
+                ) : (
+                  <p>{userData.gender}</p>
+                )}
+              </div>
+
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Địa chỉ:</label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    className="border rounded-lg p-2 w-1/2"
+                    name="address"
+                    value={userData.address}
+                    onChange={(e) => setUserData({ ...userData, address: e.target.value })}
+                    placeholder="Địa chỉ"
+                    required
+                  />
+                ) : (
+                  <p>{userData.address}</p>
+                )}
+              </div>
+
+              <div className="flex justify-between items-center">
+                <label className="font-medium">Tên tài khoản:</label>
+                <p>{userData.accountName}</p>
+              </div>
+
+              <div className="mt-6 flex justify-end space-x-4">
+                {isEditing ? (
+                  <>
+                    <button
+                      onClick={handleUpdateUserData}
+                      className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                    >
+                      Lưu
+                    </button>
+                    <button
+                      onClick={handleEditToggle}
+                      className="bg-gray-500 text-white px-4 py-2 rounded-lg"
+                    >
+                      Hủy
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      onClick={handleEditToggle}
+                      className="bg-yellow-500 text-white px-4 py-2 rounded-lg"
+                    >
+                      Sửa thông tin tài khoản
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
           </div>
         ) : (
           <p>Loading user data...</p>
