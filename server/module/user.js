@@ -8,7 +8,7 @@ const userSchema = new mongoose.Schema({
   dayOfBirth: { type: String, required: true },
   gender: { type: String, required: true },
   address: { type: String, required: true },
-  accountName: { type: String, required: true },
+  accountName: { type: String},
   password: { type: String, required: true },
   role: { type: String, default: 'user' },
   cart: [
@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
     },
   ],
 });
+
 
 const User = mongoose.model('User', userSchema);
 
