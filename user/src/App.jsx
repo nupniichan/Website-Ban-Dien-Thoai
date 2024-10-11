@@ -15,14 +15,16 @@ import PaymentResult from './pages/PaymentResult.jsx'
 import PaymentSuccess from './pages/PaymentSuccess.jsx'
 import PaymentFailed from './pages/PaymentFailed.jsx'
 import "./App.css";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 
 function App() {
     return (
         <>
-            <Header />  {/* Phần Header hiển thị cố định trên tất cả các trang */}
+            <Header />
 
             <Routes>
-                {/* Các route tương ứng với các trang */}
+                <Route path="/" element={<Login />} /> 
                 <Route path={PathNames.HOMEPAGE} element={<Homepage />} />
                 <Route path={PathNames.ABOUT} element={<About />} />
                 <Route path={PathNames.SUPPORT} element={<Support />} />
@@ -31,16 +33,23 @@ function App() {
                 <Route path={PathNames.PROFILE} element={<Profile />} />
                 <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
                 <Route path={PathNames.SEARCH_RESULTS} element={<SearchResults />} />
+<<<<<<< HEAD
                 <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
                 <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
                 <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
                 {/* Route chi tiết sản phẩm với tham số productId */}
+=======
+                <Route path={PathNames.REGISTER} element={<Register />} />
+                <Route path={PathNames.LOGIN} element={<Login />} />
+                {/* Route for product details with parameter productId */}
+>>>>>>> 74117e8af596656c237f3a3a2182dd11720a95e0
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>
 
-            <Footer />  {/* Phần Footer hiển thị cố định trên tất cả các trang */}
+            <Footer />
         </>
     );
 }
 
 export default App;
+
