@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
   const [name, setName] = useState('');
+  const [accountName, setAccountName] = useState('');
   const [gender, setGender] = useState('');
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -13,6 +14,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [nameError, setNameError] = useState('');
+  const [accountNameError, setAccountNameError] = useState('');
   const [addressError, setAddressError] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
   const [dayOfBirthError, setDayOfBirthError] = useState('');  
@@ -41,6 +43,8 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setNameError('');
+    setAccountNameError(''); // Clear accountName error
+
     setAddressError('');
     setPhoneNumberError('');
     setDayOfBirthError('');  
@@ -54,7 +58,10 @@ const Register = () => {
       setNameError('Vui lòng nhập tên người dùng');
       isValid = false;
     }
-
+    if (accountName.trim() === '') {
+      setAccountNameError('Vui lòng nhập tên tài khoản');
+      isValid = false;
+    }
     if (address.trim() === '') {
       setAddressError('Vui lòng nhập địa chỉ');
       isValid = false;
@@ -104,6 +111,7 @@ const Register = () => {
       try {
         await axios.post('http://localhost:5000/api/register', {
           name,
+          accountName,
           gender,
           address,
           phoneNumber,
@@ -126,7 +134,7 @@ const Register = () => {
           if (error.response.data.phoneNumberExists) {
             setPhoneNumberError('Số điện thoại này đã được sử dụng');
           }
-
+          
           console.error('Error:', errorMessage);
         } else {
           console.error('Error during registration:', error);
@@ -152,6 +160,16 @@ const Register = () => {
             {nameError && <span className="error-message">{nameError}</span>}
           </div>
           
+          <div className="input-group">
+            <label>Tên tài khoản:</label>
+            <input
+              type="text"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+              placeholder="Nhập tên tài khoản"
+            />
+            {accountNameError && <span className="error-message">{accountNameError}</span>}
+          </div>
           <div className="input-group">
             <label>Giới tính:</label>
             <select 

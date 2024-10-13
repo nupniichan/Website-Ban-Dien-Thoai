@@ -23,8 +23,8 @@ function App() {
         <>
             <Header />  {/* Phần Header hiển thị cố định trên tất cả các trang */}
             <Routes>
-                <Route path="/" element={<Login />} /> 
-                <Route path={PathNames.HOMEPAGE} element={<Homepage />} />
+                <Route path={PathNames.REGISTER} element={<Register />} /> 
+                <Route path="/" element={<Homepage />} />
                 <Route path={PathNames.ABOUT} element={<About />} />
                 <Route path={PathNames.SUPPORT} element={<Support />} />
                 <Route path={PathNames.CART} element={<Cart />} />
