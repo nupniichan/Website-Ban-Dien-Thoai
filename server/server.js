@@ -98,6 +98,79 @@ app.get('/api/orders/customer/:customerId', async (req, res) => {
   }
 });
 
+
+
+// Registration route
+app.post('/api/register', async (req, res) => {
+  const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password } = req.body;
+
+  const emailExists = await User.findOne({ email });
+  const phoneNumberExists = await User.findOne({ phoneNumber });
+  
+
+  if (emailExists || phoneNumberExists) {
+    return res.status(400).json({
+      message: "Email, số điện thoại đã tồn tại.",
+      emailExists: !!emailExists,
+      phoneNumberExists: !!phoneNumberExists,
+      
+    });
+  }
+
+  try {
+    
+    const lastUser = await User.findOne().sort({ id: -1 });
+    const lastId = lastUser ? parseInt(lastUser.id.substring(2), 10) : 0;
+    const userId = `KH${(lastId + 1).toString().padStart(3, '0')}`;
+    const newUser = new User({
+      id: userId,
+      name,
+      accountName, 
+      email,
+      phoneNumber,
+      dayOfBirth,
+      gender,
+      address,
+      password,
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "Đăng ký thành công!" });
+  } catch (error) {
+    console.error("Error during registration:", error);
+    res.status(500).json({ message: "Đã xảy ra lỗi trong quá trình đăng ký." });
+  }
+});
+
+// Login route
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    if (user.password !== password) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    res.status(200).json({ 
+      message: 'Login successful', 
+      user: { 
+        username: user.username, 
+        email: user.email,
+        phoneNumber: user.phoneNumber 
+      } 
+    });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ message: 'Error logging in', error: error.message });
+  }
+});
+
+
 // Get all orders
 app.get('/api/orders', async (req, res) => {
   try {
@@ -626,27 +699,33 @@ app.get('/api/discountCodes', async (req, res) => {
 // Thêm mã giảm giá mới
 app.post('/api/addDiscountCode', async (req, res) => {
   const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
-
+  
   try {
-    // Tạo ID cho mã giảm giá mới
-    const discountId = await generateDiscountId();
+     
+      const discountId = await generateDiscountId();
 
-    // Tạo mã giảm giá mới
-    const newDiscountCode = new DiscountCode({
-      id: discountId,
-      name,
-      usageDate,
-      expirationDate,
-      discountRate,
-      applicableCode
-    });
+      
+      const newDiscountCode = new DiscountCode({
+          id: discountId,
+          name,
+          usageDate,
+          expirationDate,
+          discountRate,
+          applicableCode  
+      });
 
-    await newDiscountCode.save();
-    res.status(201).json({ message: 'Mã giảm giá đã được tạo thành công!', discountCode: newDiscountCode });
+      await newDiscountCode.save();
+      res.status(201).json({ message: 'Mã giảm giá đã được tạo thành công!', discountCode: newDiscountCode });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi tạo mã giảm giá', error: err.message });
+      res.status(500).json({ message: 'Lỗi khi tạo mã giảm giá', error: err.message });
   }
 });
+
+
+
+
+
+
 
 // Sửa thông tin mã giảm giá
 app.put('/api/discountCodes/:id', async (req, res) => {
@@ -654,18 +733,20 @@ app.put('/api/discountCodes/:id', async (req, res) => {
   const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
 
   try {
-    const updateData = { name, usageDate, expirationDate, discountRate, applicableCode };
+      const updateData = { name, usageDate, expirationDate, discountRate, applicableCode };
 
-    const updatedDiscountCode = await DiscountCode.findOneAndUpdate({ id }, updateData, { new: true });
-    if (!updatedDiscountCode) {
-      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
-    }
+      const updatedDiscountCode = await DiscountCode.findByIdAndUpdate(id, updateData, { new: true });
+      if (!updatedDiscountCode) {
+          return res.status(404).json({ message: 'Discount code not found' });
+      }
 
-    res.json({ message: 'Mã giảm giá đã được cập nhật thành công', discountCode: updatedDiscountCode });
+      res.json({ message: 'Discount code updated successfully', discountCode: updatedDiscountCode });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi cập nhật mã giảm giá', error: err.message });
+      res.status(500).json({ message: 'Error updating discount code', error: err.message });
   }
 });
+
+
 
 // Xóa mã giảm giá
 app.delete('/api/discountCodes/:id', async (req, res) => {
