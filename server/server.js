@@ -422,7 +422,7 @@ app.post('/api/addUser', async (req, res) => {
       gender,
       address,
       accountName,
-      password, 
+      password,
       role: role || 'user',
     });
 
@@ -488,11 +488,11 @@ app.post('/api/users', async (req, res) => {
       name,
       email,
       phoneNumber,
-      dayOfBirth, 
-      gender,     
-      address,     
-      accountName, 
-      password, 
+      dayOfBirth,
+      gender,
+      address,
+      accountName,
+      password,
       role: role || 'user',
     });
 
@@ -510,16 +510,16 @@ app.put('/api/users/:id', async (req, res) => {
   const { id } = req.params; // Get the id from the URL parameters
 
   try {
-    const updateData = { 
-      name, 
-      email, 
-      phoneNumber,    
-      dayOfBirth,     
-      gender,       
-      address, 
-      accountName, 
-      password, 
-      role 
+    const updateData = {
+      name,
+      email,
+      phoneNumber,
+      dayOfBirth,
+      gender,
+      address,
+      accountName,
+      password,
+      role
     };
 
     const updatedUser = await User.findOneAndUpdate({ _id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
@@ -749,7 +749,7 @@ app.get('/api/cart/:userId', async (req, res) => {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
 
-    res.status(200).json(user.cart); 
+    res.status(200).json(user.cart);
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin giỏ hàng', error: error.message });
   }
@@ -779,7 +779,7 @@ app.post('/payment', async (req, res) => {
     ipnUrl: config.ipnUrl,
     lang: config.lang,
     requestType: config.requestType,
-    extraData: extraData, 
+    extraData: extraData,
     signature: signature,
   });
 
@@ -803,10 +803,10 @@ app.post('/callback', async (req, res) => {
     // Thanh toán thành công
     try {
       if (extraData) {
-        const orderData = JSON.parse(extraData); 
+        const orderData = JSON.parse(extraData);
 
         // Kiểm tra và gán giá trị mặc định cho notes nếu không có
-        const notes = orderData.notes ? orderData.notes : ''; 
+        const notes = orderData.notes ? orderData.notes : '';
 
         // Tạo ID cho đơn hàng mới
         const counter = await Counter.findByIdAndUpdate(
@@ -818,7 +818,7 @@ app.post('/callback', async (req, res) => {
 
         // Lưu đơn hàng vào MongoDB
         const newOrder = new Order({
-          id: newOrderId, 
+          id: newOrderId,
           orderId: orderId,
           customerId: orderData.customerId,
           customerName: orderData.customerName,
@@ -828,7 +828,7 @@ app.post('/callback', async (req, res) => {
           totalAmount: amount,
           status: 'Đã thanh toán',
           orderDate: new Date(),
-          notes: notes, 
+          notes: notes,
         });
 
         await newOrder.save();
@@ -839,10 +839,10 @@ app.post('/callback', async (req, res) => {
         // Xóa các sản phẩm đã thanh toán ra khỏi giỏ hàng
         const user = await User.findOne({ id: orderData.customerId });
         if (user) {
-          const updatedCart = user.cart.filter(cartItem => 
+          const updatedCart = user.cart.filter(cartItem =>
             !orderData.items.some(orderedItem => orderedItem.productId === cartItem.productId)
           );
-          
+
           user.cart = updatedCart;
           await user.save(); // Lưu giỏ hàng đã được cập nhật
         }

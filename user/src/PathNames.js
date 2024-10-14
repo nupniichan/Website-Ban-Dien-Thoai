@@ -7,8 +7,8 @@ const PathNames = {
     SEARCH_RESULTS: '/search/:searchTerm',
     PRODUCTS: '/products',
     PRODUCT_DETAILS: '/:productName',
-    REGISTER: '/user/register',
-    LOGIN: '/user/login',
+    // REGISTER: '/user/register',
+    // LOGIN: '/user/login',
     PROFILE: '/user/profile',
     MY_ORDERS: '/my-orders',
 };

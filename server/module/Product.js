@@ -9,7 +9,7 @@ const productSchema = new mongoose.Schema({
   os: { type: String },
   brand: { type: String },
   description: { type: String },
-  image: { type: String }, 
+  image: { type: String },
   cauhinh: {
     kichThuocManHinh: { type: String },
     congNgheManHinh: { type: String },

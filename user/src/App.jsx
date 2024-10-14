@@ -4,7 +4,7 @@ import Header from "./Header&Footer/Header.jsx";
 import About from "./pages/About.jsx";
 import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
-import Homepage from "./pages/Homepage.jsx";
+import Homepage from "./pages/Homepage/Homepage.jsx";
 import MyOrders from "./pages/MyOrders.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -12,6 +12,22 @@ import SearchResults from "./pages/SearchResults.jsx";
 import Support from "./pages/Support.jsx";
 import PathNames from "./PathNames.js";
 import "./App.css";
+
+/* ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⠴⠶⠶⡦⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⣠⡾⠋⠁⠀⠀⠀⠀⠀⠀⠈⠙⠳⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢠⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣦⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢠⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢷⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣿⠁⠀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣷⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣿⣠⢾⡟⠛⢻⣿⣶⣄⠀⠀⣠⣴⣶⣿⣶⣶⣦⡀⠀⢻⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣿⡇⢿⣇⣀⣼⣿⣿⣿⡆⣼⡏⠀⢹⣿⣿⣿⣿⣿⡀⣿⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢘⣷⡸⣿⣿⣿⣿⢿⣿⣿⣿⣿⣾⣿⣿⡟⣹⣿⢻⣷⠟⠀⠀⠀⠀⠀⠀
+⢠⡤⠤⢿⠙⢷⣬⣙⣿⣿⣶⣿⠟⠙⢿⣿⣿⡿⢿⣟⣵⣿⣯⣄⣀⣤⣤⡄⠀⠀
+⠘⢧⣄⡀⠀⠀⠈⠻⣭⣍⠉⠁⠀⠀⢀⣉⣉⣻⣿⠿⠛⠁⠀⠈⠉⠁⠀⡇⠀⠀
+⠀⢰⠟⠁⠀⠀⠀⢀⣤⠈⠓⠤⠴⠞⠛⠛⠋⠉⠐⣶⢦⡄⠀⠀⠀⠀⠀⠉⢳⡄
+⠀⠻⣤⣤⠖⣆⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡆⣹⠂⠀⠀⠀⢠⡶⠾⠃
+⠀⠀⠀⠀⠀⠉⠛⢡⡿⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠈⢧⢿⣤⠴⠷⣤⣸⠇⠀⠀
+⠀⠀⠀⠀⠀⠀⢠⡏⠀⠀⢉⡿⠉⠉⠋⠛⠛⢻⡗⠀⠈⢷⡀⠀⠀⠀⠁⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠳⠤⠶⠟⠁⠀⠀⠀⠀⠀⠀⠻⢶⣤⡼⠃⠀⠀⠀⠀⠀⠀⠀ */
 
 function App() {
     return (

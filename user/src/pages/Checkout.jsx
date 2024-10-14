@@ -68,7 +68,7 @@ const Checkout = () => {
       totalAmount: totalAmount,
       notes: notes,
     };
-  
+
     if (paymentMethod === 'Thanh toán qua MOMO') {
       try {
         const response = await fetch('http://localhost:5000/payment', {
@@ -81,7 +81,7 @@ const Checkout = () => {
             extraData: JSON.stringify(orderData), // Truyền toàn bộ dữ liệu đơn hàng dưới dạng chuỗi JSON
           }),
         });
-  
+
         const data = await response.json();
         if (data.payUrl) {
           window.location.href = data.payUrl; // Chuyển hướng người dùng đến trang thanh toán của MoMo
@@ -95,7 +95,7 @@ const Checkout = () => {
       console.log('Thanh toán bằng tiền mặt');
       alert('Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.');
     }
-  };  
+  };
 
   const storeAddress = '806 QL22, ấp Mỹ Hoà 3, Hóc Môn, Hồ Chí Minh';
 
@@ -179,7 +179,7 @@ const Checkout = () => {
             </div>
             <div className="mt-4">
               <label className="block mb-2">Địa chỉ cửa hàng</label>
-              <p className="bg-gray-100 p-2 rounded-lg">{storeAddress}</p> 
+              <p className="bg-gray-100 p-2 rounded-lg">{storeAddress}</p>
             </div>
           </>
         ) : (
