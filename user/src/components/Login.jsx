@@ -25,16 +25,20 @@ const Login = () => {
       const data = await response.json();
       if (response.ok) {
         alert('Đăng nhập thành công!');
-
+    
         const userResponse = await fetch(`${BASE_URL}/api/users/email/${formData.email}`);
         const userInfo = await userResponse.json();
-
+    
         sessionStorage.setItem('userEmail', userInfo.email);
         sessionStorage.setItem('userId', userInfo.id);
         sessionStorage.setItem('accountName', userInfo.accountName);
-        console.log(userInfo);
+    
+        // Gửi sự kiện tùy chỉnh để cập nhật trạng thái đăng nhập
+        window.dispatchEvent(new Event("loginSuccess"));
+    
         navigate('/');
-      } else {
+    }
+     else {
         alert(data.message || 'Đăng nhập thất bại');
       }
     } catch (err) {
