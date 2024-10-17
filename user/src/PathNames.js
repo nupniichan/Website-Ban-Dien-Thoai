@@ -4,7 +4,7 @@ const PathNames = {
     SUPPORT: '/support',
     CART: '/cart',
     CHECKOUT: '/checkout',
-    SEARCH_RESULTS: '/search/:searchTerm',
+    SEARCH_RESULTS: '/search-results',
     PRODUCTS: '/products',
     PRODUCT_DETAILS: '/:productName',
     REGISTER: '/user/register',

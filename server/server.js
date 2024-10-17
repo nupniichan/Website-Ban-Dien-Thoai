@@ -265,12 +265,44 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
 // Hiển thị tất cả sản phẩm
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await Product.find();
+    const { query, minPrice, maxPrice, colors, brands } = req.query;
+    const searchCondition = {
+      ...(query ? { name: { $regex: query, $options: 'i' } } : {}),
+      ...(minPrice || maxPrice ? { price: { $gte: minPrice || 0, $lte: maxPrice || Infinity } } : {}),
+      ...(colors ? { color: { $in: colors.split(',') } } : {}),
+      ...(brands ? { brand: { $in: brands.split(',') } } : {}),
+    };
+    
+    const products = await Product.find(searchCondition);
     res.json(products);
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi lấy sản phẩm', error: err.message });
+    res.status(500).json({ message: 'Error fetching products', error: err.message });
   }
 });
+
+// Fetch available colors
+app.get('/api/colors', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    const colors = [...new Set(products.map(product => product.color))]; // Get unique colors
+    res.json(colors);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching colors', error: err.message });
+  }
+});
+
+// Fetch available brands
+app.get('/api/brands', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    const brands = [...new Set(products.map(product => product.brand))]; // Get unique brands
+    res.json(brands);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching brands', error: err.message });
+  }
+});
+
+
 
 // Sửa thông tin sản phẩm
 app.put('/api/products/:id', upload.single('image'), async (req, res) => {
@@ -311,20 +343,35 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// Lấy sản phẩm theo ID
+// Lấy sản phẩm theo ID và các màu sắc có sẵn
 app.get('/api/products/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Lấy sản phẩm theo ID
     const product = await Product.findOne({ id });
+
     if (!product) {
       return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
     }
-    res.json(product);
+
+    // Lấy tất cả sản phẩm cùng tên, giá và thương hiệu nhưng khác màu
+    const availableColors = await Product.find({
+      name: product.name,
+      price: product.price,
+      brand: product.brand,
+    }).select('id color');
+
+    // Trả về sản phẩm cùng với các màu sắc có sẵn
+    res.json({
+      product,
+      availableColors: availableColors.map(p => ({ id: p.id, color: p.color })),
+    });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin sản phẩm', error: err.message });
   }
 });
+
 
 // Get all kho entries
 app.get('/api/kho', async (req, res) => {

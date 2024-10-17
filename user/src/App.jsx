@@ -9,7 +9,6 @@ import Homepage from "./pages/Homepage.jsx";
 import MyOrders from "./pages/MyOrders.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import Profile from "./pages/Profile.jsx";
-import SearchResults from "./pages/SearchResults.jsx";
 import Support from "./pages/Support.jsx";
 import PathNames from "./PathNames.js";
 import PaymentResult from './pages/PaymentResult.jsx'
@@ -18,6 +17,7 @@ import PaymentFailed from './pages/PaymentFailed.jsx'
 import "./App.css";
 import Register from "./components/Register";
 import Login from "./components/Login";
+import SearchResults from "./pages/SearchResults.jsx";
 function App() {
     return (
         <>
@@ -37,6 +37,7 @@ function App() {
                 <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
                 <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
                 <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
+                <Route path={PathNames.SearchResults} element={<SearchResults/>}/>
                 {/* Route chi tiết sản phẩm với tham số productId */}
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>

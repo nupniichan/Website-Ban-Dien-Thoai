@@ -9,14 +9,28 @@ const ProductDetails = () => {
   const [error, setError] = useState('');
   const userId = sessionStorage.getItem('userId');
 
+  const [availableColors, setAvailableColors] = useState([]);
+  const [selectedColor, setSelectedColor] = useState('');
+  
   useEffect(() => {
     fetch(`${BASE_URL}/api/products/${productId}`)
       .then(response => response.json())
-      .then(data => setProduct(data))
+      .then(data => {
+        console.log(data); // Check the structure of the data
+        setProduct(data.product);
+        setAvailableColors(data.availableColors);
+        
+        const defaultColor = data.availableColors.find(color => color.color === data.product.color);
+        if (defaultColor) {
+          setSelectedColor(defaultColor.id);
+        }
+      })
       .catch(error => {
         console.error('Error fetching product details:', error);
       });
   }, [productId]);
+  
+  
 
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -79,7 +93,38 @@ const ProductDetails = () => {
           <h1 className="text-2xl font-bold text-gray-800 mb-2">{product.name}</h1>
           <p className="text-xl text-gray-700 mb-2">Giá: <span className="font-semibold">{product.price.toLocaleString()} VND</span></p>
           <p className="text-md text-gray-600 mb-4">Mô tả: {product.description}</p>
-          <p className="text-md text-gray-600 mb-4">Trạng thái: <span className={product.quantity > 0 ? 'text-green-600' : 'text-red-600'}>{product.quantity > 0 ? 'Còn hàng' : 'Hết hàng'}</span></p>
+
+          {/* Show how many items are left in stock */}
+          <p className="text-md text-gray-600 mb-4">
+            Trạng thái: <span className={product.quantity > 0 ? 'text-green-600' : 'text-red-600'}>
+              {product.quantity > 0 ? `${product.quantity} sản phẩm còn lại` : 'Hết hàng'}
+            </span>
+          </p>
+          {/* Color Selection */}
+          {availableColors.length > 1 && (
+            <div className="mt-4">
+              <label htmlFor="color" className="text-lg font-semibold mr-2">Màu sắc:</label>
+              <select
+                id="color"
+                value={selectedColor}
+                onChange={(e) => {
+                  const newColorId = e.target.value;
+                  setSelectedColor(newColorId); // Update selected color
+                  const newProduct = availableColors.find(color => color.id === newColorId);
+                  if (newProduct) {
+                    window.location.href = `/product/${newProduct.id}`; // Redirect to the new product
+                  }
+                }}
+                className="w-32 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {availableColors.map((colorOption) => (
+                  <option key={colorOption.id} value={colorOption.id}>
+                    {colorOption.color}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {/* Quantity Selection */}
           {product.quantity > 0 && (

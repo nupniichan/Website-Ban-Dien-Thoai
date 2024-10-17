@@ -13,7 +13,7 @@ const Cart = () => {
 
   useEffect(() => {
     // Lưu vào session tạm thời tại cái login chưa làm xong
-    sessionStorage.setItem('userId', 'KH001');
+    sessionStorage.setItem('userId', 'KH010');
 
     const fetchCartItems = async () => {
       const userId = sessionStorage.getItem('userId');
