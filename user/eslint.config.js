@@ -20,7 +20,7 @@ export default [
         ecmaFeatures: { jsx: true },
       },
     },
-    settings: { 
+    settings: {
       react: { version: 'detect' },
       'import/resolver': {
         node: {

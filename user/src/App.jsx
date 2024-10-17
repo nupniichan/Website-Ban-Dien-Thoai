@@ -5,7 +5,7 @@ import Header from "./Header&Footer/Header.jsx";
 import About from "./pages/About.jsx";
 import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
-import Homepage from "./pages/Homepage.jsx";
+import Homepage from "./pages/Homepage/Homepage.jsx";
 import MyOrders from "./pages/MyOrders.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import Profile from "./pages/Profile.jsx";
@@ -15,9 +15,25 @@ import PaymentResult from './pages/PaymentResult.jsx'
 import PaymentSuccess from './pages/PaymentSuccess.jsx'
 import PaymentFailed from './pages/PaymentFailed.jsx'
 import "./App.css";
-import Register from "./components/Register";
-import Login from "./components/Login";
-import SearchResults from "./pages/SearchResults.jsx";
+import Register from './components/Register.jsx'
+import Login from './components/Login.jsx'
+import SearchResult from './pages/SearchResults.jsx'
+/* ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⠴⠶⠶⡦⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⣠⡾⠋⠁⠀⠀⠀⠀⠀⠀⠈⠙⠳⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⢠⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣦⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢠⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢷⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣿⠁⠀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣷⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣿⣠⢾⡟⠛⢻⣿⣶⣄⠀⠀⣠⣴⣶⣿⣶⣶⣦⡀⠀⢻⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⣿⡇⢿⣇⣀⣼⣿⣿⣿⡆⣼⡏⠀⢹⣿⣿⣿⣿⣿⡀⣿⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢘⣷⡸⣿⣿⣿⣿⢿⣿⣿⣿⣿⣾⣿⣿⡟⣹⣿⢻⣷⠟⠀⠀⠀⠀⠀⠀
+⢠⡤⠤⢿⠙⢷⣬⣙⣿⣿⣶⣿⠟⠙⢿⣿⣿⡿⢿⣟⣵⣿⣯⣄⣀⣤⣤⡄⠀⠀
+⠘⢧⣄⡀⠀⠀⠈⠻⣭⣍⠉⠁⠀⠀⢀⣉⣉⣻⣿⠿⠛⠁⠀⠈⠉⠁⠀⡇⠀⠀
+⠀⢰⠟⠁⠀⠀⠀⢀⣤⠈⠓⠤⠴⠞⠛⠛⠋⠉⠐⣶⢦⡄⠀⠀⠀⠀⠀⠉⢳⡄
+⠀⠻⣤⣤⠖⣆⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡆⣹⠂⠀⠀⠀⢠⡶⠾⠃
+⠀⠀⠀⠀⠀⠉⠛⢡⡿⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠈⢧⢿⣤⠴⠷⣤⣸⠇⠀⠀
+⠀⠀⠀⠀⠀⠀⢠⡏⠀⠀⢉⡿⠉⠉⠋⠛⠛⢻⡗⠀⠈⢷⡀⠀⠀⠀⠁⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠳⠤⠶⠟⠁⠀⠀⠀⠀⠀⠀⠻⢶⣤⡼⠃⠀⠀⠀⠀⠀⠀⠀ */
+
 function App() {
     return (
         <>
@@ -33,13 +49,12 @@ function App() {
                 <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
                 <Route path={PathNames.REGISTER} element={<Register/>} />
                 <Route path={PathNames.LOGIN} element={<Login/>} />
-                <Route path={PathNames.SEARCH_RESULTS} element={<SearchResults />} />
+                <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />
                 <Route path={PathNames.REGISTER} element={<Register />} />
                 <Route path={PathNames.LOGIN} element={<Login />} />
                 <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
                 <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
                 <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
-                <Route path={PathNames.SearchResults} element={<SearchResults/>}/>
                 {/* Route chi tiết sản phẩm với tham số productId */}
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>

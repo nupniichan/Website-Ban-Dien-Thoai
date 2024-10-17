@@ -1,15 +1,56 @@
-import { Link } from "react-router-dom";
-import UserMenu from "../components/UserMenu";
-import { SearchOutlined, ShoppingCartOutlined, FilterOutlined } from "@ant-design/icons";
-import { Input, Button } from "antd";
-import pageName from '../PathNames';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import FilterMenu from "../components/Filter"; // Import your FilterMenu component
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { SearchOutlined, ShoppingOutlined } from "@ant-design/icons";
+import NeonSign from "../assets/BrandLogos/NeonSign.jsx";
+import UserMenu from "../components/UserMenu.jsx";
+import PathNames from "../PathNames.js";
+import Switch from "../shared/Switch.jsx";
+
+const MenuItems = [
+  {
+    id: "1",
+    name: "Home",
+    url: `${PathNames.HOMEPAGE}`,
+  },
+  {
+    id: "2",
+    name: "Products",
+    url: `${PathNames.PRODUCTS}`,
+  },
+  {
+    id: "3",
+    name: "About",
+    url: `${PathNames.ABOUT}`,
+  },
+  {
+    id: "4",
+    name: "Support",
+    url: `${PathNames.SUPPORT}`,
+  },
+];
+
+/* ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡠⠴⠒⠒⠲⠤⠤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡴⠋⠀⠀⠀⠀⠠⢚⣂⡀⠈⠲⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣀⡀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡎⡴⠆⠀⠀⠀⠀⠀⢎⠐⢟⡇⠀⠈⢣⣠⠞⠉⠉⠑⢄⠀⠀⣰⠋⡯⠗⣚⣉⣓⡄
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⢠⢞⠉⡆⠀⠀⠀⠀⠀⠓⠋⠀⠀⠀⠀⢿⠀⠀⠀⠀⠈⢧⠀⢹⣠⠕⠘⢧⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠘⠮⠔⠁⠀⠀⠀⠀⢀⠀⠀⠀⠀⠀⠀⠸⡀⠀⠀⠀⠀⠈⣇⠀⢳⠀⠀⠘⡆⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡴⠋⠉⠓⠦⣧⠀⠀⠀⠀⢦⠤⠤⠖⠋⠇⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⠀⠀⠸⡄⠈⡇⠀⠀⢹⡀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠁⠀⠀⠀⠀⠙⡆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠈⣆⠀⠀⠀⢱⠀⡇⠀⠀⠀⡇⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⠀⠀⠀⠀⠀⠀⠘⢆⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡰⠁⠀⠀⠸⡄⠀⠀⠀⠳⠃⠀⠀⠀⡇⠀
+⠀⠀⠀⠀⠀⢠⢏⠉⢳⡀⠀⠀⢹⠀⠀⠀⠀⢠⠀⠀⠀⠑⠤⣄⣀⡀⠀⠀⠀⠀⠀⣀⡤⠚⠀⠀⠀⠀⠀⢸⢢⡀⠀⠀⠀⠀⠀⢰⠁⠀
+⠀⠀⣀⣤⡞⠓⠉⠁⠀⢳⠀⠀⢸⠀⠀⠀⠀⢸⡆⠀⠀⠀⠀⠀⠀⠉⠉⠉⠉⠉⠉⠁⠀⠀⠀⠀⠀⠀⠀⢸⠀⠙⠦⣤⣀⣀⡤⠃⠀⠀
+⠀⣰⠗⠒⣚⠀⢀⡤⠚⠉⢳⠀⠈⡇⠀⠀⠀⢸⡧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠸⠵⡾⠋⠉⠉⡏⠀⠀⠀⠈⠣⣀⣳⠀⠀⠀⢸⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠹⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⡼⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠳⡄⠀⠀⠀⠀⠀⠀⠀⡰⠁⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠈⠓⠲⠤⠤⠤⠴⠚⠁⠀⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘
+*/
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showFilterMenu, setShowFilterMenu] = useState(false); // State to control filter menu visibility
+  const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Added state for search bar expansion
   const navigate = useNavigate();
 
   const handleSearch = () => {
@@ -17,47 +58,75 @@ const Header = () => {
       navigate(`/search-results?query=${searchQuery}`);
     }
   };
-  
-  const toggleFilterMenu = () => {
-    setShowFilterMenu((prev) => !prev);
+
+  const toggleSearch = () => {
+    setIsSearchExpanded((prev) => !prev);
   };
 
   return (
-    <header className="bg-blue-400 shadow-md sticky top-0 z-100 w-full py-4">
-      <div className="container mx-auto flex justify-between items-center max-w-6xl px-8">
-        <div className="flex items-center gap-4">
-          <Link to="/" className="menu-link">
-            <h1 className="text-2xl text-white font-bold">SPhoneC</h1>
-          </Link>
-          <div className="relative flex items-center">
-            <Input
-              placeholder="Search..."
-              className="bg-white border border-white rounded-full text-black py-2 pl-4 pr-10 w-96"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onPressEnter={handleSearch}
-              suffix={
-                <SearchOutlined
-                  className="text-black text-xl cursor-pointer"
-                  onClick={handleSearch}
-                />
-              }
-            />
-            <Button
-              icon={<FilterOutlined />}
-              onClick={toggleFilterMenu}
-              className="ml-2 bg-white border border-white text-black rounded-full"
-            >
-              Filter
-            </Button>
-            {showFilterMenu && <FilterMenu searchQuery={searchQuery} />} {/* Show the FilterMenu */}
+    <header className="bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40">
+      <div>
+        <div className="container flex justify-between items-center">
+          {/* Logo & Menu section */}
+          <div className="flex items-center gap-4 -translate-x-9">
+            <Link to={`${PathNames.HOMEPAGE}`}>
+              <NeonSign text="PHONY BALONEY" />
+            </Link>
+
+            {/* Menu items */}
+            <div className="lg-block ">
+              <ul className="flex items-center gap-4">
+                {MenuItems.map((item) => (
+                  <li key={item.id}>
+                    <Link
+                      to={item.url}
+                      className="inline-block px-4 font-semibold text-gray-500 hover:text-black dark:hover:text-white duration-200"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-        </div>
-        <div className="flex gap-6 items-center">
-          <Link to={pageName.CART} className="menu-link">
-            <ShoppingCartOutlined className="text-white text-2xl" />
-          </Link>
-          <UserMenu />
+
+          {/* Header right section */}
+          <div className="flex justify-between items-center gap-4">
+            {/* Search */}
+            <div className="relative group hidden sm:block">
+              <input
+                type="text"
+                placeholder="What are you looking for?"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={`search-bar transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900
+                  ${isSearchExpanded
+                    ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
+                    : "w-0"
+                  }`}
+              />
+              <SearchOutlined
+                className="text-xl text-gray-600 group-hover:text-primary dark:text-gray-400 absolute top-1/2 -translate-y-1/2 right-3 duration-200 cursor-pointer"
+                onClick={toggleSearch}
+              />
+            </div>
+
+            {/* Cart */}
+            <button className="relative p-3" >
+              <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400" />
+              <div className="w-4 h-4 bg-red-500 text-white rounded-full absolute top-0 right-0 flex items-center justify-center text-xs">
+                4
+              </div>
+            </button>
+
+            {/* Dark mode toggle */}
+            <Switch className="scale-50" />
+
+            {/* User Menu */}
+            <div>
+              <UserMenu />
+            </div>
+          </div>
         </div>
       </div>
     </header>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../config';
 
@@ -8,8 +8,8 @@ const Cart = () => {
   const [error, setError] = useState(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
-  const [overStockError, setOverStockError] = useState(null); 
-  const navigate = useNavigate(); 
+  const [overStockError, setOverStockError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Lưu vào session tạm thời tại cái login chưa làm xong
@@ -20,7 +20,7 @@ const Cart = () => {
 
       if (!userId) {
         console.error('Xin hãy đăng nhập để sử dụng tính năng này');
-        navigate('/login'); 
+        navigate('/login');
         return;
       }
 
@@ -50,7 +50,7 @@ const Cart = () => {
   // Xóa sản phẩm khỏi giỏ hàng
   const removeFromCart = async (productId) => {
     const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
-  
+
     try {
       await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
         method: 'DELETE',
@@ -59,7 +59,7 @@ const Cart = () => {
         },
         body: JSON.stringify({ productId }),
       });
-  
+
       setCartItems(cartItems.filter((item) => item.productId !== productId));
     } catch (error) {
       console.error('Lỗi khi xóa sản phẩm khỏi giỏ hàng:', error);
@@ -68,7 +68,7 @@ const Cart = () => {
 
   // Cập nhật số lượng sản phẩm trong giỏ hàng và kiểm tra tồn kho
   const updateQuantity = async (productId, newQuantity) => {
-    const userId = sessionStorage.getItem('userId'); 
+    const userId = sessionStorage.getItem('userId');
     const productInCart = cartItems.find((item) => item.productId === productId);
 
     if (newQuantity <= 0) {
@@ -206,7 +206,7 @@ const Cart = () => {
         </p>
         <button
         className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg"
-        onClick={() => navigate('/checkout', { state: { cartItems, total: calculateTotal() } })} 
+        onClick={() => navigate('/checkout', { state: { cartItems, total: calculateTotal() } })}
         >
         Mua ngay ({cartItems.length})
         </button>

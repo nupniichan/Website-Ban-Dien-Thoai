@@ -1,78 +1,89 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { Dropdown } from "antd";
-import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../config.js";
+import { Dropdown, Space } from "antd";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import PathNames from "../PathNames.js";
+import Login from "./Login.jsx";
 
 const UserMenu = () => {
-  const [accountName, setAccountName] = useState(null);
-  const navigate = useNavigate();
-  const location = useLocation(); // Track URL changes
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // Fetch user data
-  const fetchUserData = async () => {
-    const userEmail = sessionStorage.getItem("userEmail");
-    if (userEmail) {
-      try {
-        const response = await fetch(`${BASE_URL}/api/users/email/${userEmail}`);
-        const data = await response.json();
-        if (response.ok) {
-          setAccountName(data.name);
-        } else {
-          setAccountName(null); // Reset if there's an issue
-        }
-      } catch (err) {
-        console.error("Error fetching user data", err);
-      }
-    } else {
-      setAccountName(null); // Reset if no email
-    }
-  };
+    // TODO: Navigation for UserMenu
+    // TODO: Login, SignUp, Logout
+    const GuestItems = [
+        {
+            label: <p>Sign Up</p>,
+            key: "0",
+        },
+        {
+            label: <p>Log In</p>,
+            key: "1",
+        },
+    ];
 
-  useEffect(() => {
-    fetchUserData(); // Fetch on mount and location change
-  }, [location]);
+    const UserItems = [
+        {
+            label: <Link to={`${PathNames.PROFILE}`}>Profile</Link>,
+            key: "0",
+        },
+        {
+            label: <Link to={`${PathNames.MY_ORDERS}`}>My Orders</Link>,
+            key: "1",
+        },
+        {
+            label: <Link to="/logout">Log Out</Link>,
+            key: "2",
+        },
+    ];
 
-  const items = accountName
-    ? [] // No dropdown items if user is logged in
-    : [
-        { label: <Link to="/user/login">Đăng nhập</Link>, key: "1" },
-        { label: <Link to="/user/register">Đăng ký</Link>, key: "2" }
-      ];
+    const handleMenuChange = (isOpen) => {
+        setIsMenuOpen(isOpen);
+    };
 
-  const handleProfileClick = (e) => {
-    if (!accountName) {
-      e.preventDefault(); // Prevent the navigation if not logged in
-    }
-  };
-
-  return (
-    <div className="flex items-center space-x-4">
-      {/* Account Name Button or Icon */}
-      {accountName ? (
-        <Link
-          to="/user/profile" // Link to profile if logged in
-          onClick={handleProfileClick} // Call handleProfileClick to prevent default if not logged in
-          className="flex items-center bg-gray-100 rounded-full px-3 py-1 space-x-2 cursor-pointer"
-        >
-          <UserOutlined className="text-lg" />
-          <span className="text-sm text-gray-700">{accountName}</span>
-        </Link>
-      ) : (
-        <Dropdown
-          menu={{ items }}
-          trigger={["click"]}
-          className="cursor-pointer"
-        >
-          <div className="flex items-center bg-gray-100 rounded-full px-3 py-1 space-x-2">
-            <MenuOutlined className="text-lg" />
-            <UserOutlined className="text-lg" />
-          </div>
-        </Dropdown>
-      )}
-    </div>
-  );
+    return (
+        <>
+            {!isLoggedIn ? (
+                <Dropdown
+                    menu={{ items: GuestItems }}
+                    trigger={["click"]}
+                    onOpenChange={handleMenuChange}
+                    className="inline-flex h-[2.8rem] w-[5.05rem] justify-center gap-[0.8rem] border-[1px] border-[#dddddd] rounded-[30px] p-2 m-[2rem] ml-[0.75rem] cursor-pointer transition-shadow duration-150 ease-linear hover:shadow-[0_2px_4px_rgba(0,0,0,0.18)] focus:shadow-[0_2px_4px_rgba(0,0,0,0.18)]"
+                    overlayStyle={{ fontSize: "0.875rem", lineHeight: "1.43" }}
+                >
+                    <Space>
+                        <div className="usermenu-icon-container">
+                            <MenuOutlined
+                                className={`transition-transform duration-200 ease-linear transform ${isMenuOpen ? `rotate-90` : `rotate-0`}`}
+                            />
+                        </div>
+                        <div className="usermenu-icon-container">
+                            <UserOutlined />
+                        </div>
+                    </Space>
+                </Dropdown>
+            ) : (
+                <Dropdown
+                    menu={{ items: UserItems }}
+                    trigger={["click"]}
+                    onOpenChange={handleMenuChange}
+                    className="inline-flex h-[2.8rem] w-[5.05rem] justify-center gap-[0.8rem] border-[1px] border-[#dddddd] rounded-[30px] p-2 m-[2rem] cursor-pointer transition-shadow duration-150 ease-linear hover:shadow-[0_2px_4px_rgba(0,0,0,0.18)] focus:shadow-[0_2px_4px_rgba(0,0,0,0.18)]"
+                    overlayStyle={{ fontSize: "0.875rem", lineHeight: "1.43" }}
+                >
+                    <Space>
+                        <div className="usermenu-icon-container">
+                            <MenuOutlined
+                                className={`transition-transform duration-200 ease-linear transform ${isMenuOpen ? `rotate-90` : `rotate-0`}`}
+                            />
+                        </div>
+                        <div className="usermenu-icon-container">
+                            <UserOutlined />
+                        </div>
+                    </Space>
+                </Dropdown>
+            )}
+        </>
+    );
 };
 
 export default UserMenu;
