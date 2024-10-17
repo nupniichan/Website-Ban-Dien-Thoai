@@ -1,4 +1,4 @@
-name: CI/CD for admin
+name: CI/CD for project
 
 on:
   push:

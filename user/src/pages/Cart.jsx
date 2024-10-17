@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../config';
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -12,7 +13,7 @@ const Cart = () => {
 
   useEffect(() => {
     // Lưu vào session tạm thời tại cái login chưa làm xong
-    sessionStorage.setItem('userId', 'KH001');
+    sessionStorage.setItem('userId', 'KH010');
 
     const fetchCartItems = async () => {
       const userId = sessionStorage.getItem('userId');
@@ -24,7 +25,7 @@ const Cart = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/cart/${userId}`);
+        const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch cart items');
         }
@@ -51,7 +52,7 @@ const Cart = () => {
     const userId = sessionStorage.getItem('userId'); // Lấy userId từ sessionStorage
 
     try {
-      await fetch(`http://localhost:5000/api/cart/${userId}/remove`, {
+      await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -75,7 +76,7 @@ const Cart = () => {
       setShowConfirmDialog(true); // Hiển thị hộp thoại xác nhận xóa sản phẩm
     } else {
       try {
-        const response = await fetch(`http://localhost:5000/api/cart/${userId}/update`, {
+        const response = await fetch(`${BASE_URL}/api/cart/${userId}/update`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -141,7 +142,7 @@ const Cart = () => {
           >
             <div className="flex items-center">
               <img
-                src={item.image ? `http://localhost:5000/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
+                src={item.image ? `${BASE_URL}/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
                 alt={item.name}
                 className="w-20 h-20 object-cover"
               />
@@ -214,4 +215,4 @@ const Cart = () => {
   );
 };
 
-export default Cart;
+export default Cart;   
