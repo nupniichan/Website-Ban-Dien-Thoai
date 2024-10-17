@@ -14,20 +14,20 @@ const UserMenu = () => {
     if (userId) {
       setIsLoggedIn(true);
     }
-  
+
     const handleLoginSuccess = () => {
       setIsLoggedIn(true);
     };
-  
+
     // Lắng nghe sự kiện login thành công
     window.addEventListener("loginSuccess", handleLoginSuccess);
-  
+
     // Xóa sự kiện khi component bị unmount
     return () => {
       window.removeEventListener("loginSuccess", handleLoginSuccess);
     };
   }, []);
-  
+
 
   const handleLogout = () => {
     // Xóa thông tin đăng nhập khỏi sessionStorage

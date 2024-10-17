@@ -4,7 +4,8 @@ import { SearchOutlined, ShoppingOutlined } from "@ant-design/icons";
 import NeonSign from "../assets/BrandLogos/NeonSign.jsx";
 import UserMenu from "../components/UserMenu.jsx";
 import PathNames from "../PathNames.js";
-import Switch from "../shared/Switch.jsx";
+import Switch2 from "../shared/Switch2.jsx";
+import DarkModeBtn from "../shared/DarkModeBtn.jsx";
 
 const MenuItems = [
   {
@@ -80,7 +81,7 @@ const Header = () => {
                   <li key={item.id}>
                     <Link
                       to={item.url}
-                      className="inline-block px-4 font-semibold text-gray-500 hover:text-black dark:hover:text-white duration-200"
+                      className="header-menu-item inline-block px-4 font-semibold text-gray-500 hover:text-black dark:hover:text-white duration-200"
                     >
                       {item.name}
                     </Link>
@@ -93,22 +94,22 @@ const Header = () => {
           {/* Header right section */}
           <div className="flex justify-between items-center gap-4">
             {/* Search */}
-            <div className="relative group hidden sm:block">
-              <input
-                type="text"
-                placeholder="What are you looking for?"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className={`search-bar transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900
-                  ${isSearchExpanded
-                    ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
-                    : "w-0"
-                  }`}
-              />
-              <SearchOutlined
-                className="text-xl text-gray-600 group-hover:text-primary dark:text-gray-400 absolute top-1/2 -translate-y-1/2 right-3 duration-200 cursor-pointer"
-                onClick={toggleSearch}
-              />
+            <div className="relative">
+                <input
+                  type="text"
+                  placeholder="What are you looking for?"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className={`transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900 absolute top-1/2 transform -translate-y-1/2 right-0
+                    ${isSearchExpanded
+                      ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
+                      : "w-0"
+                    }`}
+                />
+                <SearchOutlined
+                  className="text-xl text-gray-600 group-hover:text-primary dark:text-gray-400 absolute top-1/2 -translate-y-1/2 right-3 duration-200 cursor-pointer"
+                  onClick={toggleSearch}
+                />
             </div>
 
             {/* Cart */}
@@ -121,7 +122,7 @@ const Header = () => {
 
 
             {/* Dark mode toggle */}
-            <Switch className="scale-50" />
+            <DarkModeBtn />
 
             {/* User Menu */}
             <div>
