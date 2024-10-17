@@ -23,7 +23,7 @@ const MyOrders = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:5000/api/orders/customer/${userId}`);
+        const response = await fetch(`4.242.20.80/api/orders/customer/${userId}`);
         if (!response.ok) {
           throw new Error('Error fetching orders');
         }
@@ -39,7 +39,7 @@ const MyOrders = () => {
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products');
+        const response = await axios.get('4.242.20.80/api/products');
         if (response.status === 200) {
           const data = response.data;
           console.log('Fetched products:', data); // Log the products

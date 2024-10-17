@@ -12,7 +12,7 @@ const Profile = () => {
     const userEmail = sessionStorage.getItem('userEmail');
     if (userEmail) {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/email/${userEmail}`);
+        const response = await fetch(`4.242.20.80/api/users/email/${userEmail}`);
         const data = await response.json();
         if (response.ok) {
           setUserData(data);
@@ -52,7 +52,7 @@ const Profile = () => {
     const userId = sessionStorage.getItem('userId');
 
     try {
-      const response = await fetch(`http://localhost:5000/api/users/${userId}`, {
+      const response = await fetch(`4.242.20.80/api/users/${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
