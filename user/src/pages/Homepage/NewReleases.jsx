@@ -39,7 +39,7 @@ const ProductsData = [
 
 const NewReleases = () => {
     return (
-        <div>
+        <div className="mb-32">
             <div className="container">
                 {/* Heading section */}
                 <Heading title="New Releases" subtitle="Explore Our Newcomers" />

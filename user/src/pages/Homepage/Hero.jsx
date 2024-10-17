@@ -1,8 +1,9 @@
 import { Carousel } from "antd";
-import Button from "../../shared/Button.jsx";
-
+import axios from "axios";
+import { useEffect, useState } from "react";
 import Img1 from "../../assets/fakeAssets/hero/headphone.png";
 import Img2 from "../../assets/fakeAssets/hero/watch.png";
+import Button from "../../shared/Button.jsx";
 
 const HeroPlaceholderData = [
     {
@@ -18,18 +19,24 @@ const HeroPlaceholderData = [
         title: "Wireless",
         title2: "Virtual",
         description: "Beats Duo",
-    },
-    // {
-    //     id: 3,
-    //     image: Img3,
-    //     title: "Branded",
-    //     title2: "Laptops",
-    //     description: "Beats Trio",
-    // }
+    }
 ]
 // TODO: Bind actual data to the carousel
 
 const Hero = () => {
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get("https://fakestoreapi.com/products");
+                const data = response.data;
+                setProducts(data);
+            } catch (error) {
+                console.error(error);
+            }
+    }}, []);
+
     return (
         <div className="container">
             <div className="overflow-hidden rounded-3xl min-h-[550px] sm:min-h-[650px] hero-bg-color flex justify-center items-center">
@@ -60,7 +67,7 @@ const Hero = () => {
                                     <div className="order-1 sm:order-2">
                                         <div>
                                             <img
-                                                src={item.img}
+                                                src={item.image}
                                                 alt=""
                                                 className="w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] sm:scale-105 lg:scale-110 object-contain mx-auto drop-shadow-[-8px_4px_6px_rgba(0,0,0,.4)] relative z-40"/>
                                         </div>
