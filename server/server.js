@@ -63,6 +63,113 @@ app.post('/loginAdmin', async (req, res) => {
     res.status(401).json({ message: err.message });
   }
 });
+// Đăng nhập người dùng
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email, password });
+    
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Assuming the user is found, send the accountName and userId in the response
+    res.status(200).json({
+      message: 'Đăng nhập thành công',
+      user: {
+        accountName: user.accountName,
+        userId: user.id,
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+});
+
+
+// Get orders by customer ID
+app.get('/api/orders/customer/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+  try {
+    const orders = await Order.find({ customerId });
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching orders', error: err.message });
+  }
+});
+
+
+
+// Registration route
+app.post('/api/register', async (req, res) => {
+  const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password } = req.body;
+
+  const emailExists = await User.findOne({ email });
+  const phoneNumberExists = await User.findOne({ phoneNumber });
+  
+
+  if (emailExists || phoneNumberExists) {
+    return res.status(400).json({
+      message: "Email, số điện thoại đã tồn tại.",
+      emailExists: !!emailExists,
+      phoneNumberExists: !!phoneNumberExists,
+      
+    });
+  }
+
+  try {
+    
+    const lastUser = await User.findOne().sort({ id: -1 });
+    const lastId = lastUser ? parseInt(lastUser.id.substring(2), 10) : 0;
+    const userId = `KH${(lastId + 1).toString().padStart(3, '0')}`;
+    const newUser = new User({
+      id: userId,
+      name,
+      accountName, 
+      email,
+      phoneNumber,
+      dayOfBirth,
+      gender,
+      address,
+      password,
+    });
+
+    await newUser.save();
+    res.status(201).json({ message: "Đăng ký thành công!" });
+  } catch (error) {
+    console.error("Error during registration:", error);
+    res.status(500).json({ message: "Đã xảy ra lỗi trong quá trình đăng ký." });
+  }
+});
+
+// Login route
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    if (user.password !== password) {
+      return res.status(400).json({ message: 'Invalid email or password' });
+    }
+
+    res.status(200).json({ 
+      message: 'Login successful', 
+      user: { 
+        username: user.username, 
+        email: user.email,
+        phoneNumber: user.phoneNumber 
+      } 
+    });
+  } catch (error) {
+    console.error('Error logging in:', error);
+    res.status(500).json({ message: 'Error logging in', error: error.message });
+  }
+});
+
 
 // Get all orders
 app.get('/api/orders', async (req, res) => {
@@ -122,6 +229,7 @@ app.post('/api/orders', async (req, res) => {
     res.status(500).json({ message: 'Error creating order', error: err.message });
   }
 });
+  
 
 // Update order, adjust stock if necessary
 app.put('/api/orders/:id', async (req, res) => {
@@ -230,12 +338,44 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
 // Hiển thị tất cả sản phẩm
 app.get('/api/products', async (req, res) => {
   try {
-    const products = await Product.find();
+    const { query, minPrice, maxPrice, colors, brands } = req.query;
+    const searchCondition = {
+      ...(query ? { name: { $regex: query, $options: 'i' } } : {}),
+      ...(minPrice || maxPrice ? { price: { $gte: minPrice || 0, $lte: maxPrice || Infinity } } : {}),
+      ...(colors ? { color: { $in: colors.split(',') } } : {}),
+      ...(brands ? { brand: { $in: brands.split(',') } } : {}),
+    };
+    
+    const products = await Product.find(searchCondition);
     res.json(products);
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi lấy sản phẩm', error: err.message });
+    res.status(500).json({ message: 'Error fetching products', error: err.message });
   }
 });
+
+// Fetch available colors
+app.get('/api/colors', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    const colors = [...new Set(products.map(product => product.color))]; // Get unique colors
+    res.json(colors);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching colors', error: err.message });
+  }
+});
+
+// Fetch available brands
+app.get('/api/brands', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    const brands = [...new Set(products.map(product => product.brand))]; // Get unique brands
+    res.json(brands);
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching brands', error: err.message });
+  }
+});
+
+
 
 // Sửa thông tin sản phẩm
 app.put('/api/products/:id', upload.single('image'), async (req, res) => {
@@ -276,20 +416,35 @@ app.delete('/api/products/:id', async (req, res) => {
   }
 });
 
-// Lấy sản phẩm theo ID
+// Lấy sản phẩm theo ID và các màu sắc có sẵn
 app.get('/api/products/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Lấy sản phẩm theo ID
     const product = await Product.findOne({ id });
+
     if (!product) {
       return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
     }
-    res.json(product);
+
+    // Lấy tất cả sản phẩm cùng tên, giá và thương hiệu nhưng khác màu
+    const availableColors = await Product.find({
+      name: product.name,
+      price: product.price,
+      brand: product.brand,
+    }).select('id color');
+
+    // Trả về sản phẩm cùng với các màu sắc có sẵn
+    res.json({
+      product,
+      availableColors: availableColors.map(p => ({ id: p.id, color: p.color })),
+    });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin sản phẩm', error: err.message });
   }
 });
+
 
 // Get all kho entries
 app.get('/api/kho', async (req, res) => {
@@ -374,6 +529,26 @@ app.delete('/api/kho/:id', async (req, res) => {
     res.json({ message: 'Kho entry deleted successfully' });
   } catch (err) {
     res.status(500).json({ message: 'Error deleting kho entry', error: err.message });
+  }
+});
+// Get user info by email (including id)
+app.get('/api/users/email/:email', async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+    // Return the user info along with the id
+    res.json({
+      id: user.id, // Include the user's ID
+      email: user.email,
+      name: user.accountName, // Include other fields you want to return
+      // Add any other fields as necessary
+    });
+  } catch (err) {
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
   }
 });
 
@@ -571,27 +746,33 @@ app.get('/api/discountCodes', async (req, res) => {
 // Thêm mã giảm giá mới
 app.post('/api/addDiscountCode', async (req, res) => {
   const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
-
+  
   try {
-    // Tạo ID cho mã giảm giá mới
-    const discountId = await generateDiscountId();
+     
+      const discountId = await generateDiscountId();
 
-    // Tạo mã giảm giá mới
-    const newDiscountCode = new DiscountCode({
-      id: discountId,
-      name,
-      usageDate,
-      expirationDate,
-      discountRate,
-      applicableCode
-    });
+      
+      const newDiscountCode = new DiscountCode({
+          id: discountId,
+          name,
+          usageDate,
+          expirationDate,
+          discountRate,
+          applicableCode  
+      });
 
-    await newDiscountCode.save();
-    res.status(201).json({ message: 'Mã giảm giá đã được tạo thành công!', discountCode: newDiscountCode });
+      await newDiscountCode.save();
+      res.status(201).json({ message: 'Mã giảm giá đã được tạo thành công!', discountCode: newDiscountCode });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi tạo mã giảm giá', error: err.message });
+      res.status(500).json({ message: 'Lỗi khi tạo mã giảm giá', error: err.message });
   }
 });
+
+
+
+
+
+
 
 // Sửa thông tin mã giảm giá
 app.put('/api/discountCodes/:id', async (req, res) => {
@@ -599,18 +780,20 @@ app.put('/api/discountCodes/:id', async (req, res) => {
   const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
 
   try {
-    const updateData = { name, usageDate, expirationDate, discountRate, applicableCode };
+      const updateData = { name, usageDate, expirationDate, discountRate, applicableCode };
 
-    const updatedDiscountCode = await DiscountCode.findOneAndUpdate({ id }, updateData, { new: true });
-    if (!updatedDiscountCode) {
-      return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
-    }
+      const updatedDiscountCode = await DiscountCode.findByIdAndUpdate(id, updateData, { new: true });
+      if (!updatedDiscountCode) {
+          return res.status(404).json({ message: 'Discount code not found' });
+      }
 
-    res.json({ message: 'Mã giảm giá đã được cập nhật thành công', discountCode: updatedDiscountCode });
+      res.json({ message: 'Discount code updated successfully', discountCode: updatedDiscountCode });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi cập nhật mã giảm giá', error: err.message });
+      res.status(500).json({ message: 'Error updating discount code', error: err.message });
   }
 });
+
+
 
 // Xóa mã giảm giá
 app.delete('/api/discountCodes/:id', async (req, res) => {
@@ -652,15 +835,17 @@ app.post('/api/cart/:userId/add', async (req, res) => {
     const user = await User.findOne({ id: userId });
     const product = await Product.findOne({ id: productId });
 
-    if (!user || !product) {
-      return res.status(404).json({ message: 'Người dùng hoặc sản phẩm không tồn tại' });
+    if (!user) {
+      return res.status(500).json({ message: 'Xin hãy đăng nhập trước khi thêm vào giỏ hàng' });
     }
-
-    // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
+    else if (!product) {
+      return res.status(500).json({ message: 'Sản phẩm không tồn tại hoặc đã hết hàng' });
+    }
+    else {
+          // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
     if (quantity > product.quantity) {
       return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
     }
-
     const existingProduct = user.cart.find(item => item.productId === productId);
 
     if (existingProduct) {
@@ -679,6 +864,7 @@ app.post('/api/cart/:userId/add', async (req, res) => {
 
     await user.save();
     res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng', cart: user.cart });
+    }
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', error: error.message });
   }

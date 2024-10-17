@@ -1,61 +1,74 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Homepage.css'; // Import CSS cho Homepage
-import { BASE_URL } from '../config.js'
+import { BASE_URL } from '../config.js';
+
 const Homepage = () => {
   const [products, setProducts] = useState([]);
-  const [visibleProducts, setVisibleProducts] = useState(10); // Số lượng sản phẩm hiển thị mặc định
+  const [error, setError] = useState(null);
+  const [visibleProducts, setVisibleProducts] = useState(10);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Gọi API để lấy tất cả sản phẩm
-    fetch(`${BASE_URL}/api/products`)
-      .then(response => response.json())
-      .then(data => {
-        setProducts(data); // Lưu toàn bộ danh sách sản phẩm vào state
-      })
-      .catch(error => {
-        console.error('Lỗi khi lấy sản phẩm:', error);
-      });
+    fetchProducts();
   }, []);
 
-  // Lọc các sản phẩm có số lượng lớn hơn 0
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}/api/products`);
+      const data = await response.json();
+
+      if (response.ok) {
+        setProducts(data);
+      } else {
+        throw new Error(data.message || 'Error fetching products');
+      }
+    } catch (err) {
+      setError('Error fetching products.');
+      console.error('Error fetching products:', err);
+    }
+  };
+
   const filteredProducts = products.filter(product => product.quantity > 0);
 
   const loadMoreProducts = () => {
-    setVisibleProducts(prevVisibleProducts => prevVisibleProducts + 10); // Tăng số lượng sản phẩm hiển thị thêm 10
+    setVisibleProducts(prevVisibleProducts => prevVisibleProducts + 10);
   };
 
   const remainingProducts = filteredProducts.length - visibleProducts;
 
-  // Điều hướng đến trang chi tiết sản phẩm khi nhấn vào sản phẩm
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`);
   };
 
+  if (error) {
+    return <div className="text-red-500">{error}</div>;
+  }
+
   return (
-    <main className="main">
-      <h1>Danh sách sản phẩm</h1>
-      <div className="product-list">
+    <main className="max-w-6xl mx-auto p-4">
+      <h1 className="text-4xl font-bold text-center mb-8">Home</h1>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredProducts.slice(0, visibleProducts).map(product => (
-          <div key={product.id} className="product-card" onClick={() => handleProductClick(product.id)}>
+          <div key={product.id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product.id)}>
             <img
               src={`${BASE_URL}/${product.image}`}
               alt={product.name}
-              className="product-image"
+              className="w-full h-80 rounded-t-lg" // Adjusted height
             />
-            <h2 className="product-name">{product.name}</h2>
-            <p className="product-price">
-              Giá: <span>{product.price.toLocaleString()} VND</span>
-            </p>
-            <button className="buy-button">Mua ngay</button>
+            <div className="p-4">
+              <h2 className="text-lg font-semibold">{product.name}</h2>
+              <p className="text-red-600 mb-2 text-[19px]">
+                Giá: <span className="font-bold">{product.price.toLocaleString()} VND</span>
+              </p>
+              <button className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition-colors duration-200">Mua ngay</button>
+            </div>
           </div>
         ))}
       </div>
 
       {remainingProducts > 0 && (
-        <div className="load-more-container">
-          <button className="load-more-button" onClick={loadMoreProducts}>
+        <div className="text-center mt-6">
+          <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors duration-200" onClick={loadMoreProducts}>
             Xem thêm {remainingProducts} sản phẩm
           </button>
         </div>
