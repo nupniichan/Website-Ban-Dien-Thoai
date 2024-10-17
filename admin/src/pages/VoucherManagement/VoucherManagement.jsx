@@ -33,7 +33,7 @@ const VoucherManagement = () => {
     useEffect(() => {
         const fetchVouchers = async () => {
             try {
-                const response = await axios.get("4.242.20.80/api/discountCodes");
+                const response = await axios.get("localhost/api/discountCodes");
                 if (response.status === 200) {
                     const data = response.data;
                     setVouchers(data);
@@ -57,7 +57,7 @@ const VoucherManagement = () => {
 
     const handleDeleteVoucher = async (voucherId) => {
         try {
-            const response = await axios.delete(`4.242.20.80/api/discountCodes/${voucherId}`);
+            const response = await axios.delete(`localhost/api/discountCodes/${voucherId}`);
             if (response.status === 200) {
                 setVouchers(vouchers.filter((voucher) => voucher.id !== voucherId));
             } else {

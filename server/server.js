@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(cors({
-  origin: ['http://localhost:5173','http://localhost:5174', 'http://4.242.20.80:5174','http://4.242.20.80:5173']
+  origin: ['http://localhost:5173','http://localhost:5174', 'http://http://4.242.20.80:5174','http://http://4.242.20.80:5173']
 }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads')); // Để truy cập hình ảnh qua đường dẫn
