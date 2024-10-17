@@ -23,8 +23,8 @@ function App() {
         <>
             <Header />  {/* Phần Header hiển thị cố định trên tất cả các trang */}
             <Routes>
-                {/* Các route tương ứng với các trang */}
-                <Route path={PathNames.HOMEPAGE} element={<Homepage />} />
+                <Route path={PathNames.REGISTER} element={<Register />} /> 
+                <Route path="/" element={<Homepage />} />
                 <Route path={PathNames.ABOUT} element={<About />} />
                 <Route path={PathNames.SUPPORT} element={<Support />} />
                 <Route path={PathNames.CART} element={<Cart />} />
@@ -34,6 +34,8 @@ function App() {
                 <Route path={PathNames.REGISTER} element={<Register/>} />
                 <Route path={PathNames.LOGIN} element={<Login/>} />
                 <Route path={PathNames.SEARCH_RESULTS} element={<SearchResults />} />
+                <Route path={PathNames.REGISTER} element={<Register />} />
+                <Route path={PathNames.LOGIN} element={<Login />} />
                 <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
                 <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
                 <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
@@ -42,7 +44,7 @@ function App() {
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>
 
-            <Footer />  {/* Phần Footer hiển thị cố định trên tất cả các trang */}
+            <Footer />
         </>
     );
 }
