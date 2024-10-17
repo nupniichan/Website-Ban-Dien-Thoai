@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import { Modal } from 'antd'; // Import Modal from Ant Design
 import axios from 'axios'; // Import Axios for API calls
+import { BASE_URL } from '../config.js';
 
 const MyOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -23,7 +24,7 @@ const MyOrders = () => {
       }
 
       try {
-        const response = await fetch(`4.242.20.80/api/orders/customer/${userId}`);
+        const response = await fetch(`${BASE_URL}/api/orders/customer/${userId}`);
         if (!response.ok) {
           throw new Error('Error fetching orders');
         }
@@ -39,7 +40,7 @@ const MyOrders = () => {
 
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('4.242.20.80/api/products');
+        const response = await axios.get(`${BASE_URL}/api/products`);
         if (response.status === 200) {
           const data = response.data;
           console.log('Fetched products:', data); // Log the products
