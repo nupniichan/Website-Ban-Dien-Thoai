@@ -57,7 +57,7 @@ const Footer = () => {
                             to="#"
                             className="text-primary font-bold tracking-widest text-2xl uppercase sm:text-3xl"
                         >
-                            Phoney Baloney
+                            SPhoneC
                         </Link>
                         <p className="text-gray-600 dark:text-white/70 lg:pr-24 pt-3">
                             Your one-stop shop for smartphones that are almost as good as the real thing.
