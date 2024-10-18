@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+import { BASE_URL } from '../config'
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -23,11 +23,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-<<<<<<< HEAD
-      const response = await fetch('localhost:5000/api/addUser', {
-=======
-      const response = await fetch('localhost/api/addUser', {
->>>>>>> 0454e4f87fcd2a18301bfb7736f73e322db9fbe3
+      const response = await fetch(`${BASE_URL}/api/addUser`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
