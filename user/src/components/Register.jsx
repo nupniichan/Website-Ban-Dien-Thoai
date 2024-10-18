@@ -1,138 +1,269 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { BASE_URL } from '../config'
-const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    dayOfBirth: '',
-    gender: '',
-    address: '',
-    accountName: '',
-    password: '',
-    confirmPassword: '',
-  });
-  
-  const navigate = useNavigate();
+import React, { useState } from 'react';
+import './Register.css'; 
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+const Register = () => {
+  const [name, setName] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [gender, setGender] = useState('');
+  const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [dayOfBirth, setDayOfBirth] = useState('');  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [nameError, setNameError] = useState('');
+  const [accountNameError, setAccountNameError] = useState('');
+  const [genderError, setGenderError] = useState('');
+  const [addressError, setAddressError] = useState('');
+  const [phoneNumberError, setPhoneNumberError] = useState('');
+  const [dayOfBirthError, setDayOfBirthError] = useState('');  
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const navigate = useNavigate(); 
+
+  const validateEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+(\.[^\s@]+)?$/;
+    return emailRegex.test(email);
+  };
+
+  const validateDayOfBirth = (dayOfBirth) => {  
+    const today = new Date();
+    const selectedDate = new Date(dayOfBirth);
+    const age = today.getFullYear() - selectedDate.getFullYear();
+    const monthDifference = today.getMonth() - selectedDate.getMonth();
+    
+    return age > 16 || (age === 16 && monthDifference >= 0);
+  };
+
+  const validatePhoneNumber = (phoneNumber) => {
+    const phoneRegex = /^(0|\+84)[3-9][0-9]{8}$/; 
+    return phoneRegex.test(phoneNumber);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`${BASE_URL}/api/addUser`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+    setNameError('');
+    setAccountNameError('');
+    setGenderError('');
+    setAddressError('');
+    setPhoneNumberError('');
+    setDayOfBirthError('');  
+    setEmailError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
 
-      const data = await response.json();
-      if (response.ok) {
-        alert('Đăng ký thành công!');
-        navigate('/user/login');
-      } else {
-        alert(data.message || 'Đăng ký thất bại');
+    let isValid = true;
+
+    if (name.trim() === '') {
+      setNameError('Vui lòng nhập tên người dùng');
+      isValid = false;
+    }
+
+    if (accountName.trim() === '') {
+      setAccountNameError('Vui lòng nhập tên tài khoản');
+      isValid = false;
+    }
+
+    if (gender.trim() === '') { // Check for the default value
+      setGenderError('Vui lòng chọn giới tính');
+      isValid = false;
+    }
+
+    if (address.trim() === '') {
+      setAddressError('Vui lòng nhập địa chỉ');
+      isValid = false;
+    }
+
+    if (phoneNumber.trim() === '') {
+      setPhoneNumberError('Vui lòng nhập số điện thoại');
+      isValid = false;
+    } else if (!validatePhoneNumber(phoneNumber)) {
+      setPhoneNumberError('Vui lòng nhập số điện thoại hợp lệ (ví dụ: 0912345678)');
+      isValid = false;
+    }
+
+    if (dayOfBirth.trim() === '') {  
+      setDayOfBirthError('Vui lòng chọn ngày sinh');
+      isValid = false;
+    } else if (!validateDayOfBirth(dayOfBirth)) {  
+      setDayOfBirthError('Bạn phải lớn hơn 16 tuổi');
+      isValid = false;
+    }
+
+    if (email.trim() === '') {
+      setEmailError('Vui lòng nhập email');
+      isValid = false;
+    } else if (!validateEmail(email)) {
+      setEmailError('Vui lòng nhập email hợp lệ (ví dụ: abcd@gmail.com)');
+      isValid = false;
+    }
+
+    if (password.trim() === '') {
+      setPasswordError('Vui lòng nhập mật khẩu');
+      isValid = false;
+    } else if (password.length < 6) {
+      setPasswordError('Mật khẩu phải có ít nhất 6 ký tự');
+      isValid = false;
+    }
+
+    if (confirmPassword.trim() === '') {
+      setConfirmPasswordError('Vui lòng nhập lại mật khẩu');
+      isValid = false;
+    } else if (password !== confirmPassword) {
+      setConfirmPasswordError('Mật khẩu và xác nhận mật khẩu không khớp');
+      isValid = false;
+    }
+
+    if (isValid) {
+      try {
+        await axios.post('http://localhost:5000/api/register', {
+          name,
+          accountName,
+          gender,
+          address,
+          phoneNumber,
+          dayOfBirth,  
+          email,
+          password,
+        });
+
+        alert("Đăng ký thành công!");
+        navigate('/login');
+
+      } catch (error) {
+        if (error.response && error.response.status === 400) {
+          const errorMessage = error.response.data.message;
+
+          if (error.response.data.emailExists) {
+            setEmailError('Email này đã được sử dụng');
+          }
+
+          if (error.response.data.phoneNumberExists) {
+            setPhoneNumberError('Số điện thoại này đã được sử dụng');
+          }
+
+          console.error('Error:', errorMessage);
+        } else {
+          console.error('Error during registration:', error);
+          alert("Đã xảy ra lỗi trong quá trình đăng ký!");
+        }
       }
-    } catch (err) {
-      console.error('Error:', err);
-      alert('Đã xảy ra lỗi');
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="bg-white p-8 rounded-lg shadow-md max-w-sm w-full" onSubmit={handleSubmit}>
-        <h2 className="text-2xl mb-6 text-center text-gray-800">Đăng Ký</h2>
-        
-        <input
-          type="Họ tên"
-          name="name"
-          placeholder="Họ tên"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="number"
-          name="phoneNumber"
-          placeholder="Số diện thoại"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="date"
-          name="dayOfBirth"
-          placeholder="Ngày điện thoại"
-          value={formData.dayOfBirth}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          name="gender"
-          placeholder="Giới tính"
-          value={formData.gender}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          name="address"
-          placeholder="Địa chỉ"
-          value={formData.address}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          name="accountName"
-          placeholder="Tên tài khoản"
-          value={formData.accountName}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Mật khẩu"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Nhập lại mật khẩu"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition duration-300">Đăng Ký</button>
-        <p className="text-center mt-4">
-          Đã có tài khoản? <Link to="/user/login" className="text-blue-500 hover:underline">Đăng nhập</Link>
-        </p>
-      </form>
+    <div className="register-wrapper">
+      <div className="register-container">
+        <h2 className="register-title">Đăng ký</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="input-group">
+            <label>Họ tên:</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nhập tên người dùng"
+            />
+            {nameError && <span className="error-message">{nameError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Tên tài khoản:</label>
+            <input
+              type="text"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+              placeholder="Nhập tên tài khoản"
+            />
+            {accountNameError && <span className="error-message">{accountNameError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Giới tính:</label>
+            <select 
+              value={gender} 
+              onChange={(e) => setGender(e.target.value)}
+            >
+              <option value="">Chọn giới tính</option>
+              <option value="male">Nam</option>
+              <option value="female">Nữ</option>
+              <option value="other">Khác</option>
+            </select>
+            {genderError && <span className="error-message">{genderError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Ngày sinh:</label>
+            <input
+              type="date"
+              value={dayOfBirth}  
+              onChange={(e) => setDayOfBirth(e.target.value)}  
+            />
+            {dayOfBirthError && <span className="error-message">{dayOfBirthError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Địa chỉ:</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Nhập địa chỉ"
+            />
+            {addressError && <span className="error-message">{addressError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Số điện thoại:</label>
+            <input
+              type="text"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))} // Allow only numbers
+              placeholder="Nhập số điện thoại"
+            />
+            {phoneNumberError && <span className="error-message">{phoneNumberError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Email:</label>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Nhập email"
+            />
+            {emailError && <span className="error-message">{emailError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Mật khẩu:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Nhập mật khẩu"
+            />
+            {passwordError && <span className="error-message">{passwordError}</span>}
+          </div>
+
+          <div className="input-group">
+            <label>Nhập lại mật khẩu:</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Nhập lại mật khẩu"
+            />
+            {confirmPasswordError && <span className="error-message">{confirmPasswordError}</span>}
+          </div>
+
+          <button type="submit" className="register-btn">Đăng ký</button>
+        </form>
+      </div>
     </div>
   );
 };

@@ -104,28 +104,31 @@ app.get('/api/orders/customer/:customerId', async (req, res) => {
 app.post('/api/register', async (req, res) => {
   const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password } = req.body;
 
-  const emailExists = await User.findOne({ email });
-  const phoneNumberExists = await User.findOne({ phoneNumber });
-
-
-  if (emailExists || phoneNumberExists) {
-    return res.status(400).json({
-      message: "Email, số điện thoại đã tồn tại.",
-      emailExists: !!emailExists,
-      phoneNumberExists: !!phoneNumberExists,
-
-    });
-  }
-
   try {
+    // Check if email, phoneNumber, or accountName already exists
+    const emailExists = await User.findOne({ email });
+    const phoneNumberExists = await User.findOne({ phoneNumber });
+    const accountNameExists = await User.findOne({ accountName }); // Check for account name uniqueness
 
+    if (emailExists || phoneNumberExists || accountNameExists) {
+      return res.status(400).json({
+        message: "Email, số điện thoại hoặc tên tài khoản đã tồn tại.",
+        emailExists: !!emailExists,
+        phoneNumberExists: !!phoneNumberExists,
+        accountNameExists: !!accountNameExists, // Add this field to the response
+      });
+    }
+
+    // Generate unique user ID in the format KH0001, KH0002, etc.
     const lastUser = await User.findOne().sort({ id: -1 });
     const lastId = lastUser ? parseInt(lastUser.id.substring(2), 10) : 0;
     const userId = `KH${(lastId + 1).toString().padStart(3, '0')}`;
+
+    // Create new user document
     const newUser = new User({
       id: userId,
       name,
-      accountName,
+      accountName, // Include account name here
       email,
       phoneNumber,
       dayOfBirth,
@@ -134,13 +137,21 @@ app.post('/api/register', async (req, res) => {
       password,
     });
 
+    // Save the new user to the database
     await newUser.save();
+
+    // Success response
     res.status(201).json({ message: "Đăng ký thành công!" });
+
   } catch (error) {
+    // Error handling
     console.error("Error during registration:", error);
     res.status(500).json({ message: "Đã xảy ra lỗi trong quá trình đăng ký." });
   }
 });
+
+
+
 
 // Login route
 app.post('/api/login', async (req, res) => {
@@ -149,26 +160,29 @@ app.post('/api/login', async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ message: 'Email hoặc mật khẩu không hợp lệ' });
     }
 
     if (user.password !== password) {
-      return res.status(400).json({ message: 'Invalid email or password' });
+      return res.status(400).json({ message: 'Email hoặc mật khẩu không hợp lệ' });
     }
 
+    // Return user information upon successful login
     res.status(200).json({
-      message: 'Login successful',
+      message: 'Đăng nhập thành công',
       user: {
-        username: user.username,
+        id: user.id,
+        accountName: user.accountName,
         email: user.email,
         phoneNumber: user.phoneNumber
       }
     });
   } catch (error) {
     console.error('Error logging in:', error);
-    res.status(500).json({ message: 'Error logging in', error: error.message });
+    res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình đăng nhập.', error: error.message });
   }
 });
+
 
 
 // Get all orders
