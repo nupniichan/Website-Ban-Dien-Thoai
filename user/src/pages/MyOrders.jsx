@@ -24,11 +24,7 @@ const MyOrders = () => {
       }
 
       try {
-<<<<<<< HEAD
-        const response = await fetch(`localhost:5000/api/orders/customer/${userId}`);
-=======
         const response = await fetch(`${BASE_URL}/api/orders/customer/${userId}`);
->>>>>>> 0454e4f87fcd2a18301bfb7736f73e322db9fbe3
         if (!response.ok) {
           throw new Error('Error fetching orders');
         }
