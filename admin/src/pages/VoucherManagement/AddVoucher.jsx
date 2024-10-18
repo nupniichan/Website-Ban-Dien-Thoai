@@ -18,7 +18,7 @@ const EditVoucher = () => {
     useEffect(() => {
         const fetchVoucher = async () => {
             try {
-                const response = await axios.get(`localhost:5000/api/vouchers/${voucherId}`);
+                const response = await axios.get(`${BASE_URL}/api/vouchers/${voucherId}`);
                 setVoucher(response.data);
             } catch (error) {
                 console.error("Error fetching voucher:", error);
@@ -41,7 +41,7 @@ const EditVoucher = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = await axios.put(`localhost:5000/api/vouchers/${voucherId}`, voucher, {
+            const response = await axios.put(`${BASE_URL}/api/vouchers/${voucherId}`, voucher, {
                 headers: { "Content-Type": "application/json" },
             });
             if (response.status === 200) {

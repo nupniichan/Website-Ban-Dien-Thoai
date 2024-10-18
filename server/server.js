@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 app.use(cors({
-  origin: ['http://localhost:5173','http://localhost:5174', 'http://8.219.153.7:5174','http://8.219.153.7:5173']
+  origin: ['http://localhost:5173','http://localhost:5174', 'http://http://4.242.20.80:5174','http://http://4.242.20.80:5173']
 }));
 app.use(express.json());
 app.use('/uploads', express.static('uploads')); // Để truy cập hình ảnh qua đường dẫn
@@ -68,7 +68,7 @@ app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email, password });
-    
+
     if (!user) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -106,26 +106,26 @@ app.post('/api/register', async (req, res) => {
 
   const emailExists = await User.findOne({ email });
   const phoneNumberExists = await User.findOne({ phoneNumber });
-  
+
 
   if (emailExists || phoneNumberExists) {
     return res.status(400).json({
       message: "Email, số điện thoại đã tồn tại.",
       emailExists: !!emailExists,
       phoneNumberExists: !!phoneNumberExists,
-      
+
     });
   }
 
   try {
-    
+
     const lastUser = await User.findOne().sort({ id: -1 });
     const lastId = lastUser ? parseInt(lastUser.id.substring(2), 10) : 0;
     const userId = `KH${(lastId + 1).toString().padStart(3, '0')}`;
     const newUser = new User({
       id: userId,
       name,
-      accountName, 
+      accountName,
       email,
       phoneNumber,
       dayOfBirth,
@@ -156,13 +156,13 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    res.status(200).json({ 
-      message: 'Login successful', 
-      user: { 
-        username: user.username, 
+    res.status(200).json({
+      message: 'Login successful',
+      user: {
+        username: user.username,
         email: user.email,
-        phoneNumber: user.phoneNumber 
-      } 
+        phoneNumber: user.phoneNumber
+      }
     });
   } catch (error) {
     console.error('Error logging in:', error);
@@ -229,7 +229,7 @@ app.post('/api/orders', async (req, res) => {
     res.status(500).json({ message: 'Error creating order', error: err.message });
   }
 });
-  
+
 
 // Update order, adjust stock if necessary
 app.put('/api/orders/:id', async (req, res) => {
@@ -340,12 +340,9 @@ app.get('/api/products', async (req, res) => {
   try {
     const { query, minPrice, maxPrice, colors, brands } = req.query;
     const searchCondition = {
-      ...(query ? { name: { $regex: query, $options: 'i' } } : {}),
-      ...(minPrice || maxPrice ? { price: { $gte: minPrice || 0, $lte: maxPrice || Infinity } } : {}),
-      ...(colors ? { color: { $in: colors.split(',') } } : {}),
-      ...(brands ? { brand: { $in: brands.split(',') } } : {}),
+      ...(query ? { name: { $regex: query, $options: 'i' } } : {})
     };
-    
+
     const products = await Product.find(searchCondition);
     res.json(products);
   } catch (err) {
@@ -541,12 +538,8 @@ app.get('/api/users/email/:email', async (req, res) => {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
     // Return the user info along with the id
-    res.json({
-      id: user.id, // Include the user's ID
-      email: user.email,
-      name: user.accountName, // Include other fields you want to return
-      // Add any other fields as necessary
-    });
+    const { password, ...userInfo } = user.toObject();
+    res.json(userInfo); // Send the filtered user object back as the response
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
   }
@@ -717,6 +710,7 @@ app.get('/api/users/:id', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
+    console.log(user);
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
@@ -746,19 +740,19 @@ app.get('/api/discountCodes', async (req, res) => {
 // Thêm mã giảm giá mới
 app.post('/api/addDiscountCode', async (req, res) => {
   const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
-  
+
   try {
-     
+
       const discountId = await generateDiscountId();
 
-      
+
       const newDiscountCode = new DiscountCode({
           id: discountId,
           name,
           usageDate,
           expirationDate,
           discountRate,
-          applicableCode  
+          applicableCode
       });
 
       await newDiscountCode.save();
@@ -989,7 +983,7 @@ app.post('/callback', async (req, res) => {
     // Thanh toán thành công
     try {
       if (extraData) {
-        const orderData = JSON.parse(extraData);  
+        const orderData = JSON.parse(extraData);
         // Kiểm tra và gán giá trị mặc định cho notes nếu không có
         const notes = orderData.notes ? orderData.notes : '';
 
@@ -1015,7 +1009,7 @@ app.post('/callback', async (req, res) => {
           orderDate: new Date(),
           notes: notes,
         });
-        
+
         await newOrder.save();
 
         // Trừ số lượng tồn kho
