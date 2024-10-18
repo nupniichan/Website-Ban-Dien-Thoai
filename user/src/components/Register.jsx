@@ -23,7 +23,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+<<<<<<< HEAD
+      const response = await fetch('localhost:5000/api/addUser', {
+=======
       const response = await fetch('localhost/api/addUser', {
+>>>>>>> 0454e4f87fcd2a18301bfb7736f73e322db9fbe3
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
