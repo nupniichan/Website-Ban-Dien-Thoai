@@ -1040,7 +1040,7 @@ app.post('/callback', async (req, res) => {
           await user.save(); // Lưu giỏ hàng đã được cập nhật
         }
 
-        res.redirect('http://locahost:5173/payment-history');
+        res.redirect('http://localhost:5173/payment-history');
       } else {
         console.error('ExtraData is missing or empty');
         res.status(400).send('ExtraData is missing or empty');
@@ -1050,7 +1050,7 @@ app.post('/callback', async (req, res) => {
       res.status(500).send('Error processing order');
     }
   } else {
-    res.redirect('http://locahost:5173/cart');
+    res.redirect('http://localhost:5173/cart');
   }
 });
 
