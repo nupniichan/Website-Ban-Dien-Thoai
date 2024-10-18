@@ -50,7 +50,6 @@ const MenuItems = [
 
 const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false); // Added state for search bar expansion
   const navigate = useNavigate();
 

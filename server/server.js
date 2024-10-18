@@ -340,10 +340,7 @@ app.get('/api/products', async (req, res) => {
   try {
     const { query, minPrice, maxPrice, colors, brands } = req.query;
     const searchCondition = {
-      ...(query ? { name: { $regex: query, $options: 'i' } } : {}),
-      ...(minPrice || maxPrice ? { price: { $gte: minPrice || 0, $lte: maxPrice || Infinity } } : {}),
-      ...(colors ? { color: { $in: colors.split(',') } } : {}),
-      ...(brands ? { brand: { $in: brands.split(',') } } : {}),
+      ...(query ? { name: { $regex: query, $options: 'i' } } : {})
     };
 
     const products = await Product.find(searchCondition);

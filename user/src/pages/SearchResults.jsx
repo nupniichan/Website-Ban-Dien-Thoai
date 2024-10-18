@@ -7,40 +7,22 @@ const SearchResults = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
-  const [filters, setFilters] = useState({
-    priceRange: [0, 3000000],
-    colors: [],
-    brands: []
-  });
   const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const query = params.get('query') || '';
 
-    const minPrice = params.get('minPrice') || filters.priceRange[0];
-    const maxPrice = params.get('maxPrice') || filters.priceRange[1];
-    const colors = params.get('colors')?.split(',') || [];
-    const brands = params.get('brands')?.split(',') || [];
-
-    setFilters({
-      priceRange: [Number(minPrice), Number(maxPrice)],
-      colors,
-      brands
-    });
-
     if (query) {
       fetchProducts(query);
     }
-}, [location.search]);
-
+  }, [location.search]);
 
   const fetchProducts = async (query) => {
-    const { priceRange, colors, brands } = filters;
     setLoading(true); // Start loading
 
     try {
-      const response = await fetch(`${BASE_URL}/api/products?query=${query}&minPrice=${priceRange[0]}&maxPrice=${priceRange[1]}&colors=${colors.join(',')}&brands=${brands.join(',')}`);
+      const response = await fetch(`${BASE_URL}/api/products?query=${query}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -57,25 +39,9 @@ const SearchResults = () => {
     navigate(`/products/${productId}`);
   };
 
-  const filterMessage = () => {
-    const query = new URLSearchParams(location.search).get('query') || '';
-    const { priceRange, colors, brands } = filters;
-    let message = `You searched for "${query}"`;
-
-    const appliedFilters = [];
-    if (colors.length > 0) appliedFilters.push(`Colors: ${colors.join(', ')}`);
-    if (brands.length > 0) appliedFilters.push(`Brands: ${brands.join(', ')}`);
-    if (priceRange[0] > 0 || priceRange[1] < 3000000) {
-      appliedFilters.push(`Price Range: ${priceRange[0].toLocaleString()} - ${priceRange[1].toLocaleString()} VND`);
-    }
-
-    return appliedFilters.length ? `${message} with ${appliedFilters.join(', ')}` : message;
-  };
-
   return (
     <main className="max-w-6xl mx-auto p-4">
       <h1 className="text-4xl font-bold text-center mb-8">Search Results</h1>
-      <p className="text-lg text-center mb-4">{filterMessage()}</p>
       {loading ? ( // Show loading spinner if loading
         <div className="flex justify-center">
           <Spin size="large" />
