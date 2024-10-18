@@ -105,6 +105,10 @@ const Header = () => {
                       ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
                       : "w-0"
                     }`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter")
+                          handleSearch();
+                      }}
                 />
                 <SearchOutlined
                   className="text-xl text-gray-600 group-hover:text-primary dark:text-gray-400 absolute top-1/2 -translate-y-1/2 right-3 duration-200 cursor-pointer"
