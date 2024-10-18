@@ -541,12 +541,8 @@ app.get('/api/users/email/:email', async (req, res) => {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
     // Return the user info along with the id
-    res.json({
-      id: user.id, // Include the user's ID
-      email: user.email,
-      name: user.accountName, // Include other fields you want to return
-      // Add any other fields as necessary
-    });
+    const { password, ...userInfo } = user.toObject();
+    res.json(userInfo); // Send the filtered user object back as the response
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
   }
@@ -717,6 +713,7 @@ app.get('/api/users/:id', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
+    console.log(user);
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
