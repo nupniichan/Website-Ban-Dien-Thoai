@@ -2,12 +2,12 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
 
-const Login = () => {
+const Login = ({ onSwitchToRegister }) => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
-  const [errorMessage, setErrorMessage] = useState(''); // State to store error messages
+  const [errorMessage, setErrorMessage] = useState('');
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -16,7 +16,7 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrorMessage(''); // Clear any previous error messages
+    setErrorMessage('');
 
     try {
       const response = await fetch(`${BASE_URL}/api/login`, {
@@ -30,15 +30,11 @@ const Login = () => {
       if (response.ok) {
         alert('Đăng nhập thành công!');
 
-        // Store user information in sessionStorage
         sessionStorage.setItem('userEmail', data.user.email);
         sessionStorage.setItem('userId', data.user.id);
         sessionStorage.setItem('accountName', data.user.accountName);
 
-        // Dispatch custom event to update login state
         window.dispatchEvent(new Event("loginSuccess"));
-
-        // Redirect to the homepage or any other page
         navigate('/');
       } else {
         setErrorMessage(data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!');
@@ -50,8 +46,8 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="bg-white p-8 rounded-lg shadow-md max-w-sm w-full" onSubmit={handleSubmit}>
+    <div className="flex justify-center items-center bg-gray-100">
+      <form className="bg-white p-8 rounded-lg shadow-md max-w-lg w-full" onSubmit={handleSubmit}>
         <h2 className="text-2xl mb-6 text-center text-gray-800">Đăng Nhập</h2>
 
         {errorMessage && <p className="text-red-500 text-center mb-4">{errorMessage}</p>}
@@ -79,7 +75,7 @@ const Login = () => {
         </button>
 
         <p className="text-center mt-4">
-          Chưa có tài khoản? <Link to="/user/register" className="text-blue-500 hover:underline">Đăng ký</Link>
+          Chưa có tài khoản? <span className="text-blue-500 hover:underline cursor-pointer" onClick={onSwitchToRegister}>Đăng ký</span>
         </p>
       </form>
     </div>
