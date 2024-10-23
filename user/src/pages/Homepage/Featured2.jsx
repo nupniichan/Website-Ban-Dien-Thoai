@@ -2,6 +2,13 @@ import Button from "../../shared/Button";
 import Image1 from "../../assets/fakeAssets/category/gaming.png";
 import Image2 from "../../assets/fakeAssets/category/vr.png";
 import Image3 from "../../assets/fakeAssets/category/speaker.png";
+import Samsung from '../../assets/BrandLogos/Samsung.png';
+import Apple from '../../assets/BrandLogos/Apple.svg';
+import Huawei from '../../assets/BrandLogos/huawei.png';
+import Oppo from '../../assets/BrandLogos/OPPO.png';
+import Sony from '../../assets/BrandLogos/Sony.svg';
+import Xiaomi from '../../assets/BrandLogos/xiaomi.png';
+import Nokia from '../../assets/BrandLogos/Nokia.svg';
 
 const Featured2 = () => {
     return (

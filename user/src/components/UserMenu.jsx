@@ -101,7 +101,7 @@ const UserMenu = () => {
       {/* Modal for Login */}
       <Modal
         title="Login"
-        visible={isLoginModalVisible}
+        open={isLoginModalVisible}
         onCancel={() => setIsLoginModalVisible(false)}  // Close modal
         footer={null}  // No footer for modal
       >
@@ -114,7 +114,7 @@ const UserMenu = () => {
       {/* Modal for Register */}
       <Modal
         title="Register"
-        visible={isRegisterModalVisible}
+        open={isRegisterModalVisible}
         onCancel={() => setIsRegisterModalVisible(false)}  // Close modal
         footer={null}  // No footer for modal
       >
