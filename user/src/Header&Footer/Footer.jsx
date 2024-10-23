@@ -50,7 +50,7 @@ const Footer = () => {
     return (
         <footer className="dark:bg-gray-950">
             <div className="container">
-                <div className="grid md:grid-cols-3 pb-20 pt-5">
+                <div className="grid md:grid-cols-3 pb-14 pt-5">
                     {/* company details */}
                     <div className="py-8 px-4">
                         <Link
