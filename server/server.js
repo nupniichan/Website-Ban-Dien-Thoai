@@ -102,7 +102,7 @@ app.get('/api/orders/customer/:customerId', async (req, res) => {
 
 // Registration route
 app.post('/api/register', async (req, res) => {
-  const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password } = req.body;
+  const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password, userAvatar } = req.body;
 
   try {
     // Check if email, phoneNumber, or accountName already exists
@@ -123,7 +123,9 @@ app.post('/api/register', async (req, res) => {
     const lastUser = await User.findOne().sort({ id: -1 });
     const lastId = lastUser ? parseInt(lastUser.id.substring(2), 10) : 0;
     const userId = `KH${(lastId + 1).toString().padStart(3, '0')}`;
+    const defaultAvatarUrl = 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg';
 
+// Registration route
     // Create new user document
     const newUser = new User({
       id: userId,
@@ -135,6 +137,7 @@ app.post('/api/register', async (req, res) => {
       gender,
       address,
       password,
+      userAvatar: userAvatar || defaultAvatarUrl,
     });
 
     // Save the new user to the database
@@ -174,7 +177,8 @@ app.post('/api/login', async (req, res) => {
         id: user.id,
         accountName: user.accountName,
         email: user.email,
-        phoneNumber: user.phoneNumber
+        phoneNumber: user.phoneNumber,
+        userAvatar: user.userAvatar
       }
     });
   } catch (error) {
@@ -582,7 +586,7 @@ const generateCustomerId = async () => {
 
 // Thêm người dùng mới
 app.post('/api/addUser', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
 
   try {
     // Kiểm tra xem email đã tồn tại hay chưa
@@ -606,6 +610,7 @@ app.post('/api/addUser', async (req, res) => {
       accountName,
       password,
       role: role || 'user',
+      userAvatar: userAvatar || ''
     });
 
     await newUser.save();
@@ -618,10 +623,10 @@ app.post('/api/addUser', async (req, res) => {
 // Sửa thông tin người dùng
 app.put('/api/users/:id', async (req, res) => {
   const { id } = req.params;
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
 
   try {
-    const updateData = { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role };
+    const updateData = { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar };
 
     const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
     if (!updatedUser) {
@@ -652,7 +657,7 @@ app.delete('/api/users/:id', async (req, res) => {
 
 // Lấy danh sách tất cả người dùng
 app.post('/api/users', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
 
   try {
     // Kiểm tra xem email đã tồn tại hay chưa
@@ -676,6 +681,7 @@ app.post('/api/users', async (req, res) => {
       accountName,
       password,
       role: role || 'user',
+      userAvatar: userAvatar || ''
     });
 
     await newUser.save();
@@ -688,7 +694,7 @@ app.post('/api/users', async (req, res) => {
 
 // Lấy thông tin người dùng theo ID
 app.put('/api/users/:id', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
   const { id } = req.params; // Get the id from the URL parameters
 
   try {
@@ -701,7 +707,8 @@ app.put('/api/users/:id', async (req, res) => {
       address,
       accountName,
       password,
-      role
+      role,
+      userAvatar: userAvatar || ''
     };
 
     const updatedUser = await User.findOneAndUpdate({ _id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
