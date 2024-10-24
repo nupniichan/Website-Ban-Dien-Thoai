@@ -17,32 +17,32 @@ const FooterLinks = [
         label: "About",
         link: `${PathNames.ABOUT}`,
     },
-    {
+    {   
         label: "Stories",
-        link: `/#`,
+        link: `${PathNames.STORIES}`,
     },
     {
         label: "Vacancies",
-        link: `/#`,
+        link: `${PathNames.VACANCIES}`,
     },
 ];
 
 const SupportLinks = [
     {
         label: "FAQ",
-        link: `/#`,
+        link: `${PathNames.FAQ}`,
     },
     {
         label: "Contact Us",
-        link: `/#`,
+        link: `${PathNames.CONTACTUS}`,
     },
     {
         label: "Privacy Policy",
-        link: `/#`,
+        link: `${PathNames.PRIVACYPOLICY}`,
     },
     {
         label: "Terms & Conditions",
-        link: `/#`,
+        link: `${PathNames.TERMS}`,
     },
 ];
 
