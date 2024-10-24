@@ -169,6 +169,10 @@ const AddOrder = () => {
     }
   };
 
+  const orderStatusOptions = ['Đang xử lý', 'Đã xác nhận', 'Đang giao hàng', 'Đã giao hàng', 'Đã huỷ'];
+  const paymentStatusOptions = ['Chưa thanh toán', 'Đã thanh toán', 'Thanh toán lỗi'];
+  const paymentMethodOptions = ['Tiền mặt', 'Thẻ tín dụng', 'Thanh toán trực tuyến', 'Chuyển khoản ngân hàng'];
+
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Thêm đơn đặt hàng</Typography>
@@ -278,16 +282,57 @@ const AddOrder = () => {
           <Grid item xs={12} sm={6}>
             <TextField
               select
+              label="Trạng thái đơn hàng"
+              name="orderStatus"
+              value={order.orderStatus}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {orderStatusOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              label="Trạng thái thanh toán"
+              name="paymentStatus"
+              value={order.paymentStatus}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {paymentStatusOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
               label="Phương thức thanh toán"
               name="paymentMethod"
               value={order.paymentMethod}
               onChange={handleChange}
               fullWidth
+              required
               margin="normal"
             >
-              <MenuItem value="Tiền mặt">Tiền mặt</MenuItem>
-              <MenuItem value="Thẻ tín dụng">Thẻ tín dụng</MenuItem>
-              <MenuItem value="Thanh toán trực tuyến">Thanh toán trực tuyến</MenuItem>
+              {paymentMethodOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
             </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -301,22 +346,6 @@ const AddOrder = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Trạng thái đơn hàng"
-              name="status"
-              value={order.status}
-              onChange={handleChange}
-              fullWidth
-              margin="normal"
-            >
-              <MenuItem value="Chờ xác nhận">Chờ xác nhận</MenuItem>
-              <MenuItem value="Đang giao">Đang giao</MenuItem>
-              <MenuItem value="Đã giao">Đã giao</MenuItem>
-              <MenuItem value="Đã hủy">Đã hủy</MenuItem>
-            </TextField>
-          </Grid>
-          <Grid item xs={12}>
             <TextField
               label="Ghi chú"
               name="notes"

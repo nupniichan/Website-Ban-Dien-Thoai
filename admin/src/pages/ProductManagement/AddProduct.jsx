@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Grid, IconButton } from '@mui/material';
+import { Box, TextField, Button, Typography, Grid, IconButton, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
+import { MenuItem } from '@mui/material';
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -89,6 +90,14 @@ const AddProduct = () => {
     navigate('/product-management'); // Quay lại /product-management
   };
 
+  const colorOptions = ['Đen', 'Trắng', 'Vàng', 'Xanh', 'Đỏ', 'Hồng', 'Tím', 'Xám'];
+  const osOptions = ['Android', 'IOS'];
+  const brandOptions = ['Apple', 'Samsung', 'Oppo', 'Xiaomi', 'Vivo', 'Realme', 'Huawei', 'Nokia', 'LG', 'Lenovo', 'Asus', 'Google', 'Microsoft', 'BlackBerry', 'HTC', 'Sony', 'Motorola', 'OnePlus', 'Razer', 'ZTE', 'Meizu', 'Nubia'];
+  const screenTechOptions = ['OLED', 'AMOLED', 'LCD', 'IPS LCD', 'Super AMOLED'];
+  const nfcOptions = ['Có', 'Không'];
+  const simOptions = ['1 SIM', '2 SIM', 'eSIM'];
+  const chargingPortOptions = ['Lightning', 'Type-C', 'Micro USB'];
+
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Thêm sản phẩm mới</Typography>
@@ -99,10 +108,22 @@ const AddProduct = () => {
             <Typography variant="h6" gutterBottom>Thông tin cơ bản</Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Tên sản phẩm" name="name" value={product.name} onChange={handleChange} fullWidth margin="normal" />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField label="Màu sắc" name="color" value={product.color} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              select
+              label="Màu sắc"
+              name="color"
+              value={product.color}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {colorOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField label="Số lượng tồn" name="quantity" value={product.quantity} onChange={handleChange} fullWidth margin="normal" />
@@ -111,10 +132,40 @@ const AddProduct = () => {
             <TextField label="Giá (VNĐ)" name="price" value={product.price} onChange={handleChange} fullWidth margin="normal" />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Hệ điều hành" name="os" value={product.os} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              select
+              label="Hệ điều hành"
+              name="os"
+              value={product.os}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {osOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Hãng" name="brand" value={product.brand} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              select
+              label="Thương hiệu"
+              name="brand"
+              value={product.brand}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {brandOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12}>
             <TextField label="Mô tả" name="description" value={product.description} onChange={handleChange} fullWidth margin="normal" multiline rows={4} />
@@ -133,16 +184,61 @@ const AddProduct = () => {
             <Typography variant="h6" gutterBottom>Cấu hình sản phẩm</Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Kích thước màn hình" name="cauhinh.kichThuocManHinh" value={product.cauhinh.kichThuocManHinh} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              label="Kích thước màn hình"
+              name="cauhinh.kichThuocManHinh"
+              value={product.cauhinh.kichThuocManHinh}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              helperText='Định dạng: x" (ví dụ: 6.1")'
+              error={product.cauhinh.kichThuocManHinh && !/^\d+(\.\d+)?\"$/.test(product.cauhinh.kichThuocManHinh)}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Công nghệ màn hình" name="cauhinh.congNgheManHinh" value={product.cauhinh.congNgheManHinh} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              select
+              label="Công nghệ màn hình"
+              name="cauhinh.congNgheManHinh"
+              value={product.cauhinh.congNgheManHinh}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {screenTechOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Camera sau" name="cauhinh.cameraSau" value={product.cauhinh.cameraSau} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              label="Camera sau"
+              name="cauhinh.cameraSau"
+              value={product.cauhinh.cameraSau}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              helperText="Định dạng: xMP (ví dụ: 48MP)"
+              error={product.cauhinh.cameraSau && !/^\d+MP$/.test(product.cauhinh.cameraSau)}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Camera trước" name="cauhinh.cameraTruoc" value={product.cauhinh.cameraTruoc} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              label="Camera trước"
+              name="cauhinh.cameraTruoc"
+              value={product.cauhinh.cameraTruoc}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              helperText="Định dạng: xMP (ví dụ: 12MP)"
+              error={product.cauhinh.cameraTruoc && !/^\d+MP$/.test(product.cauhinh.cameraTruoc)}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField label="Chipset" name="cauhinh.chipset" value={product.cauhinh.chipset} onChange={handleChange} fullWidth margin="normal" />
@@ -151,25 +247,84 @@ const AddProduct = () => {
             <TextField label="GPU" name="cauhinh.gpu" value={product.cauhinh.gpu} onChange={handleChange} fullWidth margin="normal" />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Công nghệ NFC" name="cauhinh.congNgheNFC" value={product.cauhinh.congNgheNFC} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              select
+              label="Công nghệ NFC"
+              name="cauhinh.congNgheNFC"
+              value={product.cauhinh.congNgheNFC}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {nfcOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Dung lượng RAM" name="cauhinh.dungLuongRAM" value={product.cauhinh.dungLuongRAM} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              label="RAM"
+              name="cauhinh.dungLuongRAM"
+              value={product.cauhinh.dungLuongRAM}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              helperText="Định dạng: xGB (ví dụ: 8GB)"
+              error={product.cauhinh.dungLuongRAM && !/^\d+GB$/.test(product.cauhinh.dungLuongRAM)}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Bộ nhớ trong" name="cauhinh.boNhoTrong" value={product.cauhinh.boNhoTrong} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              label="Bộ nhớ trong"
+              name="cauhinh.boNhoTrong"
+              value={product.cauhinh.boNhoTrong}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              helperText="Định dạng: xGB (ví dụ: 128GB)"
+              error={product.cauhinh.boNhoTrong && !/^\d+GB$/.test(product.cauhinh.boNhoTrong)}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Pin" name="cauhinh.pin" value={product.cauhinh.pin} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              select
+              label="Thẻ SIM"
+              name="cauhinh.theSIM"
+              value={product.cauhinh.theSIM}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {simOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField label="Thẻ SIM" name="cauhinh.theSIM" value={product.cauhinh.theSIM} onChange={handleChange} fullWidth margin="normal" />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField label="Độ phân giải màn hình" name="cauhinh.doPhanGiaiManHinh" value={product.cauhinh.doPhanGiaiManHinh} onChange={handleChange} fullWidth margin="normal" />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField label="Cổng sạc" name="cauhinh.congSac" value={product.cauhinh.congSac} onChange={handleChange} fullWidth margin="normal" />
+            <TextField
+              select
+              label="Cổng sạc"
+              name="cauhinh.congSac"
+              value={product.cauhinh.congSac}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {chargingPortOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
         </Grid>
 

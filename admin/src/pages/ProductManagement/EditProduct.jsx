@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Grid, CircularProgress } from '@mui/material';
+import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
 
@@ -28,6 +28,15 @@ const EditProduct = () => {
     congSac: "Cổng sạc",
     // Thêm các key khác nếu cần
   };
+
+  // Thêm các options giống như AddProduct
+  const colorOptions = ['Đen', 'Trắng', 'Vàng', 'Xanh', 'Đỏ', 'Hồng', 'Tím', 'Xám'];
+  const osOptions = ['Android', 'IOS'];
+  const brandOptions = ['Apple', 'Samsung', 'Oppo', 'Xiaomi', 'Vivo', 'Realme', 'Huawei', 'Nokia', 'LG', 'Lenovo', 'Asus', 'Google', 'Microsoft', 'BlackBerry', 'HTC', 'Sony', 'Motorola', 'OnePlus', 'Razer', 'ZTE', 'Meizu', 'Nubia'];
+  const screenTechOptions = ['OLED', 'AMOLED', 'LCD', 'IPS LCD', 'Super AMOLED'];
+  const nfcOptions = ['Có', 'Không'];
+  const simOptions = ['1 SIM', '2 SIM', 'eSIM'];
+  const chargingPortOptions = ['Lightning', 'Type-C', 'Micro USB'];
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -122,23 +131,57 @@ const EditProduct = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField 
-              label="Tên sản phẩm" 
-              name="name" 
-              value={product.name || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-            />
+              select
+              label="Màu sắc"
+              name="color"
+              value={product.color || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {colorOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField 
-              label="Màu sắc" 
-              name="color" 
-              value={product.color || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-            />
+              select
+              label="Hệ điều hành"
+              name="os"
+              value={product.os || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {osOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField 
+              select
+              label="Thương hiệu"
+              name="brand"
+              value={product.brand || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {brandOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField 
@@ -164,34 +207,12 @@ const EditProduct = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField 
-              label="Hệ điều hành" 
-              name="os" 
-              value={product.os || ''} 
+              label="Hình ảnh sản phẩm hiện tại" 
+              name="image" 
+              value={imagePreview || ''} 
               onChange={handleChange} 
               fullWidth 
               margin="normal" 
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField 
-              label="Hãng" 
-              name="brand" 
-              value={product.brand || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField 
-              label="Mô tả" 
-              name="description" 
-              value={product.description || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-              multiline 
-              rows={4} 
             />
           </Grid>
           <Grid item xs={12}>
