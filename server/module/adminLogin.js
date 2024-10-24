@@ -6,6 +6,16 @@ const AdminSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
+AdminSchema.pre('save', function(next) {
+  if (!this.email || !this.email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+    return next(new Error('Email admin không hợp lệ'));
+  }
+  if (!this.password || this.password.length < 8) {
+    return next(new Error('Mật khẩu admin phải có ít nhất 8 ký tự'));
+  }
+  next();
+});
+
 const Admin = mongoose.model('Admin', AdminSchema, 'admin');
 
 // Hàm đăng nhập admin

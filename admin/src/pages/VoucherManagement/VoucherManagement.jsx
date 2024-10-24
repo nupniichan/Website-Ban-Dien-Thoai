@@ -79,8 +79,8 @@ const VoucherManagement = () => {
 
     const filteredVouchers = vouchers.filter(
         (voucher) =>
-            voucher.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            voucher.id.includes(searchTerm)
+            (voucher.name?.toLowerCase().includes(searchTerm.toLowerCase()) || false) ||
+            (voucher.id?.includes(searchTerm) || false)
     );
 
     return (
@@ -126,31 +126,31 @@ const VoucherManagement = () => {
                             <TableRow key={voucher.id}>
                                 <TableCell>{voucher.id}</TableCell>
                                 <TableCell>{voucher.name}</TableCell>
-                                <TableCell>{(new Date(voucher.startDate).toLocaleDateString("vi-VN"))}</TableCell>
-                                <TableCell>{(new Date(voucher.endDate).toLocaleDateString("vi-VN"))}</TableCell>
-                                <TableCell>{voucher.discountRate}%</TableCell>
-                                <TableCell>{voucher.applyCode}</TableCell>
+                                <TableCell>
+                                    {new Date(voucher.startDate || voucher.usageDate).toLocaleDateString("vi-VN")}
+                                </TableCell>
+                                <TableCell>
+                                    {new Date(voucher.endDate || voucher.expirationDate).toLocaleDateString("vi-VN")}
+                                </TableCell>
+                                <TableCell>
+                                    {(voucher.discountPercent || voucher.discountRate)}%
+                                </TableCell>
+                                <TableCell>{voucher.code || voucher.applicableCode}</TableCell>
                                 <TableCell>
                                     <IconButton
-                                        onClick={() =>
-                                            handleViewDetails(voucher)
-                                        }
+                                        onClick={() => handleViewDetails(voucher)}
                                         color="primary"
                                     >
                                         <Visibility />
                                     </IconButton>
                                     <IconButton
-                                        onClick={() =>
-                                            handleEditVoucher(voucher.id)
-                                        }
+                                        onClick={() => handleEditVoucher(voucher.id)}
                                         color="secondary"
                                     >
                                         <Edit />
                                     </IconButton>
                                     <IconButton
-                                        onClick={() =>
-                                            handleDeleteVoucher(voucher.id)
-                                        }
+                                        onClick={() => handleDeleteVoucher(voucher.id)}
                                         color="error"
                                     >
                                         <Delete />
@@ -169,16 +169,22 @@ const VoucherManagement = () => {
                         <Typography>ID: {selectedVoucher.id}</Typography>
                         <Typography>Tên mã: {selectedVoucher.name}</Typography>
                         <Typography>
-                            Ngày sử dụng: {new Date(selectedVoucher.startDate).toLocaleDateString('vi-VN')}
+                            Ngày sử dụng: {new Date(selectedVoucher.startDate || selectedVoucher.usageDate).toLocaleDateString('vi-VN')}
                         </Typography>
                         <Typography>
-                            Ngày hết hạn: {(new Date(selectedVoucher.endDate).toLocaleDateString("vi-VN"))}
+                            Ngày hết hạn: {new Date(selectedVoucher.endDate || selectedVoucher.expirationDate).toLocaleDateString("vi-VN")}
                         </Typography>
                         <Typography>
-                            Tỉ lệ chiết khấu: {selectedVoucher.discountRate}%
+                            Tỉ lệ chiết khấu: {(selectedVoucher.discountPercent || selectedVoucher.discountRate)}%
                         </Typography>
                         <Typography>
-                            Mã áp dụng: {selectedVoucher.applyCode}
+                            Mã áp dụng: {selectedVoucher.code || selectedVoucher.applicableCode}
+                        </Typography>
+                        <Typography>
+                            Giá trị đơn hàng tối thiểu: {selectedVoucher.minOrderValue?.toLocaleString('vi-VN')} VNĐ
+                        </Typography>
+                        <Typography>
+                            Số tiền giảm tối đa: {selectedVoucher.maxDiscountAmount?.toLocaleString('vi-VN')} VNĐ
                         </Typography>
                     </DialogContent>
                 </Dialog>
