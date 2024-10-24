@@ -1,30 +1,32 @@
 import { Carousel } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Img1 from "../../assets/fakeAssets/hero/headphone.png";
-import Img2 from "../../assets/fakeAssets/hero/watch.png";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../../config";
+import PathNames from "../../PathNames";
 import Button from "../../shared/Button.jsx";
 
-const HeroPlaceholderData = [
-    {
-        id: 1,
-        image: Img1,
-        title: "Wireless",
-        title2: "Heaphones",
-        description: "Beats Solo",
-    },
-    {
-        id: 2,
-        image: Img2,
-        title: "Wireless",
-        title2: "Virtual",
-        description: "Beats Duo",
-    }
-]
+// const HeroPlaceholderData = [
+//     {
+//         id: 1,
+//         image: Img1,
+//         title: "Wireless",
+//         title2: "Heaphones",
+//         description: "Beats Solo",
+//     },
+//     {
+//         id: 2,
+//         image: Img2,
+//         title: "Wireless",
+//         title2: "Virtual",
+//         description: "Beats Duo",
+//     },
+// ];
 // TODO: Bind actual data to the carousel
 
 const Hero = () => {
     const [products, setProducts] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -42,10 +44,17 @@ const Hero = () => {
     }, []);
 
     const getProductsById = (ids) => {
-        return products.filter((product) => product.id === ids);
+        return products.filter((product) => ids.includes(product.id));
+    };
+    const heroProducts = getProductsById(["SP023", "SP035"]);
+
+    const handleHeroClick = (productId) => {
+        navigate(`/product/${productId}`);
     };
 
-    const heroProducts = getProductsById(["SP023", "SP035"]);
+    useEffect(() => {
+        console.log("Logged hero products id" + handleHeroClick.productId);
+    }, [handleHeroClick.productId]);
 
     return (
         <div className="container">
@@ -61,7 +70,7 @@ const Hero = () => {
                         autoplaySpeed={4000}
                         easing="ease-in-out"
                     >
-                        {HeroPlaceholderData.map((product) => (
+                        {heroProducts.map((product) => (
                             <div key={product.id}>
                                 <div className="grid grid-cols-1 sm:grid-cols-2">
                                     {/* text content section */}
@@ -69,27 +78,29 @@ const Hero = () => {
                                         {/* <h1 className="text-2xl sm:text-6xl lg:text-2xl font-bold">
                                             {product.description}
                                         </h1> */}
-                                        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold">
-                                            {product.title}
+                                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+                                            {product.brand}
                                         </h1>
-                                        <h1 className="text-5xl uppercase text-white dark:text-white/5 sm:text-[80px] md:text-[100px] xl:text-[150px] font-bold">
-                                            {product.title2}
+                                        <h1 className="text-3xl uppercase text-white dark:text-white/5 sm:text-[50px] md:text-[70px] xl:text-[100px] font-bold leading-none">
+                                            {product.name}
                                         </h1>
                                         <div>
                                             <Button
                                                 text="Discover"
                                                 bgColor="bg-primary"
                                                 textColor="text-white"
+                                                onClick={() => handleHeroClick(product.id)}
                                             />
                                         </div>
                                     </div>
+
                                     {/* Img section */}
                                     <div className="order-1 sm:order-2">
                                         <div>
                                             <img
-                                                src={product.image}
+                                                src={`${BASE_URL}/${product.image}`}
                                                 alt=""
-                                                className="w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] sm:scale-105 lg:scale-110 object-contain mx-auto drop-shadow-[-8px_4px_6px_rgba(0,0,0,.4)] relative z-40"
+                                                className="w-[300px] sm:w-[450px] h-[320px] sm:h-[470px] sm:scale-105 lg:scale-110 object-contain mx-auto drop-shadow-[-8px_4px_6px_rgba(0,0,0,.4)] relative z-40"
                                             />
                                         </div>
                                     </div>
