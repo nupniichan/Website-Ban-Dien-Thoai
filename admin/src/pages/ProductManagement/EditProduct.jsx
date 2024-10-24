@@ -10,6 +10,7 @@ const EditProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // Thêm state cho hình ảnh mới
+  const [errors, setErrors] = useState({});
 
   // Bản đồ key sang nhãn có dấu
   const cauHinhLabels = {
@@ -115,6 +116,43 @@ const EditProduct = () => {
 
   const handleCancel = () => {
     navigate('/product-management'); // Quay lại trang quản lý sản phẩm
+  };
+
+  // Thêm hàm validate
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate tên sản phẩm
+    if (!product.name || product.name.trim() === '') {
+      newErrors.name = 'Vui lòng nhập tên sản phẩm';
+    }
+
+    // Validate màu sắc
+    if (!product.color) {
+      newErrors.color = 'Vui lòng chọn màu sắc';
+    }
+
+    // Validate số lượng
+    if (product.quantity === undefined || product.quantity < 0) {
+      newErrors.quantity = 'Số lượng không được âm';
+    }
+
+    // Validate giá
+    if (product.price === undefined || product.price <= 0) {
+      newErrors.price = 'Giá phải lớn hơn 0';
+    }
+
+    // Validate hệ điều hành
+    if (!product.os) {
+      newErrors.os = 'Vui lòng chọn hệ điều hành';
+    }
+
+    // Validate thương hiệu
+    if (!product.brand) {
+      newErrors.brand = 'Vui lòng chọn thương hiệu';
+    }
+
+    return newErrors;
   };
 
   if (loading) return <CircularProgress />;

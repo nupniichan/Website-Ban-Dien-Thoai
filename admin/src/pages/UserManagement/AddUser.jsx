@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, TextField, Button, Grid, Typography } from "@mui/material";
+import { Box, TextField, Button, Grid, Typography, MenuItem } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from '../../config.js';
@@ -17,13 +17,94 @@ const AddUser = () => {
         accountName: "",
     });
 
+    const [errors, setErrors] = useState({});
+
+    const genderOptions = [
+        { value: 'Nam', label: 'Nam' },
+        { value: 'Nữ', label: 'Nữ' },
+        { value: 'Khác', label: 'Khác' }
+    ];
+
+    const validateForm = () => {
+        const newErrors = {};
+        
+        // Validate tên
+        if (!user.name.trim()) {
+            newErrors.name = 'Vui lòng nhập tên';
+        } else if (user.name.length < 2) {
+            newErrors.name = 'Tên phải có ít nhất 2 ký tự';
+        }
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!user.email) {
+            newErrors.email = 'Vui lòng nhập email';
+        } else if (!emailRegex.test(user.email)) {
+            newErrors.email = 'Email không hợp lệ';
+        }
+
+        // Validate mật khẩu
+        if (!user.password) {
+            newErrors.password = 'Vui lòng nhập mật khẩu';
+        } else if (user.password.length < 6) {
+            newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
+        }
+
+        // Validate số điện thoại
+        const phoneRegex = /(84|0[3|5|7|8|9])+([0-9]{8})\b/;
+        if (!user.phoneNumber) {
+            newErrors.phoneNumber = 'Vui lòng nhập số điện thoại';
+        } else if (!phoneRegex.test(user.phoneNumber)) {
+            newErrors.phoneNumber = 'Số điện thoại không hợp lệ';
+        }
+
+        // Validate ngày sinh
+        if (!user.dayOfBirth) {
+            newErrors.dayOfBirth = 'Vui lòng chọn ngày sinh';
+        } else {
+            const birthDate = new Date(user.dayOfBirth);
+            const today = new Date();
+            if (birthDate > today) {
+                newErrors.dayOfBirth = 'Ngày sinh không hợp lệ';
+            }
+        }
+
+        // Validate giới tính
+        if (!user.gender) {
+            newErrors.gender = 'Vui lòng chọn giới tính';
+        }
+
+        // Validate địa chỉ
+        if (!user.address.trim()) {
+            newErrors.address = 'Vui lòng nhập địa chỉ';
+        }
+
+        // Validate tên tài khoản
+        if (!user.accountName.trim()) {
+            newErrors.accountName = 'Vui lòng nhập tên tài khoản';
+        } else if (user.accountName.length < 4) {
+            newErrors.accountName = 'Tên tài khoản phải có ít nhất 4 ký tự';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleChange = (e) => {
         const { name, value } = e.target;
         setUser({ ...user, [name]: value });
+        // Xóa lỗi khi người dùng thay đổi giá trị
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: undefined }));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
 
         try {
             const response = await axios.post(`${BASE_URL}/api/addUser`, user, {
@@ -31,15 +112,15 @@ const AddUser = () => {
                     "Content-Type": "application/json",
                 },
             });
-            if (response.status === 201) { // Assuming 201 is the success status for creation
-                alert("User created successfully");
+            if (response.status === 201) {
+                alert("Tạo tài khoản thành công");
                 navigate("/user-management");
             } else {
-                alert("Failed to create user");
+                alert("Không thể tạo tài khoản");
             }
         } catch (error) {
-            console.error("Error creating user:", error);
-            alert("An error occurred while creating the user");
+            console.error("Lỗi khi tạo tài khoản:", error);
+            alert(error.response?.data?.message || "Đã xảy ra lỗi khi tạo tài khoản");
         }
     };
 
@@ -59,6 +140,8 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.name}
+                            helperText={errors.name}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -74,10 +157,13 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.dayOfBirth}
+                            helperText={errors.dayOfBirth}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
+                            select
                             label="Giới tính"
                             name="gender"
                             value={user.gender}
@@ -85,7 +171,15 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
-                        />
+                            error={!!errors.gender}
+                            helperText={errors.gender}
+                        >
+                            {genderOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </Grid>
                     <Grid item xs={6}>
                         <TextField
@@ -97,6 +191,8 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.email}
+                            helperText={errors.email}
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -108,6 +204,8 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.phoneNumber}
+                            helperText={errors.phoneNumber}
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -119,6 +217,8 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.accountName}
+                            helperText={errors.accountName}
                         />
                     </Grid>
                     <Grid item xs={6}>
@@ -131,6 +231,8 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.password}
+                            helperText={errors.password}
                         />
                     </Grid>
                     <Grid item xs={12}>
@@ -142,6 +244,10 @@ const AddUser = () => {
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.address}
+                            helperText={errors.address}
+                            multiline
+                            rows={2}
                         />
                     </Grid>
                 </Grid>

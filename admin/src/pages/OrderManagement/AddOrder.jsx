@@ -20,6 +20,56 @@ const AddOrder = () => {
     notes: '',
   });
 
+  // Thêm state cho errors
+  const [errors, setErrors] = useState({});
+
+  // Thêm hàm validate
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate thông tin khách hàng
+    if (!order.customerId?.trim()) {
+      newErrors.customerId = 'Vui lòng nhập ID khách hàng';
+    }
+
+    if (!order.customerName?.trim()) {
+      newErrors.customerName = 'Không tìm thấy thông tin khách hàng';
+    }
+
+    if (!order.shippingAddress?.trim()) {
+      newErrors.shippingAddress = 'Vui lòng nhập địa chỉ giao hàng';
+    }
+
+    // Validate sản phẩm
+    if (!order.items || order.items.length === 0) {
+      newErrors.items = 'Vui lòng thêm ít nhất một sản phẩm';
+    } else {
+      order.items.forEach((item, index) => {
+        if (!item.productId) {
+          newErrors[`items.${index}.productId`] = 'Vui lòng chọn sản phẩm';
+        }
+        
+        if (!item.quantity || item.quantity < 1) {
+          newErrors[`items.${index}.quantity`] = 'Số lượng phải lớn hơn 0';
+        }
+
+        // Kiểm tra số lượng tồn kho
+        const product = products.find(p => p.id === item.productId);
+        if (product && item.quantity > product.quantity) {
+          newErrors[`items.${index}.quantity`] = `Chỉ còn ${product.quantity} sản phẩm trong kho`;
+        }
+      });
+    }
+
+    // Validate phương thức thanh toán
+    if (!order.paymentMethod) {
+      newErrors.paymentMethod = 'Vui lòng chọn phương thức thanh toán';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // Fetch products for selection
   useEffect(() => {
     const fetchProducts = async () => {
@@ -90,13 +140,21 @@ const AddOrder = () => {
   // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setOrder({ ...order, [name]: value });
+    setOrder(prev => ({ ...prev, [name]: value }));
+    // Xóa lỗi khi người dùng thay đổi giá trị
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
   };
 
   const handleItemChange = (index, field, value) => {
     const updatedItems = [...order.items];
     updatedItems[index][field] = value;
-    setOrder({ ...order, items: updatedItems });
+    setOrder(prev => ({ ...prev, items: updatedItems }));
+    // Xóa lỗi khi người dùng thay đổi giá trị
+    if (errors[`items.${index}.${field}`]) {
+      setErrors(prev => ({ ...prev, [`items.${index}.${field}`]: undefined }));
+    }
   };
 
   const handleAddItem = () => {
@@ -124,48 +182,30 @@ const AddOrder = () => {
   // Submit the form and place the order
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const formData = new FormData();
+    
+    if (!validateForm()) {
+      return;
+    }
 
-    // Assuming you want to process the first product in the order.items for submission
-    const selectedItem = order.items[0]; // Change index as necessary
-    const product = products.find((p) => p.id === selectedItem.productId);
+    try {
+      const response = await fetch(`${BASE_URL}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(order),
+      });
 
-    if (product) {
-      formData.append('name', product.name);
-      formData.append('color', product.color);
-      formData.append('quantity', selectedItem.quantity); // Using quantity from the item
-      formData.append('price', product.price);
-      formData.append('os', product.os);
-      formData.append('brand', product.brand);
-      formData.append('description', product.description);
-
-      if (product.image) {
-        formData.append('image', product.image);
+      if (response.ok) {
+        alert('Đơn hàng đã được tạo thành công');
+        navigate('/order-management');
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || 'Không thể tạo đơn hàng');
       }
-
-      formData.append('cauhinh', JSON.stringify(product.cauhinh));
-
-      try {
-        const response = await fetch(`${BASE_URL}/api/addProduct`, {
-          method: 'POST',
-          body: formData,
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          setProductId(result.id); // Make sure setProductId is declared in your state
-          alert('Sản phẩm đã được thêm thành công');
-          navigate('/product-management');
-        } else {
-          const result = await response.json();
-          alert('Lỗi khi thêm sản phẩm: ' + result.message);
-        }
-      } catch (error) {
-        console.error('Lỗi khi thêm sản phẩm:', error);
-        alert('Lỗi kết nối đến server');
-      }
-    } else {
-      alert('Không tìm thấy sản phẩm.');
+    } catch (error) {
+      console.error('Lỗi khi tạo đơn hàng:', error);
+      alert(error.message || 'Đã xảy ra lỗi khi tạo đơn hàng');
     }
   };
 
@@ -187,6 +227,8 @@ const AddOrder = () => {
               fullWidth
               required
               margin="normal"
+              error={!!errors.customerId}
+              helperText={errors.customerId}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -198,7 +240,9 @@ const AddOrder = () => {
               fullWidth
               required
               margin="normal"
-              disabled // Disable this field to prevent manual editing
+              disabled
+              error={!!errors.customerName}
+              helperText={errors.customerName}
             />
           </Grid>
           <Grid item xs={12}>
@@ -210,6 +254,10 @@ const AddOrder = () => {
               fullWidth
               required
               margin="normal"
+              error={!!errors.shippingAddress}
+              helperText={errors.shippingAddress}
+              multiline
+              rows={2}
             />
           </Grid>
 
@@ -235,23 +283,18 @@ const AddOrder = () => {
               <Grid container spacing={2} key={index}>
                 <Grid item xs={6}>
                   <TextField
-                    label="Sản phẩm"
-                    value={item.productId}
-                    onChange={(e) => handleProductFilter(index, e.target.value)} // Filter products based on input
-                    fullWidth
-                    required
-                  />
-                  <TextField
                     select
                     label="Chọn sản phẩm"
                     value={item.productId}
                     onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
                     fullWidth
                     margin="normal"
+                    error={!!errors[`items.${index}.productId`]}
+                    helperText={errors[`items.${index}.productId`]}
                   >
                     {filteredProducts.map((product) => (
                       <MenuItem key={product.id} value={product.id}>
-                        {product.name}
+                        {product.name} - Còn {product.quantity} sản phẩm
                       </MenuItem>
                     ))}
                   </TextField>
@@ -261,20 +304,32 @@ const AddOrder = () => {
                     label="Số lượng"
                     type="number"
                     value={item.quantity}
-                    onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
+                    onChange={(e) => handleItemChange(index, 'quantity', parseInt(e.target.value))}
                     fullWidth
                     required
                     inputProps={{ min: 1 }}
+                    error={!!errors[`items.${index}.quantity`]}
+                    helperText={errors[`items.${index}.quantity`]}
                   />
                 </Grid>
                 <Grid item xs={3}>
-                  <Button variant="contained" color="secondary" onClick={() => handleRemoveItem(index)}>
+                  <Button 
+                    variant="contained" 
+                    color="secondary" 
+                    onClick={() => handleRemoveItem(index)}
+                    disabled={order.items.length === 1}
+                  >
                     Xoá
                   </Button>
                 </Grid>
               </Grid>
             ))}
-            <Button variant="contained" color="primary" onClick={handleAddItem} style={{ marginTop: '10px' }}>
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={handleAddItem} 
+              style={{ marginTop: '10px' }}
+            >
               Thêm sản phẩm
             </Button>
           </Grid>
@@ -327,6 +382,8 @@ const AddOrder = () => {
               fullWidth
               required
               margin="normal"
+              error={!!errors.paymentMethod}
+              helperText={errors.paymentMethod}
             >
               {paymentMethodOptions.map((option) => (
                 <MenuItem key={option} value={option}>

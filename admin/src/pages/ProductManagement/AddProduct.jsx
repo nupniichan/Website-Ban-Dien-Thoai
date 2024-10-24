@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Grid, IconButton, MenuItem } from '@mui/material';
+import { Box, TextField, Button, Typography, Grid, IconButton, Autocomplete } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
 import { MenuItem } from '@mui/material';
@@ -33,6 +33,9 @@ const AddProduct = () => {
   });
   const [productId, setProductId] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // Thêm state để lưu URL hình ảnh
+
+  // Thêm state cho validation errors
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -98,6 +101,103 @@ const AddProduct = () => {
   const simOptions = ['1 SIM', '2 SIM', 'eSIM'];
   const chargingPortOptions = ['Lightning', 'Type-C', 'Micro USB'];
 
+  // Hàm validate form
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate tên sản phẩm
+    if (!product.name || product.name.trim() === '') {
+      newErrors.name = 'Vui lòng nhập tên sản phẩm';
+    }
+
+    // Validate màu sắc
+    if (!product.color) {
+      newErrors.color = 'Vui lòng chọn màu sắc';
+    }
+
+    // Validate số lượng
+    if (!product.quantity || product.quantity <= 0) {
+      newErrors.quantity = 'Số lượng phải lớn hơn 0';
+    }
+
+    // Validate giá
+    if (!product.price || product.price <= 0) {
+      newErrors.price = 'Giá phải lớn hơn 0';
+    }
+
+    // Validate hệ điều hành
+    if (!product.os) {
+      newErrors.os = 'Vui lòng chọn hệ điều hành';
+    }
+
+    // Validate thương hiệu
+    if (!product.brand) {
+      newErrors.brand = 'Vui lòng chọn thương hiệu';
+    }
+
+    // Validate cấu hình
+    if (!product.cauhinh.kichThuocManHinh) {
+      newErrors['cauhinh.kichThuocManHinh'] = 'Vui lòng nhập kích thước màn hình';
+    } else if (!/^\d+(\.\d+)?\"$/.test(product.cauhinh.kichThuocManHinh)) {
+      newErrors['cauhinh.kichThuocManHinh'] = 'Định dạng không hợp lệ';
+    }
+
+    // Validate camera sau
+    if (!product.cauhinh.cameraSau) {
+      newErrors['cauhinh.cameraSau'] = 'Vui lòng nhập camera sau';
+    } else if (!/^\d+MP$/.test(product.cauhinh.cameraSau)) {
+      newErrors['cauhinh.cameraSau'] = 'Định dạng không hợp lệ';
+    }
+
+    // Validate camera trước
+    if (!product.cauhinh.cameraTruoc) {
+      newErrors['cauhinh.cameraTruoc'] = 'Vui lòng nhập camera trước';
+    } else if (!/^\d+MP$/.test(product.cauhinh.cameraTruoc)) {
+      newErrors['cauhinh.cameraTruoc'] = 'Định dạng không hợp lệ';
+    }
+
+    // Validate chipset
+    if (!product.cauhinh.chipset) {
+      newErrors['cauhinh.chipset'] = 'Vui lòng nhập chipset';
+    }
+
+    // Validate GPU
+    if (!product.cauhinh.gpu) {
+      newErrors['cauhinh.gpu'] = 'Vui lòng nhập GPU';
+    }
+
+    // Validate công nghệ NFC
+    if (!product.cauhinh.congNgheNFC) {
+      newErrors['cauhinh.congNgheNFC'] = 'Vui lòng chọn công nghệ NFC';
+    }
+
+    // Validate RAM
+    if (!product.cauhinh.dungLuongRAM) {
+      newErrors['cauhinh.dungLuongRAM'] = 'Vui lòng nhập RAM';
+    } else if (!/^\d+GB$/.test(product.cauhinh.dungLuongRAM)) {
+      newErrors['cauhinh.dungLuongRAM'] = 'Định dạng không hợp lệ';
+    }
+
+    // Validate bộ nhớ trong
+    if (!product.cauhinh.boNhoTrong) {
+      newErrors['cauhinh.boNhoTrong'] = 'Vui lòng nhập bộ nhớ trong';
+    } else if (!/^\d+GB$/.test(product.cauhinh.boNhoTrong)) {
+      newErrors['cauhinh.boNhoTrong'] = 'Định dạng không hợp lệ';
+    }
+
+    // Validate thẻ SIM
+    if (!product.cauhinh.theSIM) {
+      newErrors['cauhinh.theSIM'] = 'Vui lòng chọn thẻ SIM';
+    }
+
+    // Validate cổng sạc
+    if (!product.cauhinh.congSac) {
+      newErrors['cauhinh.congSac'] = 'Vui lòng chọn cổng sạc';
+    }
+
+    setErrors(newErrors);
+  };
+
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Thêm sản phẩm mới</Typography>
@@ -107,23 +207,36 @@ const AddProduct = () => {
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>Thông tin cơ bản</Typography>
           </Grid>
+          <Grid item xs={12}>
+            <TextField 
+              label="Tên sản phẩm" 
+              name="name" 
+              value={product.name} 
+              onChange={handleChange} 
+              fullWidth 
+              required 
+              margin="normal" 
+            />
+          </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Màu sắc"
-              name="color"
+            <Autocomplete
+              freeSolo
+              options={colorOptions}
               value={product.color}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {colorOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                setProduct({ ...product, color: newValue || '' });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Màu sắc"
+                  name="color"
+                  required
+                  margin="normal"
+                  fullWidth
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField label="Số lượng tồn" name="quantity" value={product.quantity} onChange={handleChange} fullWidth margin="normal" />
@@ -132,40 +245,44 @@ const AddProduct = () => {
             <TextField label="Giá (VNĐ)" name="price" value={product.price} onChange={handleChange} fullWidth margin="normal" />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Hệ điều hành"
-              name="os"
+            <Autocomplete
+              freeSolo
+              options={osOptions}
               value={product.os}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {osOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                setProduct({ ...product, os: newValue || '' });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Hệ điều hành"
+                  name="os"
+                  required
+                  margin="normal"
+                  fullWidth
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Thương hiệu"
-              name="brand"
+            <Autocomplete
+              freeSolo
+              options={brandOptions}
               value={product.brand}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {brandOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                setProduct({ ...product, brand: newValue || '' });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Thương hiệu"
+                  name="brand"
+                  required
+                  margin="normal"
+                  fullWidth
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12}>
             <TextField label="Mô tả" name="description" value={product.description} onChange={handleChange} fullWidth margin="normal" multiline rows={4} />
@@ -197,22 +314,27 @@ const AddProduct = () => {
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Công nghệ màn hình"
-              name="cauhinh.congNgheManHinh"
+            <Autocomplete
+              freeSolo
+              options={screenTechOptions}
               value={product.cauhinh.congNgheManHinh}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {screenTechOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                setProduct({
+                  ...product,
+                  cauhinh: { ...product.cauhinh, congNgheManHinh: newValue || '' }
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Công nghệ màn hình"
+                  name="cauhinh.congNgheManHinh"
+                  required
+                  margin="normal"
+                  fullWidth
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

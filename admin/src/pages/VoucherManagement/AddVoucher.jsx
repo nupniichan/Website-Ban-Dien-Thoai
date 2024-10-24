@@ -1,88 +1,126 @@
-import { useState, useEffect } from "react";
-import { Box, TextField, Button, CircularProgress, Grid, Typography } from "@mui/material";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Box, TextField, Button, Grid, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { BASE_URL } from "../../config";
 
-const EditVoucher = () => {
-    const { voucherId } = useParams();
+const AddVoucher = () => {
     const navigate = useNavigate();
     const [voucher, setVoucher] = useState({
         name: '',
-        startDate: '',
-        endDate: '',
-        discountRate: 0,
-        applyCode: '',
+        usageDate: '', // Đổi từ startDate
+        expirationDate: '', // Đổi từ endDate  
+        discountRate: '',
+        applicableCode: '', // Đổi từ applyCode
     });
-    const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fetchVoucher = async () => {
-            try {
-                const response = await axios.get(`${BASE_URL}/api/vouchers/${voucherId}`);
-                setVoucher(response.data);
-            } catch (error) {
-                console.error("Error fetching voucher:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const [errors, setErrors] = useState({});
 
-        fetchVoucher();
-    }, [voucherId]);
+    const validateForm = () => {
+        const newErrors = {};
+
+        // Validate tên voucher
+        if (!voucher.name.trim()) {
+            newErrors.name = 'Vui lòng nhập tên voucher';
+        } else if (voucher.name.length < 3) {
+            newErrors.name = 'Tên voucher phải có ít nhất 3 ký tự';
+        }
+
+        // Validate ngày bắt đầu
+        if (!voucher.usageDate) { // Đổi tên field
+            newErrors.usageDate = 'Vui lòng chọn ngày bắt đầu';
+        }
+
+        // Validate ngày kết thúc
+        if (!voucher.expirationDate) { // Đổi tên field
+            newErrors.expirationDate = 'Vui lòng chọn ngày kết thúc';
+        } else if (new Date(voucher.expirationDate) <= new Date(voucher.usageDate)) {
+            newErrors.expirationDate = 'Ngày kết thúc phải sau ngày bắt đầu';
+        }
+
+        // Validate tỷ lệ giảm giá
+        const discountRate = Number(voucher.discountRate);
+        if (!voucher.discountRate) {
+            newErrors.discountRate = 'Vui lòng nhập tỷ lệ giảm giá';
+        } else if (isNaN(discountRate) || discountRate <= 0 || discountRate > 100) {
+            newErrors.discountRate = 'Tỷ lệ giảm giá phải từ 1% đến 100%';
+        }
+
+        // Validate mã áp dụng
+        if (!voucher.applicableCode.trim()) { // Đổi tên field
+            newErrors.applicableCode = 'Vui lòng nhập mã voucher';
+        } else if (!/^[A-Z0-9]{3,20}$/.test(voucher.applicableCode)) {
+            newErrors.applicableCode = 'Mã voucher chỉ được chứa chữ hoa và số, độ dài 3-20 ký tự';
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setVoucher((prevVoucher) => ({
-            ...prevVoucher,
-            [name]: value,
+        setVoucher(prev => ({
+            ...prev,
+            [name]: value
         }));
+        // Xóa lỗi khi người dùng thay đổi giá trị
+        if (errors[name]) {
+            setErrors(prev => ({
+                ...prev,
+                [name]: undefined
+            }));
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
+
         try {
-            const response = await axios.put(`${BASE_URL}/api/vouchers/${voucherId}`, voucher, {
+            const response = await axios.post(`${BASE_URL}/api/addDiscountCode`, voucher, {
                 headers: { "Content-Type": "application/json" },
             });
-            if (response.status === 200) {
-                alert("Voucher updated successfully");
+            if (response.status === 201) {
+                alert("Thêm voucher thành công");
                 navigate("/voucher-management");
             } else {
-                alert("Failed to update voucher");
+                alert("Không thể thêm voucher");
             }
         } catch (error) {
-            console.error("Error updating voucher:", error);
+            console.error("Lỗi khi thêm voucher:", error);
+            alert(error.response?.data?.message || "Đã xảy ra lỗi khi thêm voucher");
         }
     };
-
-    if (loading) return <CircularProgress />;
-    if (!voucher) return <div>Voucher không tồn tại</div>;
 
     return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
-                Chỉnh sửa Voucher
+                Thêm Voucher Mới
             </Typography>
             <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Voucher Name"
+                            label="Tên Voucher"
                             name="name"
                             value={voucher.name}
                             onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.name}
+                            helperText={errors.name}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Start Date"
-                            name="startDate"
+                            label="Ngày bắt đầu"
+                            name="usageDate"
                             type="date"
-                            value={voucher.startDate.split('T')[0]} // Format for input
+                            value={voucher.usageDate}
                             onChange={handleInputChange}
                             fullWidth
                             required
@@ -90,14 +128,16 @@ const EditVoucher = () => {
                             InputLabelProps={{
                                 shrink: true,
                             }}
+                            error={!!errors.usageDate}
+                            helperText={errors.usageDate}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="End Date"
-                            name="endDate"
+                            label="Ngày kết thúc"
+                            name="expirationDate"
                             type="date"
-                            value={voucher.endDate.split('T')[0]} // Format for input
+                            value={voucher.expirationDate}
                             onChange={handleInputChange}
                             fullWidth
                             required
@@ -105,11 +145,13 @@ const EditVoucher = () => {
                             InputLabelProps={{
                                 shrink: true,
                             }}
+                            error={!!errors.expirationDate}
+                            helperText={errors.expirationDate}
                         />
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <TextField
-                            label="Discount Rate (%)"
+                            label="Tỷ lệ giảm giá (%)"
                             name="discountRate"
                             type="number"
                             value={voucher.discountRate}
@@ -117,18 +159,22 @@ const EditVoucher = () => {
                             fullWidth
                             required
                             margin="normal"
-                            inputProps={{ min: 0, max: 100 }}
+                            inputProps={{ min: 1, max: 100 }}
+                            error={!!errors.discountRate}
+                            helperText={errors.discountRate}
                         />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
-                            label="Apply Code"
-                            name="applyCode"
-                            value={voucher.applyCode}
+                            label="Mã áp dụng"
+                            name="applicableCode"
+                            value={voucher.applicableCode}
                             onChange={handleInputChange}
                             fullWidth
                             required
                             margin="normal"
+                            error={!!errors.applicableCode}
+                            helperText={errors.applicableCode || 'Chỉ sử dụng chữ hoa và số'}
                         />
                     </Grid>
                 </Grid>
@@ -140,7 +186,7 @@ const EditVoucher = () => {
                         color="primary"
                         size="large"
                     >
-                        Cập nhật Voucher
+                        Thêm Voucher
                     </Button>
                     <Button
                         onClick={() => navigate("/voucher-management")}
@@ -157,4 +203,4 @@ const EditVoucher = () => {
     );
 };
 
-export default EditVoucher;
+export default AddVoucher;
