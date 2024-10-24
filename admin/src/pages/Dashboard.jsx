@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from 'react';
-import { Card, CardContent, Typography, Box } from '@mui/material';
+import React, { useEffect, useRef, useState } from 'react';
+import { Card, CardContent, Typography, Box, CircularProgress } from '@mui/material';
 import { Line } from 'react-chartjs-2';
 import { Button, ButtonGroup } from '@mui/material';
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { TrendingUp, TrendingDown, Users, Package, DollarSign, Clock } from 'lucide-react';
 import '../styles/Dashboard.css';
+import { BASE_URL } from '../config';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
@@ -28,26 +29,81 @@ const StatCard = ({ title, value, change, icon: Icon, changeType }) => (
   </Card>
 );
 
-const Dashboard = () => {
-  const chartRef = useRef(null); // Tham chiếu đến chart
+const getStatusColor = (status) => {
+  switch (status) {
+    case 'Chờ xác nhận':
+      return '#FFA500'; // Orange
+    case 'Đã xác nhận':
+      return '#4CAF50'; // Green
+    case 'Đang giao hàng':
+      return '#2196F3'; // Blue
+    case 'Đã giao hàng':
+      return '#4CAF50'; // Green
+    case 'Đã huỷ':
+      return '#f44336'; // Red
+    case 'Đã thanh toán':
+      return '#4CAF50'; // Green
+    default:
+      return '#757575'; // Grey
+  }
+};
 
-  const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-    datasets: [
-      {
-        label: 'Doanh số bán hàng',
-        data: [1.2, 1.5, 1.8, 2.0, 2.5, 3.2, 2.9, 3.3, 2.8, 3.0, 3.5, 4.2],
-        borderColor: 'rgba(143, 153, 251, 1)',
-        backgroundColor: 'rgba(143, 153, 251, 0.2)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.4,
-        pointRadius: 5,
-        pointBackgroundColor: 'white',
-        pointHoverRadius: 8,
-        pointHoverBackgroundColor: 'rgba(143, 153, 251, 1)',
-      },
-    ],
+const Dashboard = () => {
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const chartRef = useRef(null);
+
+  // Gộp tất cả useEffect vào một
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/dashboard/stats`);
+        const data = await response.json();
+        setDashboardData(data);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDashboardData();
+
+    // Xử lý resize chart
+    const handleResize = () => {
+      if (chartRef.current) {
+        chartRef.current.resize();
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  if (loading || !dashboardData) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  const chartData = {
+    labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'],
+    datasets: [{
+      label: 'Doanh số bán hàng',
+      data: dashboardData?.monthlyRevenue 
+        ? Array(12).fill(0).map((_, index) => {
+            const monthData = dashboardData.monthlyRevenue.find(item => item._id === index + 1);
+            return monthData ? monthData.total / 1000000 : 0;
+          })
+        : Array(12).fill(0),
+      borderColor: '#1A1A40',
+      backgroundColor: 'rgba(26, 26, 64, 0.1)',
+      tension: 0.4
+    }]
   };
 
   const options = {
@@ -80,38 +136,48 @@ const Dashboard = () => {
     },
   };
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (chartRef.current) {
-        chartRef.current.chartInstance.resize(); // Gọi hàm resize
-      }
-    };
-
-    window.addEventListener('resize', handleResize); // Lắng nghe sự kiện resize
-
-    return () => {
-      window.removeEventListener('resize', handleResize); // Cleanup khi component bị unmount
-    };
-  }, []);
-
   return (
     <>
       <h3>Dashboard</h3>
       <div style={{ padding: '16px' }}>
         <div className="row g-3 mb-3">
-        <div className="col-12 col-md-6 col-lg-3">
-          <StatCard title="Tổng người dùng" value="40,689" change=" 8.5% so với tháng trước" icon={Users} changeType="up" />
+          <div className="col-12 col-md-6 col-lg-3">
+            <StatCard 
+              title="Tổng người dùng" 
+              value={dashboardData.stats.users.total.toLocaleString('vi-VN')} 
+              change={`${dashboardData.stats.users.change}% so với tháng trước`}
+              icon={Users} 
+              changeType={dashboardData.stats.users.change > 0 ? 'up' : 'down'} 
+            />
+          </div>
+          <div className="col-12 col-md-6 col-lg-3">
+            <StatCard 
+              title="Tổng đơn hàng" 
+              value={dashboardData.stats.orders.total.toLocaleString('vi-VN')} 
+              change={`${dashboardData.stats.orders.change}% so với tuần trước`}
+              icon={Package} 
+              changeType={dashboardData.stats.orders.change > 0 ? 'up' : 'down'} 
+            />
+          </div>
+          <div className="col-12 col-md-6 col-lg-3">
+            <StatCard 
+              title="Tổng doanh thu" 
+              value={`${(dashboardData.stats.revenue.total).toLocaleString('vi-VN')}đ`}
+              change={`${dashboardData.stats.revenue.change}% so với tháng trước`}
+              icon={DollarSign} 
+              changeType={dashboardData.stats.revenue.change > 0 ? 'up' : 'down'} 
+            />
+          </div>
+          <div className="col-12 col-md-6 col-lg-3">
+            <StatCard 
+              title="Đơn hàng đang chờ" 
+              value={dashboardData.stats.pendingOrders.total.toLocaleString('vi-VN')}
+              change={`${dashboardData.stats.pendingOrders.change}% so với hôm qua`}
+              icon={Clock} 
+              changeType={dashboardData.stats.pendingOrders.change > 0 ? 'up' : 'down'} 
+            />
+          </div>
         </div>
-        <div className="col-12 col-md-6 col-lg-3">
-          <StatCard title="Tổng đơn hàng" value="10,293" change=" 1.3% so với tuần trước" icon={Package} changeType="up" />
-        </div>
-        <div className="col-12 col-md-6 col-lg-3">
-          <StatCard title="Tổng doanh số bán" value="$89,000" change=" 4.3% so với tuần trước" icon={DollarSign} changeType="down" />
-        </div>
-        <div className="col-12 col-md-6 col-lg-3">
-          <StatCard title="Đơn hàng đang chờ" value="2,040" change=" 1.8% so với ngày hôm qua" icon={Clock} changeType="up" />
-        </div>
-      </div>
         <div style={{ backgroundColor: 'white', padding: '16px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)', marginBottom: '24px' }}>
           <Box display="flex" justifyContent="space-between" alignItems="center" marginBottom="16px">
             <Box>
@@ -129,7 +195,7 @@ const Dashboard = () => {
             </ButtonGroup>
           </Box>
           <div className='dashboard-chart' style={{ height: '400px' }}> {/* Đảm bảo chart có chiều cao */}
-            <Line ref={chartRef} data={data} options={options} />
+            <Line ref={chartRef} data={chartData} options={options} />
           </div>
         </div>
 
@@ -140,46 +206,22 @@ const Dashboard = () => {
               <thead>
                 <tr style={{ backgroundColor: '#f5f5f5' }}>
                   <th style={{ padding: '8px', border: '1px solid #ddd' }}>Mã đơn hàng</th>
-                  <th style={{ padding: '8px', border: '1px solid #ddd' }}>Tên sản phẩm</th>
                   <th style={{ padding: '8px', border: '1px solid #ddd' }}>Mã / Tên khách hàng</th>
                   <th style={{ padding: '8px', border: '1px solid #ddd' }}>Ngày đặt</th>
-                  <th style={{ padding: '8px', border: '1px solid #ddd' }}>Số lượng</th>
                   <th style={{ padding: '8px', border: '1px solid #ddd' }}>Thành tiền</th>
                   <th style={{ padding: '8px', border: '1px solid #ddd' }}>Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>IP16X2024-1</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>Iphone 16</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>1 / nupniichan</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>16/09/2024 - 12:53 PM</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>1</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>$9.999</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd', color: 'green' }}>Đã được giao</td>
-                </tr>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>IP16X2024-2</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>Iphone 16</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>1 / nupniichan</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>16/09/2024 - 12:53 PM</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>1</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>$9.999</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd', color: 'orange' }}>Chờ xác nhận</td>
-                </tr>
-              </tbody>
-              <tbody>
-                <tr>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>IP16X2024-3</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>Iphone 16</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>1 / nupniichan</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>16/09/2024 - 12:53 PM</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>1</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd' }}>$9.999</td>
-                  <td style={{ padding: '8px', border: '1px solid #ddd', color: 'red' }}>Chưa được giao</td>
-                </tr>
+                {dashboardData.recentOrders.map(order => (
+                  <tr key={order.id}>
+                    <td style={{ padding: '8px', border: '1px solid #ddd' }}>{order.id}</td>
+                    <td style={{ padding: '8px', border: '1px solid #ddd' }}>{order.customerId} / {order.customerName}</td>
+                    <td style={{ padding: '8px', border: '1px solid #ddd' }}>{new Date(order.orderDate).toLocaleString('vi-VN')}</td>
+                    <td style={{ padding: '8px', border: '1px solid #ddd' }}>{order.totalAmount.toLocaleString('vi-VN')}đ</td>
+                    <td style={{ padding: '8px', border: '1px solid #ddd', color: getStatusColor(order.status) }}>{order.status}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

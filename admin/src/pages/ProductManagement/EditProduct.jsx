@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Grid, CircularProgress } from '@mui/material';
+import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem, Autocomplete } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
 
@@ -10,6 +10,7 @@ const EditProduct = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imagePreview, setImagePreview] = useState(null); // Thêm state cho hình ảnh mới
+  const [errors, setErrors] = useState({});
 
   // Bản đồ key sang nhãn có dấu
   const cauHinhLabels = {
@@ -28,6 +29,15 @@ const EditProduct = () => {
     congSac: "Cổng sạc",
     // Thêm các key khác nếu cần
   };
+
+  // Thêm các options giống như AddProduct
+  const colorOptions = ['Đen', 'Trắng', 'Vàng', 'Xanh', 'Đỏ', 'Hồng', 'Tím', 'Xám'];
+  const osOptions = ['Android', 'IOS'];
+  const brandOptions = ['Apple', 'Samsung', 'Oppo', 'Xiaomi', 'Vivo', 'Realme', 'Huawei', 'Nokia', 'LG', 'Lenovo', 'Asus', 'Google', 'Microsoft', 'BlackBerry', 'HTC', 'Sony', 'Motorola', 'OnePlus', 'Razer', 'ZTE', 'Meizu', 'Nubia'];
+  const screenTechOptions = ['OLED', 'AMOLED', 'LCD', 'IPS LCD', 'Super AMOLED'];
+  const nfcOptions = ['Có', 'Không'];
+  const simOptions = ['1 SIM', '2 SIM', 'eSIM'];
+  const chargingPortOptions = ['Lightning', 'Type-C', 'Micro USB'];
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -56,11 +66,32 @@ const EditProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Xóa error khi người dùng bắt đầu nhập lại
+    setErrors(prev => ({
+        ...prev,
+        [name]: undefined
+    }));
+
+    if (name === 'price' && Number(value) <= 0) {
+        setErrors(prev => ({
+            ...prev,
+            price: 'Giá phải lớn hơn 0'
+        }));
+    }
+
+    if (name === 'quantity' && Number(value) <= 0) {
+        setErrors(prev => ({
+            ...prev,
+            quantity: 'Số lượng phải lớn hơn 0'
+        }));
+    }
+
     if (name.startsWith("cauhinh.")) {
-      const key = name.split(".")[1];
-      setProduct({ ...product, cauhinh: { ...product.cauhinh, [key]: value } });
+        const key = name.split(".")[1];
+        setProduct({ ...product, cauhinh: { ...product.cauhinh, [key]: value } });
     } else {
-      setProduct({ ...product, [name]: value });
+        setProduct({ ...product, [name]: value });
     }
   };
 
@@ -72,6 +103,11 @@ const EditProduct = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+        return;
+    }
+
     const formData = new FormData();
 
     // Lặp qua các trường của product và thêm vào formData
@@ -108,6 +144,102 @@ const EditProduct = () => {
     navigate('/product-management'); // Quay lại trang quản lý sản phẩm
   };
 
+  // Thêm hàm validate
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Validate tên sản phẩm
+    if (!product?.name || !product.name.trim()) {
+        newErrors.name = 'Vui lòng nhập tên sản phẩm';
+    }
+
+    // Validate màu sắc
+    if (!product?.color) {
+        newErrors.color = 'Vui lòng chọn màu sắc';
+    }
+
+    // Validate số lượng
+    if (!product?.quantity || product.quantity <= 0) {
+        newErrors.quantity = 'Số lượng phải lớn hơn 0';
+    }
+
+    // Validate giá
+    if (!product?.price || product.price <= 0) {
+        newErrors.price = 'Giá phải lớn hơn 0';
+    }
+
+    // Validate hệ điều hành
+    if (!product?.os) {
+        newErrors.os = 'Vui lòng chọn hệ điều hành';
+    }
+
+    // Validate thương hiệu
+    if (!product?.brand) {
+        newErrors.brand = 'Vui lòng chọn thương hiệu';
+    }
+
+    // Validate cấu hình
+    if (product?.cauhinh) {
+        // Validate kích thước màn hình
+        if (!product.cauhinh.kichThuocManHinh) {
+            newErrors['cauhinh.kichThuocManHinh'] = 'Vui lòng nhập kích thước màn hình';
+        } else if (!/^\d+(\.\d+)?\"$/.test(product.cauhinh.kichThuocManHinh)) {
+            newErrors['cauhinh.kichThuocManHinh'] = 'Định dạng không hợp lệ (ví dụ: 6.1")';
+        }
+
+        // Validate camera sau
+        if (!product.cauhinh.cameraSau) {
+            newErrors['cauhinh.cameraSau'] = 'Vui lòng nhập camera sau';
+        } else if (!/^\d+MP$/.test(product.cauhinh.cameraSau)) {
+            newErrors['cauhinh.cameraSau'] = 'Định dạng không hợp lệ (ví dụ: 12MP)';
+        }
+
+        // Validate camera trước
+        if (!product.cauhinh.cameraTruoc) {
+            newErrors['cauhinh.cameraTruoc'] = 'Vui lòng nhập camera trước';
+        } else if (!/^\d+MP$/.test(product.cauhinh.cameraTruoc)) {
+            newErrors['cauhinh.cameraTruoc'] = 'Định dạng không hợp lệ (ví dụ: 12MP)';
+        }
+
+        // Validate chipset
+        if (!product.cauhinh.chipset) {
+            newErrors['cauhinh.chipset'] = 'Vui lòng nhập chipset';
+        }
+
+        // Validate GPU
+        if (!product.cauhinh.gpu) {
+            newErrors['cauhinh.gpu'] = 'Vui lòng nhập GPU';
+        }
+
+        // Validate RAM
+        if (!product.cauhinh.dungLuongRAM) {
+            newErrors['cauhinh.dungLuongRAM'] = 'Vui lòng nhập RAM';
+        } else if (!/^\d+GB$/.test(product.cauhinh.dungLuongRAM)) {
+            newErrors['cauhinh.dungLuongRAM'] = 'Định dạng không hợp lệ (ví dụ: 8GB)';
+        }
+
+        // Validate bộ nhớ trong
+        if (!product.cauhinh.boNhoTrong) {
+            newErrors['cauhinh.boNhoTrong'] = 'Vui lòng nhập bộ nhớ trong';
+        } else if (!/^\d+GB$/.test(product.cauhinh.boNhoTrong)) {
+            newErrors['cauhinh.boNhoTrong'] = 'Định dạng không hợp lệ (ví dụ: 128GB)';
+        }
+
+        // Validate thẻ SIM
+        if (!product.cauhinh.theSIM) {
+            newErrors['cauhinh.theSIM'] = 'Vui lòng chọn thẻ SIM';
+        }
+
+        // Validate cổng sạc
+        if (!product.cauhinh.congSac) {
+            newErrors['cauhinh.congSac'] = 'Vui lòng chọn cổng sạc';
+        }
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   if (loading) return <CircularProgress />;
   if (error) return <Typography color="error">{error}</Typography>;
   if (!product) return <Typography>Không tìm thấy sản phẩm</Typography>;
@@ -121,23 +253,94 @@ const EditProduct = () => {
             <Typography variant="h6" gutterBottom>Thông tin cơ bản</Typography>
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField 
-              label="Tên sản phẩm" 
-              name="name" 
-              value={product.name || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
+            <Autocomplete
+                freeSolo
+                options={colorOptions}
+                value={product.color}
+                onChange={(event, newValue) => {
+                    setProduct({ ...product, color: newValue || '' });
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Màu sắc"
+                        name="color"
+                        required
+                        margin="normal"
+                        fullWidth
+                        error={!!errors.color}
+                        helperText={errors.color}
+                    />
+                )}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField 
-              label="Màu sắc" 
-              name="color" 
-              value={product.color || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
+            <Autocomplete
+                freeSolo
+                options={osOptions}
+                value={product.os}
+                onChange={(event, newValue) => {
+                    setProduct({ ...product, os: newValue || '' });
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Hệ điều hành"
+                        name="os"
+                        required
+                        margin="normal"
+                        fullWidth
+                        error={!!errors.os}
+                        helperText={errors.os}
+                    />
+                )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+                freeSolo
+                options={brandOptions}
+                value={product.brand}
+                onChange={(event, newValue) => {
+                    setProduct({ ...product, brand: newValue || '' });
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Thương hiệu"
+                        name="brand"
+                        required
+                        margin="normal"
+                        fullWidth
+                        error={!!errors.brand}
+                        helperText={errors.brand}
+                    />
+                )}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Autocomplete
+                freeSolo
+                options={screenTechOptions}
+                value={product.cauhinh.congNgheManHinh}
+                onChange={(event, newValue) => {
+                    setProduct({
+                        ...product,
+                        cauhinh: { ...product.cauhinh, congNgheManHinh: newValue || '' }
+                    });
+                }}
+                renderInput={(params) => (
+                    <TextField
+                        {...params}
+                        label="Công nghệ màn hình"
+                        name="cauhinh.congNgheManHinh"
+                        required
+                        margin="normal"
+                        fullWidth
+                        error={!!errors['cauhinh.congNgheManHinh']}
+                        helperText={errors['cauhinh.congNgheManHinh']}
+                    />
+                )}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -147,8 +350,12 @@ const EditProduct = () => {
               value={product.quantity || ''} 
               onChange={handleChange} 
               fullWidth 
+              required
               margin="normal" 
-              type="number" 
+              type="number"
+              inputProps={{ min: 0 }}
+              error={!!errors.quantity}
+              helperText={errors.quantity}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -158,40 +365,22 @@ const EditProduct = () => {
               value={product.price || ''} 
               onChange={handleChange} 
               fullWidth 
+              required
               margin="normal" 
-              type="number" 
+              type="number"
+              inputProps={{ min: 0 }}
+              error={!!errors.price}
+              helperText={errors.price}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField 
-              label="Hệ điều hành" 
-              name="os" 
-              value={product.os || ''} 
+              label="Hình ảnh sản phẩm hiện tại" 
+              name="image" 
+              value={imagePreview || ''} 
               onChange={handleChange} 
               fullWidth 
               margin="normal" 
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField 
-              label="Hãng" 
-              name="brand" 
-              value={product.brand || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField 
-              label="Mô tả" 
-              name="description" 
-              value={product.description || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
-              multiline 
-              rows={4} 
             />
           </Grid>
           <Grid item xs={12}>
@@ -213,6 +402,8 @@ const EditProduct = () => {
                   onChange={handleChange}
                   fullWidth
                   margin="normal"
+                  error={!!errors[`cauhinh.${key}`]}
+                  helperText={errors[`cauhinh.${key}`]}
                 />
               </Grid>
             ))
