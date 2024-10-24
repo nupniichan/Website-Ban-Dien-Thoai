@@ -7,6 +7,11 @@ const discountCodeSchema = new mongoose.Schema({
     unique: true,
     match: [/^VC\d{3}$/, 'ID mã giảm giá phải có định dạng VCxxx (x là số)']
   },
+  name: {
+    type: String,
+    required: [true, 'Tên mã giảm giá là bắt buộc'],
+    minlength: [3, 'Tên mã giảm giá phải có ít nhất 3 ký tự']
+  },
   code: {
     type: String,
     required: [true, 'Mã giảm giá là bắt buộc'],

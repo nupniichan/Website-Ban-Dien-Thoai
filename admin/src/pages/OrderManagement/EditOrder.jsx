@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem } from '@mui/material';
+import { Box, TextField, Button, Typography, Grid, CircularProgress, MenuItem, Autocomplete } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
 
@@ -52,6 +52,13 @@ const EditOrder = () => {
     fetchProducts();
   }, [orderId]);
 
+  // Thêm hàm kiểm tra ngày trong quá khứ
+  const isPastDate = (date) => {
+    const orderDate = new Date(date);
+    const now = new Date();
+    return orderDate < now;
+  };
+
   // Validate form
   const validateForm = () => {
     const newErrors = {};
@@ -94,6 +101,13 @@ const EditOrder = () => {
 
     if (!order.paymentStatus) {
       newErrors.paymentStatus = 'Vui lòng chọn trạng thái thanh toán';
+    }
+
+    // Validate ngày đặt hàng
+    if (!order.orderDate) {
+      newErrors.orderDate = 'Vui lòng chọn ngày đặt hàng';
+    } else if (isPastDate(order.orderDate)) {
+      newErrors.orderDate = 'Không thể chọn ngày trong quá khứ';
     }
 
     setErrors(newErrors);
@@ -220,23 +234,24 @@ const EditOrder = () => {
             {order.items && order.items.map((item, index) => (
               <Grid container spacing={2} key={index}>
                 <Grid item xs={6}>
-                  <TextField
-                    select
-                    label="Sản phẩm"
-                    value={item.productId || ''}
-                    onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
-                    fullWidth
-                    required
-                    error={!!errors[`items[${index}].productId`]}
-                    helperText={errors[`items[${index}].productId`]}
-                    margin="normal"
-                  >
-                    {products.map((product) => (
-                      <MenuItem key={product.id} value={product.id}>
-                        {product.name}
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  <Autocomplete
+                    options={products}
+                    getOptionLabel={(option) => `${option.name} - Còn ${option.quantity} sản phẩm`}
+                    value={products.find(p => p.id === item.productId) || null}
+                    onChange={(event, newValue) => {
+                      handleItemChange(index, 'productId', newValue ? newValue.id : '');
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Chọn sản phẩm"
+                        required
+                        margin="normal"
+                        error={!!errors[`items[${index}].productId`]}
+                        helperText={errors[`items[${index}].productId`]}
+                      />
+                    )}
+                  />
                 </Grid>
                 <Grid item xs={6}>
                   <TextField
@@ -258,60 +273,69 @@ const EditOrder = () => {
 
           {/* Order Status and Payment */}
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Trạng thái đơn hàng"
-              name="orderStatus"
+            <Autocomplete
+              options={orderStatusOptions}
               value={order.orderStatus || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!!errors.orderStatus}
-              helperText={errors.orderStatus}
-              margin="normal"
-            >
-              {orderStatusOptions.map((option) => (
-                <MenuItem key={option} value={option}>{option}</MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                handleChange({
+                  target: { name: 'orderStatus', value: newValue }
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Trạng thái đơn hàng"
+                  required
+                  margin="normal"
+                  error={!!errors.orderStatus}
+                  helperText={errors.orderStatus}
+                />
+              )}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Trạng thái thanh toán"
-              name="paymentStatus"
+            <Autocomplete
+              options={paymentStatusOptions}
               value={order.paymentStatus || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!!errors.paymentStatus}
-              helperText={errors.paymentStatus}
-              margin="normal"
-            >
-              {paymentStatusOptions.map((option) => (
-                <MenuItem key={option} value={option}>{option}</MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                handleChange({
+                  target: { name: 'paymentStatus', value: newValue }
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Trạng thái thanh toán"
+                  required
+                  margin="normal"
+                  error={!!errors.paymentStatus}
+                  helperText={errors.paymentStatus}
+                />
+              )}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Phương thức thanh toán"
-              name="paymentMethod"
+            <Autocomplete
+              options={paymentMethodOptions}
               value={order.paymentMethod || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!!errors.paymentMethod}
-              helperText={errors.paymentMethod}
-              margin="normal"
-            >
-              {paymentMethodOptions.map((option) => (
-                <MenuItem key={option} value={option}>{option}</MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                handleChange({
+                  target: { name: 'paymentMethod', value: newValue }
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Phương thức thanh toán"
+                  required
+                  margin="normal"
+                  error={!!errors.paymentMethod}
+                  helperText={errors.paymentMethod}
+                />
+              )}
+            />
           </Grid>
 
           {/* Notes */}
@@ -325,6 +349,25 @@ const EditOrder = () => {
               multiline
               rows={3}
               margin="normal"
+            />
+          </Grid>
+
+          {/* Ngày đặt hàng */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Ngày đặt hàng"
+              name="orderDate"
+              type="datetime-local"
+              value={order.orderDate || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              error={!!errors.orderDate}
+              helperText={errors.orderDate}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Grid>
         </Grid>

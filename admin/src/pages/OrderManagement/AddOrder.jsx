@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'; 
-import { Box, TextField, Button, Grid, Typography, MenuItem } from '@mui/material';
+import { Box, TextField, Button, Grid, Typography, MenuItem, Autocomplete } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
 
@@ -22,6 +22,13 @@ const AddOrder = () => {
 
   // Thêm state cho errors
   const [errors, setErrors] = useState({});
+
+  // Thêm hàm kiểm tra ngày trong quá khứ
+  const isPastDate = (date) => {
+    const orderDate = new Date(date);
+    const now = new Date();
+    return orderDate < now;
+  };
 
   // Thêm hàm validate
   const validateForm = () => {
@@ -64,6 +71,13 @@ const AddOrder = () => {
     // Validate phương thức thanh toán
     if (!order.paymentMethod) {
       newErrors.paymentMethod = 'Vui lòng chọn phương thức thanh toán';
+    }
+
+    // Validate ngày đặt hàng
+    if (!order.orderDate) {
+        newErrors.orderDate = 'Vui lòng chọn ngày đặt hàng';
+    } else if (isPastDate(order.orderDate)) {
+        newErrors.orderDate = 'Không thể chọn ngày trong quá khứ';
     }
 
     setErrors(newErrors);
@@ -270,7 +284,10 @@ const AddOrder = () => {
               value={order.orderDate}
               onChange={handleChange}
               fullWidth
+              required
               margin="normal"
+              error={!!errors.orderDate}
+              helperText={errors.orderDate}
               InputLabelProps={{
                 shrink: true,
               }}
@@ -280,24 +297,28 @@ const AddOrder = () => {
           <Grid item xs={12}>
             <Typography variant="h6" gutterBottom>Sản phẩm đặt</Typography>
             {order.items.map((item, index) => (
-              <Grid container spacing={2} key={index}>
+              <Grid container spacing={2} key={index} alignItems="center">
                 <Grid item xs={6}>
-                  <TextField
-                    select
-                    label="Chọn sản phẩm"
-                    value={item.productId}
-                    onChange={(e) => handleItemChange(index, 'productId', e.target.value)}
-                    fullWidth
-                    margin="normal"
-                    error={!!errors[`items.${index}.productId`]}
-                    helperText={errors[`items.${index}.productId`]}
-                  >
-                    {filteredProducts.map((product) => (
-                      <MenuItem key={product.id} value={product.id}>
-                        {product.name} - Còn {product.quantity} sản phẩm
-                      </MenuItem>
-                    ))}
-                  </TextField>
+                  <Autocomplete
+                    options={filteredProducts}
+                    getOptionLabel={(option) => `${option.name} - Còn ${option.quantity} sản phẩm`}
+                    value={products.find(p => p.id === item.productId) || null}
+                    onChange={(event, newValue) => {
+                      handleItemChange(index, 'productId', newValue ? newValue.id : '');
+                    }}
+                    onInputChange={(event, value) => handleProductFilter(index, value)}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label="Chọn sản phẩm"
+                        required
+                        error={!!errors[`items.${index}.productId`]}
+                        helperText={errors[`items.${index}.productId`]}
+                        sx={{ marginTop: 0, marginBottom: 0 }} // Xóa margin
+                      />
+                    )}
+                    sx={{ marginTop: 2, marginBottom: 1 }} // Thêm margin vào Autocomplete
+                  />
                 </Grid>
                 <Grid item xs={3}>
                   <TextField
@@ -310,6 +331,7 @@ const AddOrder = () => {
                     inputProps={{ min: 1 }}
                     error={!!errors[`items.${index}.quantity`]}
                     helperText={errors[`items.${index}.quantity`]}
+                    sx={{ marginTop: 2, marginBottom: 1 }} // Căn chỉnh margin giống Autocomplete
                   />
                 </Grid>
                 <Grid item xs={3}>
@@ -318,6 +340,7 @@ const AddOrder = () => {
                     color="secondary" 
                     onClick={() => handleRemoveItem(index)}
                     disabled={order.items.length === 1}
+                    sx={{ marginTop: 2 }} // Căn chỉnh button theo các trường khác
                   >
                     Xoá
                   </Button>
@@ -335,62 +358,69 @@ const AddOrder = () => {
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Trạng thái đơn hàng"
-              name="orderStatus"
+            <Autocomplete
+              options={orderStatusOptions}
               value={order.orderStatus}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {orderStatusOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                handleChange({
+                  target: { name: 'orderStatus', value: newValue }
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Trạng thái đơn hàng"
+                  required
+                  margin="normal"
+                  error={!!errors.orderStatus}
+                  helperText={errors.orderStatus}
+                />
+              )}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Trạng thái thanh toán"
-              name="paymentStatus"
+            <Autocomplete
+              options={paymentStatusOptions}
               value={order.paymentStatus}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-            >
-              {paymentStatusOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                handleChange({
+                  target: { name: 'paymentStatus', value: newValue }
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Trạng thái thanh toán"
+                  required
+                  margin="normal"
+                  error={!!errors.paymentStatus}
+                  helperText={errors.paymentStatus}
+                />
+              )}
+            />
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Phương thức thanh toán"
-              name="paymentMethod"
+            <Autocomplete
+              options={paymentMethodOptions}
               value={order.paymentMethod}
-              onChange={handleChange}
-              fullWidth
-              required
-              margin="normal"
-              error={!!errors.paymentMethod}
-              helperText={errors.paymentMethod}
-            >
-              {paymentMethodOptions.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+              onChange={(event, newValue) => {
+                handleChange({
+                  target: { name: 'paymentMethod', value: newValue }
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Phương thức thanh toán"
+                  required
+                  margin="normal"
+                  error={!!errors.paymentMethod}
+                  helperText={errors.paymentMethod}
+                />
+              )}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField

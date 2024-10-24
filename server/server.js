@@ -753,27 +753,33 @@ app.get('/api/discountCodes', async (req, res) => {
 
 // Thêm mã giảm giá mới
 app.post('/api/addDiscountCode', async (req, res) => {
-  const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
+    try {
+        const discountId = await generateDiscountId();
+        const { name, code, discountPercent, startDate, endDate, minOrderValue, maxDiscountAmount } = req.body;
 
-  try {
+        const newDiscountCode = new DiscountCode({
+            id: discountId,
+            code,
+            name,
+            discountPercent,
+            startDate,
+            endDate,
+            minOrderValue,
+            maxDiscountAmount
+        });
 
-      const discountId = await generateDiscountId();
-
-
-      const newDiscountCode = new DiscountCode({
-          id: discountId,
-          name,
-          usageDate,
-          expirationDate,
-          discountRate,
-          applicableCode
-      });
-
-      await newDiscountCode.save();
-      res.status(201).json({ message: 'Mã giảm giá đã được tạo thành công!', discountCode: newDiscountCode });
-  } catch (err) {
-      res.status(500).json({ message: 'Lỗi khi tạo mã giảm giá', error: err.message });
-  }
+        await newDiscountCode.save();
+        res.status(201).json({ 
+            message: 'Mã giảm giá đã được tạo thành công!', 
+            discountCode: newDiscountCode 
+        });
+    } catch (err) {
+        console.error('Lỗi khi tạo mã giảm giá:', err);
+        res.status(500).json({ 
+            message: 'Lỗi khi tạo mã giảm giá', 
+            error: err.message 
+        });
+    }
 });
 
 
@@ -784,21 +790,37 @@ app.post('/api/addDiscountCode', async (req, res) => {
 
 // Sửa thông tin mã giảm giá
 app.put('/api/discountCodes/:id', async (req, res) => {
-  const { id } = req.params;
-  const { name, usageDate, expirationDate, discountRate, applicableCode } = req.body;
+    const { id } = req.params;
+    try {
+        const discountCode = await DiscountCode.findOne({ id }); // Tìm theo id không phải _id
+        if (!discountCode) {
+            return res.status(404).json({ message: 'Không tìm thấy mã giảm giá' });
+        }
 
-  try {
-      const updateData = { name, usageDate, expirationDate, discountRate, applicableCode };
+        const { name, startDate, endDate, discountPercent, code, minOrderValue, maxDiscountAmount } = req.body;
+        
+        // Cập nhật các trường
+        discountCode.name = name;
+        discountCode.startDate = startDate;
+        discountCode.endDate = endDate;
+        discountCode.discountPercent = discountPercent;
+        discountCode.code = code;
+        discountCode.minOrderValue = minOrderValue;
+        discountCode.maxDiscountAmount = maxDiscountAmount;
 
-      const updatedDiscountCode = await DiscountCode.findByIdAndUpdate(id, updateData, { new: true });
-      if (!updatedDiscountCode) {
-          return res.status(404).json({ message: 'Discount code not found' });
-      }
-
-      res.json({ message: 'Discount code updated successfully', discountCode: updatedDiscountCode });
-  } catch (err) {
-      res.status(500).json({ message: 'Error updating discount code', error: err.message });
-  }
+        await discountCode.save();
+        
+        res.json({ 
+            message: 'Cập nhật mã giảm giá thành công', 
+            discountCode 
+        });
+    } catch (err) {
+        console.error('Lỗi khi cập nhật mã giảm giá:', err);
+        res.status(500).json({ 
+            message: 'Lỗi khi cập nhật mã giảm giá', 
+            error: err.message 
+        });
+    }
 });
 
 
@@ -828,6 +850,7 @@ app.get('/api/discountCodes/:id', async (req, res) => {
     if (!discountCode) {
       return res.status(404).json({ message: 'Mã giảm giá không tồn tại' });
     }
+
     res.json(discountCode);
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin mã giảm giá', error: err.message });
@@ -1078,6 +1101,98 @@ app.post('/check-status-transaction', async (req, res) => {
     res.status(200).json(result.data);
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+});
+
+// Thêm endpoint để lấy thông tin một voucher
+app.get('/api/discountCodes/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const discountCode = await DiscountCode.findOne({ id: id });
+        
+        if (!discountCode) {
+            return res.status(404).json({ 
+                message: 'Không tìm thấy mã giảm giá' 
+            });
+        }
+        res.json(discountCode);
+    } catch (err) {
+        console.error('Lỗi khi lấy thông tin mã giảm giá:', err);
+        res.status(500).json({ 
+            message: 'Lỗi khi lấy thông tin mã giảm giá', 
+            error: err.message 
+        });
+    }
+});
+
+// Thêm các endpoints mới cho dashboard
+app.get('/api/dashboard/stats', async (req, res) => {
+  try {
+    // Lấy thống kê người dùng
+    const totalUsers = await User.countDocuments() || 0;
+    const lastMonthUsers = await User.countDocuments({
+      createdAt: { $gte: new Date(new Date().setMonth(new Date().getMonth() - 1)) }
+    }) || 0;
+
+    // Lấy thống kê đơn hàng và doanh thu
+    const totalOrders = await Order.countDocuments() || 0;
+    const lastWeekOrders = await Order.countDocuments({
+      orderDate: { $gte: new Date(new Date().setDate(new Date().getDate() - 7)) }
+    }) || 0;
+
+    // Lấy đơn hàng gần đây và populate thông tin sản phẩm
+    const recentOrders = await Order.find()
+      .sort({ orderDate: -1 })
+      .limit(10)
+      .populate('items.productId', 'name');
+
+    // Lấy doanh thu theo tháng
+    const monthlyRevenue = await Order.aggregate([
+      {
+        $match: {
+          orderDate: {
+            $gte: new Date(new Date().getFullYear(), 0, 1)
+          }
+        }
+      },
+      {
+        $group: {
+          _id: { $month: "$orderDate" },
+          total: { $sum: "$totalAmount" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]) || [];
+
+    res.json({
+      stats: {
+        users: {
+          total: totalUsers,
+          change: lastMonthUsers ? ((totalUsers - lastMonthUsers) / lastMonthUsers * 100).toFixed(1) : 0
+        },
+        orders: {
+          total: totalOrders,
+          change: lastWeekOrders ? ((totalOrders - lastWeekOrders) / lastWeekOrders * 100).toFixed(1) : 0
+        },
+        revenue: {
+          total: monthlyRevenue.reduce((sum, month) => sum + month.total, 0),
+          change: 0
+        },
+        pendingOrders: {
+          total: await Order.countDocuments({ status: 'Chờ xác nhận' }) || 0,
+          change: 0
+        }
+      },
+      monthlyRevenue,
+      recentOrders
+    });
+
+  } catch (error) {
+    console.error('Dashboard stats error:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi lấy thống kê', 
+      error: error.message 
+    });
   }
 });
 
