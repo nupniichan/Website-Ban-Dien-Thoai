@@ -5,7 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login";  // Import your Login component
 import Register from "./Register";  // Import your Register component
 import PathNames from "../PathNames.js";
-
+import axios from 'axios'; // Import axios for making API calls
+import { BASE_URL } from "../config";
 const UserMenu = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userAvatar, setUserAvatar] = useState(null);  // State to store userAvatar
@@ -16,17 +17,27 @@ const UserMenu = () => {
 
   useEffect(() => {
     const userId = sessionStorage.getItem("userId");
-    const storedUserAvatar = sessionStorage.getItem("avatar");  // Retrieve userAvatar from sessionStorage
     
+    // Function to fetch user details if logged in
+    const fetchUserData = async (userId) => {
+      try {
+        const response = await axios.get(`http://localhost:5000/api/users/${userId}`);
+        const user = response.data;
+        if (user) {
+          setUserAvatar(user.userAvatar); // Assuming your API response contains a userAvatar field
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
     if (userId) {
-      setIsLoggedIn(true);
-      setUserAvatar(storedUserAvatar);  // Set userAvatar state
+      fetchUserData(userId);
     }
 
     const handleLoginSuccess = () => {
-      const updatedUserAvatar = sessionStorage.getItem("avatar");  // Fetch updated avatar on login
-      setIsLoggedIn(true);
-      setUserAvatar(updatedUserAvatar);  // Update userAvatar state
+      fetchUserData(sessionStorage.getItem("userId"));
     };
 
     window.addEventListener("loginSuccess", handleLoginSuccess);
@@ -40,7 +51,6 @@ const UserMenu = () => {
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("userEmail");
     sessionStorage.removeItem("accountName");
-    sessionStorage.removeItem("avatar");
     setIsLoggedIn(false);
     setUserAvatar(null);  // Clear avatar when logged out
     navigate(PathNames.HOMEPAGE);
@@ -103,9 +113,9 @@ const UserMenu = () => {
             <MenuOutlined className={`transition-transform duration-200 ease-linear transform ${isMenuOpen ? `rotate-90` : `rotate-0`}`} />
             {userAvatar ? (
               <img
-                src={userAvatar}
+                src={`${BASE_URL}/${userAvatar}`}
                 alt="User Avatar"
-                className="w-8 h-8 rounded-full mr-2" // Use the avatar from sessionStorage
+                className="w-8 h-8 rounded-full mr-2" // Use the avatar from API
               />
             ) : (
               <UserOutlined />

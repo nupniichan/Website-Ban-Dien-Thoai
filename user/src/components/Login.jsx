@@ -33,7 +33,6 @@ const Login = ({ onSwitchToRegister }) => {
         sessionStorage.setItem('userEmail', data.user.email);
         sessionStorage.setItem('userId', data.user.userId);
         sessionStorage.setItem('accountName', data.user.accountName);
-        sessionStorage.setItem('userAvatar', data.user.userAvatar);
         console.log(data.user.userAvatar);
         window.dispatchEvent(new Event("loginSuccess"));
         navigate('/');

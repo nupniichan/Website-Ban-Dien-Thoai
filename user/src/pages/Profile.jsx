@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate for redirect
+import { useNavigate } from "react-router-dom";
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import { BASE_URL } from "../config.js";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
   const [error, setError] = useState(null);
-  const [isEditing, setIsEditing] = useState(false); // State to manage edit mode
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [isEditing, setIsEditing] = useState(false);
+  const [userAvatar, setUserAvatar] = useState(); // State for user avatar upload
+  const [avatarPreview, setAvatarPreview] = useState(null); // State for avatar preview
+  const [avatarError, setAvatarError] = useState(''); // State for avatar error
+  const navigate = useNavigate();
 
   const fetchUserData = async () => {
     const userEmail = sessionStorage.getItem('userEmail');
@@ -15,6 +18,7 @@ const Profile = () => {
       try {
         const response = await fetch(`${BASE_URL}/api/users/email/${userEmail}`);
         const data = await response.json();
+        console.log(data); // Log the fetched data
         if (response.ok) {
           setUserData(data);
         } else {
@@ -28,46 +32,74 @@ const Profile = () => {
       setError("User email not found");
     }
   };
+  
 
   useEffect(() => {
     fetchUserData();
   }, []);
 
-  // Toggle editing mode
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
+    if (!isEditing) {
+      setUserAvatar(null); // Reset userAvatar when editing is toggled off
+      setAvatarPreview(null); // Reset avatar preview when editing is toggled off
+      setAvatarError(''); // Reset avatar error when editing is toggled off
+    }
   };
 
-  // Handle form submission to update user data
-const handleUpdateUserData = async (e) => {
-  e.preventDefault();
-  const userId = sessionStorage.getItem('userId');
+  const handleUpdateUserData = async (e) => {
+    e.preventDefault();
+    const userId = sessionStorage.getItem('userId');
 
-  try {
-    const response = await fetch(`${BASE_URL}/api/users/${userId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData), // Send updated user data
-    });
+    const formData = new FormData(); // Create FormData to handle file uploads
+    formData.append('name', userData.name);
+    formData.append('email', userData.email);
+    formData.append('phoneNumber', userData.phoneNumber);
+    formData.append('dayOfBirth', userData.dayOfBirth);
+    formData.append('gender', userData.gender);
+    formData.append('address', userData.address);
+    formData.append('accountName', userData.accountName);
+    console.log([...formData]); // Log FormData entries
 
-    const data = await response.json();
+    if (userAvatar) {
+      formData.append('avatar', userAvatar); // Append the avatar file
+    }
+    console.log(userAvatar)
 
-    if (response.ok) {
-      setIsEditing(false); // Exit edit mode after successful update
-      sessionStorage.setItem('userEmail', userData.email); // Update the session with the new email
-      fetchUserData(); // Re-fetch user data to reflect updates
-    } else {
-      console.error(data.message);
+    try {
+      const response = await fetch(`${BASE_URL}/api/users/${userId}`, {
+        method: 'PUT',
+        body: formData,
+      });
+      
+      const data = await response.json();
+      if (response.ok) {
+        setIsEditing(false);
+        fetchUserData();
+        setUserAvatar(null); // Reset userAvatar after successful update
+        setAvatarPreview(null); // Reset avatar preview after successful update
+      } else {
+        console.error(data.message);
+        setError("Error updating user data");
+      }
+    } catch (error) {
+      console.error("Error updating user data", error);
       setError("Error updating user data");
     }
-  } catch (error) {
-    console.error("Error updating user data", error);
-    setError("Error updating user data");
-  }
-};
+  };
 
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2000000) { // Limit to 2MB
+        setAvatarError('File size exceeds 2MB limit');
+        return;
+      }
+      setUserAvatar(file);
+      setAvatarPreview(URL.createObjectURL(file)); // Create a preview URL for the selected file
+      setAvatarError(''); // Clear any previous error
+    }
+  };
 
   return (
     <div className="flex flex-col md:flex-row h-[690px] bg-gray-100 p-5">
@@ -78,6 +110,35 @@ const handleUpdateUserData = async (e) => {
         {userData ? (
           <div className="bg-white shadow-md rounded-lg p-6">
             <div className="space-y-4">
+            <div className="flex justify-between items-center">
+            <label className="font-medium">Avatar:</label>
+            <div className="flex items-center space-x-4">
+              {isEditing ? (
+                <>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleAvatarChange} // Update avatar and preview
+                    className="border rounded-lg p-2"
+                  />
+                  {avatarPreview && (
+                    <img
+                      src={avatarPreview}
+                      alt="Avatar Preview"
+                      className="w-16 h-16 rounded-full object-cover" // object-cover to maintain aspect ratio
+                    />
+                  )}
+                </>
+              ) : (
+                <img
+                  src={`${BASE_URL}/${userData.userAvatar.replace(/\\/g, '/')}`}
+                  alt="User Avatar"
+                  className="w-16 h-16 rounded-full object-cover" // object-cover for better aspect ratio handling
+                />
+              )}
+            </div>
+          </div>
+
               <div className="flex justify-between items-center">
                 <label className="font-medium">Tên:</label>
                 {isEditing ? (

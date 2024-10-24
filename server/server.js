@@ -101,9 +101,9 @@ app.get('/api/orders/customer/:customerId', async (req, res) => {
 
 
 
-// Registration route
-app.post('/api/register', async (req, res) => {
-  const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password, userAvatar } = req.body;
+// Updated Registration route to handle user avatar upload
+app.post('/api/register', upload.single('userAvatar'), async (req, res) => {
+  const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password } = req.body;
 
   try {
     // Check if email, phoneNumber, or accountName already exists
@@ -126,7 +126,6 @@ app.post('/api/register', async (req, res) => {
     const userId = `KH${(lastId + 1).toString().padStart(3, '0')}`;
     const defaultAvatarUrl = 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg';
 
-// Registration route
     // Create new user document
     const newUser = new User({
       id: userId,
@@ -138,7 +137,7 @@ app.post('/api/register', async (req, res) => {
       gender,
       address,
       password,
-      userAvatar: userAvatar || defaultAvatarUrl,
+      userAvatar: req.file ? req.file.path : defaultAvatarUrl, // Use uploaded file path or default URL
     });
 
     // Save the new user to the database
@@ -150,9 +149,10 @@ app.post('/api/register', async (req, res) => {
   } catch (error) {
     // Error handling
     console.error("Error during registration:", error);
-    res.status(500).json({ message: "Đã xảy ra lỗi trong quá trình đăng ký." });
+    res.status(500).json({ message: "Đã xảy ra lỗi trong quá trình đăng ký.", error: error.message});
   }
 });
+
 
 
 
@@ -623,24 +623,8 @@ app.post('/api/addUser', async (req, res) => {
   }
 });
 
-// Sửa thông tin người dùng
-app.put('/api/users/:id', async (req, res) => {
-  const { id } = req.params;
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
 
-  try {
-    const updateData = { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar };
 
-    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' });
-    }
-
-    res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
-  } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
-  }
-});
 
 // Xóa người dùng
 app.delete('/api/users/:id', async (req, res) => {
@@ -696,11 +680,14 @@ app.post('/api/users', async (req, res) => {
 
 
 // SỬA
-app.put('/api/users/:id', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
+app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
   const { id } = req.params; // Get the id from the URL parameters
 
   try {
+    // If a new avatar is uploaded, update the userAvatar field
+    const userAvatar = req.file ? req.file.path : undefined;
+
     const updateData = {
       name,
       email,
@@ -711,10 +698,10 @@ app.put('/api/users/:id', async (req, res) => {
       accountName,
       password,
       role,
-      userAvatar,
+      ...(userAvatar && { userAvatar }), // Include userAvatar only if it's present
     };
 
-    const updatedUser = await User.findOneAndUpdate({ _id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
+    const updatedUser = await User.findOneAndUpdate({ id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
     if (!updatedUser) {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }

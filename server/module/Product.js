@@ -73,7 +73,7 @@ const productSchema = new mongoose.Schema({
     kichThuocManHinh: { 
       type: String,
       required: [true, 'Kích thước màn hình là bắt buộc'],
-      match: [/^\d+(\.\d+)?\"$/, 'Kích thước màn hình phải có định dạng x" (ví dụ: 6.1")']
+      match: [/^\d+(\.\d+)?"$/, 'Kích thước màn hình phải có định dạng x" (ví dụ: 6.1")']
     },
     congNgheManHinh: { 
       type: String,
