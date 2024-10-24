@@ -21,6 +21,7 @@ const UserMenu = () => {
 
     const handleLoginSuccess = () => {
       setIsLoggedIn(true);
+      setIsLoginModalVisible(false);  // Đóng modal đăng nhập
     };
 
     window.addEventListener("loginSuccess", handleLoginSuccess);

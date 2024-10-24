@@ -29,13 +29,13 @@ const Login = ({ onSwitchToRegister }) => {
 
       if (response.ok) {
         alert('Đăng nhập thành công!');
-        console.log(data)
-        console.log(data.user.accountName)
+
         sessionStorage.setItem('userEmail', data.user.email);
-        sessionStorage.setItem('userId', data.user.userId);
+        sessionStorage.setItem('userId', data.user.id);
         sessionStorage.setItem('accountName', data.user.accountName);
 
-        window.dispatchEvent(new Event("loginSuccess"));
+        // Kích hoạt sự kiện loginSuccess
+        window.dispatchEvent(new Event('loginSuccess'));
         navigate('/');
       } else {
         setErrorMessage(data.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!');
