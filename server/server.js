@@ -63,28 +63,7 @@ app.post('/loginAdmin', async (req, res) => {
     res.status(401).json({ message: err.message });
   }
 });
-// Đăng nhập người dùng
-app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email, password });
 
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    // Assuming the user is found, send the accountName and userId in the response
-    res.status(200).json({
-      message: 'Đăng nhập thành công',
-      user: {
-        accountName: user.accountName,
-        userId: user.id,
-      }
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-});
 
 
 // Get orders by customer ID
@@ -173,14 +152,16 @@ app.post('/api/login', async (req, res) => {
     // Return user information upon successful login
     res.status(200).json({
       message: 'Đăng nhập thành công',
+      
       user: {
-        id: user.id,
+        userId: user.id,
         accountName: user.accountName,
         email: user.email,
         phoneNumber: user.phoneNumber,
         userAvatar: user.userAvatar
       }
     });
+    console.log('User object:', user); // Log the user object
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình đăng nhập.', error: error.message });
@@ -655,7 +636,7 @@ app.delete('/api/users/:id', async (req, res) => {
   }
 });
 
-// Lấy danh sách tất cả người dùng
+// ADD
 app.post('/api/users', async (req, res) => {
   const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
 
@@ -681,7 +662,7 @@ app.post('/api/users', async (req, res) => {
       accountName,
       password,
       role: role || 'user',
-      userAvatar: userAvatar || ''
+      userAvatar
     });
 
     await newUser.save();
@@ -692,7 +673,7 @@ app.post('/api/users', async (req, res) => {
 });
 
 
-// Lấy thông tin người dùng theo ID
+// SỬA
 app.put('/api/users/:id', async (req, res) => {
   const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
   const { id } = req.params; // Get the id from the URL parameters
@@ -708,7 +689,7 @@ app.put('/api/users/:id', async (req, res) => {
       accountName,
       password,
       role,
-      userAvatar: userAvatar || ''
+      userAvatar,
     };
 
     const updatedUser = await User.findOneAndUpdate({ _id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
@@ -722,7 +703,7 @@ app.put('/api/users/:id', async (req, res) => {
   }
 });
 
-// Lấy thông tin người dùng theo ID
+// GET
 app.get('/api/users/:id', async (req, res) => {
   const { id } = req.params; // Lấy ID từ params
 

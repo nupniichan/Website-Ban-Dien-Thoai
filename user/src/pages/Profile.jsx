@@ -33,14 +33,6 @@ const Profile = () => {
     fetchUserData();
   }, []);
 
-  // Logout function
-  const handleLogout = () => {
-    sessionStorage.removeItem('userEmail'); // Clear the user email
-    sessionStorage.removeItem('userId'); // Clear the user id if stored
-    sessionStorage.removeItem('accountName');
-    navigate('/user/login'); // Redirect to the login page
-  };
-
   // Toggle editing mode
   const handleEditToggle = () => {
     setIsEditing(!isEditing);

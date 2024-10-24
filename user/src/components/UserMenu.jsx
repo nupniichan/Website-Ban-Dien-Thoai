@@ -8,6 +8,7 @@ import PathNames from "../PathNames.js";
 
 const UserMenu = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userAvatar, setUserAvatar] = useState(null);  // State to store userAvatar
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);  // For Login modal
   const [isRegisterModalVisible, setIsRegisterModalVisible] = useState(false);  // For Register modal
@@ -15,12 +16,17 @@ const UserMenu = () => {
 
   useEffect(() => {
     const userId = sessionStorage.getItem("userId");
+    const storedUserAvatar = sessionStorage.getItem("avatar");  // Retrieve userAvatar from sessionStorage
+    
     if (userId) {
       setIsLoggedIn(true);
+      setUserAvatar(storedUserAvatar);  // Set userAvatar state
     }
 
     const handleLoginSuccess = () => {
+      const updatedUserAvatar = sessionStorage.getItem("avatar");  // Fetch updated avatar on login
       setIsLoggedIn(true);
+      setUserAvatar(updatedUserAvatar);  // Update userAvatar state
     };
 
     window.addEventListener("loginSuccess", handleLoginSuccess);
@@ -34,8 +40,9 @@ const UserMenu = () => {
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("userEmail");
     sessionStorage.removeItem("accountName");
-    sessionStorage.removeItem("userAvatar");
+    sessionStorage.removeItem("avatar");
     setIsLoggedIn(false);
+    setUserAvatar(null);  // Clear avatar when logged out
     navigate(PathNames.HOMEPAGE);
   };
 
@@ -94,12 +101,15 @@ const UserMenu = () => {
         >
           <Space>
             <MenuOutlined className={`transition-transform duration-200 ease-linear transform ${isMenuOpen ? `rotate-90` : `rotate-0`}`} />
-            
-            {!isLoggedIn ? <UserOutlined /> : <img
-                src="https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg" // Change to the actual avatar URL
+            {userAvatar ? (
+              <img
+                src={userAvatar}
                 alt="User Avatar"
-                className="w-8 h-8 rounded-full mr-2" // Make the avatar circular and provide margin
-              />}
+                className="w-8 h-8 rounded-full mr-2" // Use the avatar from sessionStorage
+              />
+            ) : (
+              <UserOutlined />
+            )}
           </Space>
         </Dropdown>
       )}
