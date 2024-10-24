@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { Dropdown, Space } from "antd";
+import { Dropdown, Space, Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
+import Login from "./Login";  // Import your Login component
+import Register from "./Register";  // Import your Register component
 import PathNames from "../PathNames.js";
 
 const UserMenu = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginModalVisible, setIsLoginModalVisible] = useState(false);  // For Login modal
+  const [isRegisterModalVisible, setIsRegisterModalVisible] = useState(false);  // For Register modal
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,32 +23,28 @@ const UserMenu = () => {
       setIsLoggedIn(true);
     };
 
-    // Lắng nghe sự kiện login thành công
     window.addEventListener("loginSuccess", handleLoginSuccess);
 
-    // Xóa sự kiện khi component bị unmount
     return () => {
       window.removeEventListener("loginSuccess", handleLoginSuccess);
     };
   }, []);
 
-
   const handleLogout = () => {
-    // Xóa thông tin đăng nhập khỏi sessionStorage
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("userEmail");
     sessionStorage.removeItem("accountName");
     setIsLoggedIn(false);
-    navigate(PathNames.HOMEPAGE); // Quay lại trang chủ sau khi đăng xuất
+    navigate(PathNames.HOMEPAGE);
   };
 
   const GuestItems = [
     {
-      label: <Link to={PathNames.REGISTER}>Sign Up</Link>, // Điều hướng đến trang Register
+      label: <span onClick={() => setIsRegisterModalVisible(true)}>Sign Up</span>,
       key: "0",
     },
     {
-      label: <Link to={PathNames.LOGIN}>Log In</Link>, // Điều hướng đến trang Login
+      label: <span onClick={() => setIsLoginModalVisible(true)}>Log In</span>,
       key: "1",
     },
   ];
@@ -59,7 +59,7 @@ const UserMenu = () => {
       key: "1",
     },
     {
-      label: <p onClick={handleLogout}>Log Out</p>, // Thực hiện đăng xuất
+      label: <p onClick={handleLogout}>Log Out</p>,
       key: "2",
     },
   ];
@@ -97,6 +97,32 @@ const UserMenu = () => {
           </Space>
         </Dropdown>
       )}
+
+      {/* Modal for Login */}
+      <Modal
+        title="Login"
+        open={isLoginModalVisible}
+        onCancel={() => setIsLoginModalVisible(false)}  // Close modal
+        footer={null}  // No footer for modal
+      >
+        <Login onSwitchToRegister={() => {
+          setIsLoginModalVisible(false);
+          setIsRegisterModalVisible(true);
+        }} />
+      </Modal>
+
+      {/* Modal for Register */}
+      <Modal
+        title="Register"
+        open={isRegisterModalVisible}
+        onCancel={() => setIsRegisterModalVisible(false)}  // Close modal
+        footer={null}  // No footer for modal
+      >
+        <Register onRegisterSuccess={() => {
+          setIsRegisterModalVisible(false);
+          setIsLoginModalVisible(true);
+        }} />
+      </Modal>
     </>
   );
 };
