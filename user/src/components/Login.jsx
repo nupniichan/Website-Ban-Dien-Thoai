@@ -29,9 +29,10 @@ const Login = ({ onSwitchToRegister }) => {
 
       if (response.ok) {
         alert('Đăng nhập thành công!');
-
+        console.log(data)
+        console.log(data.user.accountName)
         sessionStorage.setItem('userEmail', data.user.email);
-        sessionStorage.setItem('userId', data.user.id);
+        sessionStorage.setItem('userId', data.user.userId);
         sessionStorage.setItem('accountName', data.user.accountName);
 
         window.dispatchEvent(new Event("loginSuccess"));

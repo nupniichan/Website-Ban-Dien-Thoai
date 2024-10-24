@@ -18,5 +18,24 @@ const orderSchema = new mongoose.Schema({
   notes: { type: String },
 });
 
+orderSchema.pre('save', function(next) {
+  if (this.totalAmount < 0) {
+    return next(new Error('Tổng số tiền không thể âm'));
+  }
+  if (!['Chờ xác nhận', 'Đã xác nhận', 'Đang giao hàng', 'Đã giao hàng', 'Đã hủy'].includes(this.status)) {
+    return next(new Error('Trạng thái đơn hàng không hợp lệ'));
+  }
+  if (!this.items || this.items.length === 0) {
+    return next(new Error('Đơn hàng phải có ít nhất một sản phẩm'));
+  }
+  if (!this.shippingAddress || this.shippingAddress.trim().length === 0) {
+    return next(new Error('Địa chỉ giao hàng không được để trống'));
+  }
+  if (!['COD', 'MoMo', 'Bank Transfer'].includes(this.paymentMethod)) {
+    return next(new Error('Phương thức thanh toán không hợp lệ'));
+  }
+  next();
+});
+
 const Order = mongoose.model('Order', orderSchema);
 module.exports = Order;

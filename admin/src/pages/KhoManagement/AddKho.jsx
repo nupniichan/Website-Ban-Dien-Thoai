@@ -17,6 +17,7 @@ const AddKho = () => {
     location: '',
     products: [{ productId: '', productName: '', quantity: 1, color: '' }],
     notes: '',
+    warehouseType: 'Kho chính',
   });
 
   useEffect(() => {
