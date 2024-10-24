@@ -6,6 +6,7 @@ import Img3 from "../../assets/fakeAssets/blogs/blog-3.jpg";
 
 const BlogData = [
     {
+        id: 1,
         title: "How to choose the perfect smartwatch",
         subtitle:
             "A smartwatch is a wearable computer in the form of a wristwatch; modern smartwatches provide a local touchscreen interface for daily use, while an associated smartphone app provides for management and telemetry (such as long-term biomonitoring).",
@@ -13,6 +14,7 @@ const BlogData = [
         image: Img1,
     },
     {
+        id: 2,
         title: "Guide on picking your next smartphone",
         subtitle:
             "Smartphones combine mobile telephone and computing functions into one unit. They are distinguished from feature phones by their stronger hardware capabilities and extensive mobile operating systems, which facilitate wider software, internet (including web browsing over mobile broadband), and multimedia functionality (including music, video, cameras, and gaming), alongside core phone functions such as voice calls and text messaging.",
@@ -20,6 +22,7 @@ const BlogData = [
         image: Img2,
     },
     {
+        id: 3,
         title: "Which VR headset suits you best?",
         subtitle:
             "It's a head-mounted device that provides virtual reality for the wearer. Virtual reality (VR) headsets are widely used with video games but they are also used in other applications, including simulators and trainers. They comprise a stereoscopic head-mounted display (providing separate images for each eye), stereo sound, and head motion tracking sensors (which may include gyroscopes, accelerometers, structured light systems, etc.).",

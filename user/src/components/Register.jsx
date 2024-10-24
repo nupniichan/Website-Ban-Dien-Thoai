@@ -1,138 +1,246 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { BASE_URL } from '../config'
-const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phoneNumber: '',
-    dayOfBirth: '',
-    gender: '',
-    address: '',
-    accountName: '',
-    password: '',
-    confirmPassword: '',
-  });
-  
-  const navigate = useNavigate();
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; 
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+const Register = ({ onRegisterSuccess }) => {
+  const [name, setName] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [gender, setGender] = useState('');
+  const [address, setAddress] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [dayOfBirth, setDayOfBirth] = useState('');  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  // Error state
+  const [nameError, setNameError] = useState('');
+  const [accountNameError, setAccountNameError] = useState('');
+  const [genderError, setGenderError] = useState('');
+  const [addressError, setAddressError] = useState('');
+  const [phoneNumberError, setPhoneNumberError] = useState('');
+  const [dayOfBirthError, setDayOfBirthError] = useState('');  
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [confirmPasswordError, setConfirmPasswordError] = useState('');
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await fetch(`${BASE_URL}/api/addUser`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
 
-      const data = await response.json();
-      if (response.ok) {
-        alert('Đăng ký thành công!');
-        navigate('/user/login');
-      } else {
-        alert(data.message || 'Đăng ký thất bại');
+    // Reset error messages
+    setNameError('');
+    setAccountNameError('');
+    setGenderError('');
+    setAddressError('');
+    setPhoneNumberError('');
+    setDayOfBirthError('');
+    setEmailError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
+
+    let isValid = true;
+
+    // Validation logic
+    if (!name.trim()) {
+      setNameError('Họ tên không được để trống.');
+      isValid = false;
+    }
+
+    if (!accountName.trim()) {
+      setAccountNameError('Tên tài khoản không được để trống.');
+      isValid = false;
+    }
+
+    if (!gender) {
+      setGenderError('Vui lòng chọn giới tính.');
+      isValid = false;
+    }
+
+    if (!dayOfBirth) {
+      setDayOfBirthError('Ngày sinh không được để trống.');
+      isValid = false;
+    } else {
+      const selectedDate = new Date(dayOfBirth);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time for comparison
+
+      if (selectedDate > today) {
+        setDayOfBirthError('Ngày sinh không thể là ngày trong tương lai.');
+        isValid = false;
       }
-    } catch (err) {
-      console.error('Error:', err);
-      alert('Đã xảy ra lỗi');
+    } 
+
+    if (!address.trim()) {
+      setAddressError('Địa chỉ không được để trống.');
+      isValid = false;
+    }
+
+    const phonePattern = /^[0-9]{10,11}$/;  // Matches 10-11 digit phone numbers
+    if (!phonePattern.test(phoneNumber)) {
+      setPhoneNumberError('Số điện thoại không hợp lệ (10-11 số).');
+      isValid = false;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;  // Simple email validation pattern
+    if (!emailPattern.test(email)) {
+      setEmailError('Email không hợp lệ.');
+      isValid = false;
+    }
+
+    if (password.length < 6) {
+      setPasswordError('Mật khẩu phải có ít nhất 6 ký tự.');
+      isValid = false;
+    }
+
+    if (password !== confirmPassword) {
+      setConfirmPasswordError('Mật khẩu không khớp.');
+      isValid = false;
+    }
+
+    if (isValid) {
+      try {
+        await axios.post('http://localhost:5000/api/register', {
+          name,
+          accountName,
+          gender,
+          address,
+          phoneNumber,
+          dayOfBirth,  
+          email,
+          password,
+        });
+
+        alert("Đăng ký thành công!");
+        onRegisterSuccess();  // Close Register modal and open Login modal
+      } catch (error) {
+        alert("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.");
+      }
     }
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <form className="bg-white p-8 rounded-lg shadow-md max-w-sm w-full" onSubmit={handleSubmit}>
-        <h2 className="text-2xl mb-6 text-center text-gray-800">Đăng Ký</h2>
-        
-        <input
-          type="Họ tên"
-          name="name"
-          placeholder="Họ tên"
-          value={formData.name}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="number"
-          name="phoneNumber"
-          placeholder="Số diện thoại"
-          value={formData.phoneNumber}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="date"
-          name="dayOfBirth"
-          placeholder="Ngày điện thoại"
-          value={formData.dayOfBirth}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          name="gender"
-          placeholder="Giới tính"
-          value={formData.gender}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          name="address"
-          placeholder="Địa chỉ"
-          value={formData.address}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="text"
-          name="accountName"
-          placeholder="Tên tài khoản"
-          value={formData.accountName}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Mật khẩu"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Nhập lại mật khẩu"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          className="w-full p-3 mb-4 border border-gray-300 rounded focus:border-blue-500 focus:outline-none"
-        />
-        <button type="submit" className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600 transition duration-300">Đăng Ký</button>
-        <p className="text-center mt-4">
-          Đã có tài khoản? <Link to="/user/login" className="text-blue-500 hover:underline">Đăng nhập</Link>
-        </p>
-      </form>
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 py-6">
+      <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center transition-transform hover:translate-y-1">
+        <h2 className="text-3xl font-bold mb-6 text-gray-800">Đăng ký</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Họ tên:</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Nhập tên người dùng"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {nameError && <span className="text-red-500 text-xs">{nameError}</span>}
+          </div>
+          
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Tên tài khoản:</label>
+            <input
+              type="text"
+              value={accountName}
+              onChange={(e) => setAccountName(e.target.value)}
+              placeholder="Nhập tên tài khoản"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {accountNameError && <span className="text-red-500 text-xs">{accountNameError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Giới tính:</label>
+            <select 
+              value={gender} 
+              onChange={(e) => setGender(e.target.value)}
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            >
+              <option value="">Chọn giới tính</option>
+              <option value="male">Nam</option>
+              <option value="female">Nữ</option>
+              <option value="other">Khác</option>
+            </select>
+            {genderError && <span className="text-red-500 text-xs">{genderError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Ngày sinh:</label>
+            <input
+              type="date"
+              value={dayOfBirth}  
+              onChange={(e) => setDayOfBirth(e.target.value)}  
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {dayOfBirthError && <span className="text-red-500 text-xs">{dayOfBirthError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Địa chỉ:</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Nhập địa chỉ"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {addressError && <span className="text-red-500 text-xs">{addressError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Số điện thoại:</label>
+            <input
+              type="text"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))} // Allow only numbers
+              placeholder="Nhập số điện thoại"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {phoneNumberError && <span className="text-red-500 text-xs">{phoneNumberError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Email:</label>
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Nhập email"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {emailError && <span className="text-red-500 text-xs">{emailError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Mật khẩu:</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Nhập mật khẩu"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {passwordError && <span className="text-red-500 text-xs">{passwordError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Nhập lại mật khẩu:</label>
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Nhập lại mật khẩu"
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
+            {confirmPasswordError && <span className="text-red-500 text-xs">{confirmPasswordError}</span>}
+          </div>
+
+          <button type="submit" className="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transform hover:translate-y-1 mt-4">
+            Đăng ký
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

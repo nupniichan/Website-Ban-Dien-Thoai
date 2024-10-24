@@ -7,7 +7,6 @@ const DarkModeBtn = () => {
     );
 
     const element = document.documentElement; //Access the root element
-    console.log(element);
 
     // Set the theme to localStorage and root element
     useEffect(() => {
