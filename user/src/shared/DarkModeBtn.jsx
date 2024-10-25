@@ -23,7 +23,7 @@ const DarkModeBtn = () => {
     return (
         <div className="relative">
             <label
-                className="relative inline-flex items-center cursor-pointer"
+                className="relative inline-flex items-center cursor-pointer translate-y-1"
                 style={{ scale: "70%" }}
             >
                 <input
