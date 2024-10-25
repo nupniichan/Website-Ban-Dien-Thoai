@@ -18,44 +18,39 @@ import "./App.css";
 import Register from './components/Register.jsx'
 import Login from './components/Login.jsx'
 import SearchResult from './pages/SearchResults.jsx'
-/* ⠀⠀⠀⠀⠀⠀⠀⠀⢀⣤⣤⠴⠶⠶⡦⣤⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⣠⡾⠋⠁⠀⠀⠀⠀⠀⠀⠈⠙⠳⣦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⢠⡾⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣦⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⢠⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⢷⡀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⣿⠁⠀⣀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⣷⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⣿⣠⢾⡟⠛⢻⣿⣶⣄⠀⠀⣠⣴⣶⣿⣶⣶⣦⡀⠀⢻⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⣿⡇⢿⣇⣀⣼⣿⣿⣿⡆⣼⡏⠀⢹⣿⣿⣿⣿⣿⡀⣿⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⢘⣷⡸⣿⣿⣿⣿⢿⣿⣿⣿⣿⣾⣿⣿⡟⣹⣿⢻⣷⠟⠀⠀⠀⠀⠀⠀
-⢠⡤⠤⢿⠙⢷⣬⣙⣿⣿⣶⣿⠟⠙⢿⣿⣿⡿⢿⣟⣵⣿⣯⣄⣀⣤⣤⡄⠀⠀
-⠘⢧⣄⡀⠀⠀⠈⠻⣭⣍⠉⠁⠀⠀⢀⣉⣉⣻⣿⠿⠛⠁⠀⠈⠉⠁⠀⡇⠀⠀
-⠀⢰⠟⠁⠀⠀⠀⢀⣤⠈⠓⠤⠴⠞⠛⠛⠋⠉⠐⣶⢦⡄⠀⠀⠀⠀⠀⠉⢳⡄
-⠀⠻⣤⣤⠖⣆⠀⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢹⡆⣹⠂⠀⠀⠀⢠⡶⠾⠃
-⠀⠀⠀⠀⠀⠉⠛⢡⡿⠀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠈⢧⢿⣤⠴⠷⣤⣸⠇⠀⠀
-⠀⠀⠀⠀⠀⠀⢠⡏⠀⠀⢉⡿⠉⠉⠋⠛⠛⢻⡗⠀⠈⢷⡀⠀⠀⠀⠁⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠳⠤⠶⠟⠁⠀⠀⠀⠀⠀⠀⠻⢶⣤⡼⠃⠀⠀⠀⠀⠀⠀⠀ */
+import Stories from "./pages/Stories.jsx";
+import Vacancies from "./pages/Vacancies.jsx";
+import FAQ from "./pages/FAQ.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
+import Terms from "./pages/Terms.jsx";
+
 
 function App() {
     return (
         <>
-            <Header />  {/* Phần Header hiển thị cố định trên tất cả các trang */}
+            <Header />  
             <Routes>
                 <Route path={PathNames.REGISTER} element={<Register />} />
                 <Route path="/" element={<Homepage />} />
-                <Route path={PathNames.ABOUT} element={<About />} />
+                <Route path={PathNames.ABOUT} element={<About />} />    
+                <Route path={PathNames.STORIES} element={<Stories />} /> 
+                <Route path={PathNames.FAQ} element={<FAQ />} /> 
+                <Route path={PathNames.VACANCIES} element={<Vacancies />} /> 
+                <Route path={PathNames.CONTACTUS} element={<ContactUs />} /> 
+                <Route path={PathNames.PRIVACYPOLICY} element={<PrivacyPolicy />} /> 
+                <Route path={PathNames.TERMS} element={<Terms />} /> 
                 <Route path={PathNames.SUPPORT} element={<Support />} />
                 <Route path={PathNames.CART} element={<Cart />} />
                 <Route path={PathNames.CHECKOUT} element={<Checkout />} />
                 <Route path={PathNames.PROFILE} element={<Profile />} />
                 <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
-                <Route path={PathNames.REGISTER} element={<Register/>} />
                 <Route path={PathNames.LOGIN} element={<Login/>} />
                 <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />
-                <Route path={PathNames.REGISTER} element={<Register />} />
-                <Route path={PathNames.LOGIN} element={<Login />} />
                 <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
                 <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
                 <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
-                {/* Route chi tiết sản phẩm với tham số productId */}
+                
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>
 
