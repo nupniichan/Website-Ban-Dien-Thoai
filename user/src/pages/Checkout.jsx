@@ -13,6 +13,10 @@ const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalAmount, setTotalAmount] = useState(0);
   const [notes, setNotes] = useState(''); // Lưu trữ ghi chú từ người dùng
+  const [showDiscountDialog, setShowDiscountDialog] = useState(false);
+  const [discountCodes, setDiscountCodes] = useState([]);
+  const [selectedDiscount, setSelectedDiscount] = useState(null);
+  const [discountedAmount, setDiscountedAmount] = useState(0);
 
   const userId = sessionStorage.getItem('userId');
 
@@ -59,15 +63,57 @@ const Checkout = () => {
     }
   }, [userId]);
 
+  // Thêm useEffect để fetch mã giảm giá
+  useEffect(() => {
+    const fetchDiscountCodes = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/api/discountCodes`);
+        if (!response.ok) throw new Error('Failed to fetch discount codes');
+        const data = await response.json();
+        // Sắp xếp theo phn trăm giảm giá từ cao đến thấp
+        const sortedCodes = data.sort((a, b) => b.discountPercent - a.discountPercent);
+        setDiscountCodes(sortedCodes);
+      } catch (error) {
+        console.error('Error fetching discount codes:', error);
+      }
+    };
+    fetchDiscountCodes();
+  }, []);
+
+  // Handler khi chọn mã giảm giá
+  const handleSelectDiscount = (discount) => {
+    setSelectedDiscount(discount);
+    const discountAmount = Math.min(
+      (totalAmount * discount.discountPercent) / 100,
+      discount.maxDiscountAmount
+    );
+    setDiscountedAmount(discountAmount);
+    setShowDiscountDialog(false);
+  };
+
+  // Thêm handler để xóa mã giảm giá
+  const handleRemoveDiscount = () => {
+    setSelectedDiscount(null);
+    setDiscountedAmount(0);
+  };
+
   const handleContinue = async () => {
+    const finalAmount = totalAmount - discountedAmount; // Tính tổng tiền sau khi giảm giá
+
     const orderData = {
       customerId: userId,
       customerName: customerInfo.name,
       shippingAddress: customerInfo.address,
       items: cartItems,
       paymentMethod: paymentMethod,
-      totalAmount: totalAmount,
+      totalAmount: finalAmount, // Sử dụng số tiền sau khi đã giảm giá
       notes: notes,
+      // Thêm thông tin về mã giảm giá nếu có
+      discount: selectedDiscount ? {
+        discountId: selectedDiscount.id,
+        discountName: selectedDiscount.name,
+        discountAmount: discountedAmount
+      } : null
     };
 
     if (paymentMethod === 'Thanh toán qua MOMO') {
@@ -78,14 +124,14 @@ const Checkout = () => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            totalAmount,
-            extraData: JSON.stringify(orderData), // Truyền toàn bộ dữ liệu đơn hàng dưới dạng chuỗi JSON
+            totalAmount: finalAmount, // Sử dụng số tiền sau khi đã giảm giá
+            extraData: JSON.stringify(orderData),
           }),
         });
 
         const data = await response.json();
         if (data.payUrl) {
-          window.location.href = data.payUrl; // Chuyển hướng người dùng đến trang thanh toán của MoMo
+          window.location.href = data.payUrl;
         } else {
           console.error('Failed to get payment URL:', data);
         }
@@ -220,10 +266,143 @@ const Checkout = () => {
         </select>
       </div>
 
-      {/* Tóm tắt hoá đơn thanh toán */}
+      {/* Thêm nút và dialog mã giảm giá */}
       <div className="bg-white p-4 rounded-lg shadow mb-4">
-        <h3 className="text-lg font-semibold mb-2">Tổng tiền tạm tính</h3>
-        <p className="text-red-500 text-xl">{totalAmount.toLocaleString()}</p>
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">Mã giảm giá</h3>
+          {!selectedDiscount ? (
+            <button
+              onClick={() => setShowDiscountDialog(true)}
+              className="text-blue-500 hover:text-blue-700"
+            >
+              Chọn mã giảm giá
+            </button>
+          ) : (
+            <button
+              onClick={handleRemoveDiscount}
+              className="text-red-500 hover:text-red-700"
+            >
+              Xóa mã giảm giá
+            </button>
+          )}
+        </div>
+        {selectedDiscount && (
+          <div className="mt-2 p-2 bg-blue-50 rounded">
+            <div className="flex justify-between items-center">
+              <div>
+                <p className="font-medium">{selectedDiscount.name}</p>
+                <p className="text-sm text-gray-600">
+                  Giảm {selectedDiscount.discountPercent}% 
+                  (Tối đa {selectedDiscount.maxDiscountAmount.toLocaleString()}đ)
+                </p>
+                <p className="text-green-600 font-medium">
+                  -{discountedAmount.toLocaleString()}đ
+                </p>
+              </div>
+              <button
+                onClick={handleRemoveDiscount}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Dialog mã giảm giá */}
+      {showDiscountDialog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 max-h-[75vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-semibold">Chọn mã giảm giá</h3>
+              <button
+                onClick={() => setShowDiscountDialog(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="space-y-4">
+              {discountCodes.map((discount) => {
+                // Kiểm tra điều kiện áp dụng mã giảm giá
+                const isApplicable = totalAmount >= discount.minOrderValue;
+                
+                return (
+                  <div
+                    key={discount.id}
+                    className={`border rounded p-3 ${
+                      isApplicable 
+                        ? 'hover:bg-gray-50' 
+                        : 'opacity-50'
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-lg">{discount.name}</h4>
+                        <div className="space-y-1 mt-1">
+                          <p className="text-sm text-gray-600">
+                            Giảm {discount.discountPercent}% 
+                            (Tối đa {discount.maxDiscountAmount.toLocaleString()}đ)
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Đơn tối thiểu {discount.minOrderValue.toLocaleString()}đ
+                          </p>
+                          {!isApplicable && (
+                            <p className="text-xs text-red-500">
+                              Đơn hàng chưa đạt giá trị tối thiểu
+                            </p>
+                          )}
+                          {discount.endDate && (
+                            <p className="text-xs text-gray-500">
+                              HSD: {new Date(discount.endDate).toLocaleDateString('vi-VN')}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                      <div className="ml-4 flex items-center">
+                        <button
+                          className={`px-4 py-1.5 rounded text-sm w-32 ${
+                            isApplicable
+                              ? 'bg-blue-500 hover:bg-blue-600 text-white'
+                              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                          }`}
+                          onClick={() => isApplicable && handleSelectDiscount(discount)}
+                          disabled={!isApplicable}
+                        >
+                          {isApplicable ? 'Áp dụng' : 'Không đủ điều kiện'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cập nhật phần tổng tiền */}
+      <div className="bg-white p-4 rounded-lg shadow mb-4">
+        <h3 className="text-lg font-semibold mb-2">Tổng tiền</h3>
+        <div className="space-y-2">
+          <div className="flex justify-between">
+            <span>Tạm tính:</span>
+            <span>{totalAmount.toLocaleString()}đ</span>
+          </div>
+          {selectedDiscount && (
+            <div className="flex justify-between text-green-600">
+              <span>Giảm giá:</span>
+              <span>-{discountedAmount.toLocaleString()}đ</span>
+            </div>
+          )}
+          <div className="flex justify-between font-semibold text-xl">
+            <span>Tổng cộng:</span>
+            <span className="text-red-500">
+              {(totalAmount - discountedAmount).toLocaleString()}đ
+            </span>
+          </div>
+        </div>
       </div>
 
       <button
