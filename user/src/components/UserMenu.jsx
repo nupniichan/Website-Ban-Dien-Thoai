@@ -7,6 +7,7 @@ import Register from "./Register";  // Import your Register component
 import PathNames from "../PathNames.js";
 import axios from 'axios'; // Import axios for making API calls
 import { BASE_URL } from "../config";
+
 const UserMenu = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userAvatar, setUserAvatar] = useState(null);  // State to store userAvatar
@@ -17,11 +18,11 @@ const UserMenu = () => {
 
   useEffect(() => {
     const userId = sessionStorage.getItem("userId");
-    
+
     // Function to fetch user details if logged in
     const fetchUserData = async (userId) => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/users/${userId}`);
+        const response = await axios.get(`${BASE_URL}/api/users/${userId}`);
         const user = response.data;
         if (user) {
           setUserAvatar(user.userAvatar); // Assuming your API response contains a userAvatar field
@@ -38,6 +39,7 @@ const UserMenu = () => {
 
     const handleLoginSuccess = () => {
       fetchUserData(sessionStorage.getItem("userId"));
+      setIsLoginModalVisible(false); // Close the login modal on successful login
     };
 
     window.addEventListener("loginSuccess", handleLoginSuccess);
