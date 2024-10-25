@@ -2,28 +2,26 @@ import { Carousel } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Img1 from "../../assets/fakeAssets/hero/headphone.png";
-import Img2 from "../../assets/fakeAssets/hero/watch.png";
 import { BASE_URL } from "../../config";
-import Button from "../../shared/Button.jsx";
 import PathNames from "../../PathNames";
+import Button from "../../shared/Button.jsx";
 
-const HeroPlaceholderData = [
-    {
-        id: 1,
-        image: Img1,
-        title: "Wireless",
-        title2: "Heaphones",
-        description: "Beats Solo",
-    },
-    {
-        id: 2,
-        image: Img2,
-        title: "Wireless",
-        title2: "Virtual",
-        description: "Beats Duo",
-    },
-];
+// const HeroPlaceholderData = [
+//     {
+//         id: 1,
+//         image: Img1,
+//         title: "Wireless",
+//         title2: "Heaphones",
+//         description: "Beats Solo",
+//     },
+//     {
+//         id: 2,
+//         image: Img2,
+//         title: "Wireless",
+//         title2: "Virtual",
+//         description: "Beats Duo",
+//     },
+// ];
 // TODO: Bind actual data to the carousel
 
 const Hero = () => {
@@ -49,10 +47,6 @@ const Hero = () => {
         return products.filter((product) => ids.includes(product.id));
     };
     const heroProducts = getProductsById(["SP023", "SP035"]);
-
-    // const handleHeroClick = (productId) => {
-    //     navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
-    // };
 
     const handleHeroClick = (productId) => {
         navigate(`/product/${productId}`);
@@ -95,9 +89,7 @@ const Hero = () => {
                                                 text="Discover"
                                                 bgColor="bg-primary"
                                                 textColor="text-white"
-                                                onClick={() =>
-                                                    handleHeroClick(product.id)
-                                                }
+                                                onClick={() => handleHeroClick(product.id)}
                                             />
                                         </div>
                                     </div>
