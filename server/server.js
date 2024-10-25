@@ -681,11 +681,26 @@ app.post('/api/users', async (req, res) => {
 
 // SỬA
 app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
-  const { id } = req.params; // Get the id from the URL parameters
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, currentPassword, newPassword } = req.body;
+  const { id } = req.params;
 
   try {
-    // If a new avatar is uploaded, update the userAvatar field
+    const user = await User.findOne({ id });
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Kiểm tra mật khẩu hiện tại nếu người dùng muốn đổi mật khẩu
+    if (newPassword) {
+      if (user.password !== currentPassword) {
+        return res.status(400).json({ message: 'Mật khẩu hiện tại không đúng' });
+      }
+      // Validate mật khẩu mới
+      if (!newPassword.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
+        return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số' });
+      }
+    }
+
     const userAvatar = req.file ? req.file.path : undefined;
 
     const updateData = {
@@ -696,16 +711,11 @@ app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
       gender,
       address,
       accountName,
-      password,
-      role,
-      ...(userAvatar && { userAvatar }), // Include userAvatar only if it's present
+      ...(newPassword && { password: newPassword }),
+      ...(userAvatar && { userAvatar }),
     };
 
-    const updatedUser = await User.findOneAndUpdate({ id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' });
-    }
-
+    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true, runValidators: true });
     res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
