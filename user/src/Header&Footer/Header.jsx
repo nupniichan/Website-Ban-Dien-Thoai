@@ -15,7 +15,7 @@ const MenuItems = [
   },
   {
     id: "2",
-    name: "Products",
+    name: "Shop",
     url: `${PathNames.PRODUCTS}`,
   },
   {

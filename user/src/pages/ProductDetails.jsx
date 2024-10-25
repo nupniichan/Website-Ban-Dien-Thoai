@@ -11,7 +11,7 @@ const ProductDetails = () => {
 
   const [availableColors, setAvailableColors] = useState([]);
   const [selectedColor, setSelectedColor] = useState('');
-  
+
   useEffect(() => {
     fetch(`${BASE_URL}/api/products/${productId}`)
       .then(response => response.json())
@@ -19,7 +19,7 @@ const ProductDetails = () => {
         console.log(data); // Check the structure of the data
         setProduct(data.product);
         setAvailableColors(data.availableColors);
-        
+
         const defaultColor = data.availableColors.find(color => color.color === data.product.color);
         if (defaultColor) {
           setSelectedColor(defaultColor.id);
@@ -29,8 +29,8 @@ const ProductDetails = () => {
         console.error('Error fetching product details:', error);
       });
   }, [productId]);
-  
-  
+
+
 
   const handleQuantityChange = (e) => {
     const value = parseInt(e.target.value, 10);
@@ -78,7 +78,7 @@ const ProductDetails = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-5 bg-gray-100">
       <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-md w-full max-w-6xl overflow-hidden">
-        
+
         {/* Image Section */}
         <div className="w-full md:w-1/3 p-4">
           <img
