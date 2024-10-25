@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import AccountSidebar from '../components/AccountSidebar.jsx';
 import { BASE_URL } from "../config.js";
@@ -10,6 +10,13 @@ const Profile = () => {
   const [userAvatar, setUserAvatar] = useState(); // State for user avatar upload
   const [avatarPreview, setAvatarPreview] = useState(null); // State for avatar preview
   const [avatarError, setAvatarError] = useState(''); // State for avatar error
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  });
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState('');
   const navigate = useNavigate();
 
   const fetchUserData = async () => {
@@ -47,6 +54,10 @@ const Profile = () => {
     }
   };
 
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+  };
+
   const handleUpdateUserData = async (e) => {
     e.preventDefault();
     const userId = sessionStorage.getItem('userId');
@@ -66,6 +77,15 @@ const Profile = () => {
     }
     console.log(userAvatar)
 
+    if (passwordData.newPassword) {
+      if (passwordData.newPassword !== passwordData.confirmNewPassword) {
+        setPasswordError('Mật khẩu mới không khớp');
+        return;
+      }
+      formData.append('currentPassword', passwordData.currentPassword);
+      formData.append('newPassword', passwordData.newPassword);
+    }
+
     try {
       const response = await fetch(`${BASE_URL}/api/users/${userId}`, {
         method: 'PUT',
@@ -78,13 +98,21 @@ const Profile = () => {
         fetchUserData();
         setUserAvatar(null); // Reset userAvatar after successful update
         setAvatarPreview(null); // Reset avatar preview after successful update
+        if (passwordData.newPassword) {
+          setPasswordSuccess('Mật khẩu đã được cập nhật thành công');
+        }
+        setPasswordData({ currentPassword: '', newPassword: '', confirmNewPassword: '' });
+        setPasswordError('');
       } else {
         console.error(data.message);
-        setError("Error updating user data");
+        setError(data.message || "Lỗi cập nhật thông tin người dùng");
+        if (data.message.includes("password")) {
+          setPasswordError(data.message);
+        }
       }
     } catch (error) {
-      console.error("Error updating user data", error);
-      setError("Error updating user data");
+      console.error("Lỗi cập nhật thông tin người dùng", error);
+      setError("Lỗi cập nhật thông tin người dùng");
     }
   };
 
@@ -277,6 +305,43 @@ const Profile = () => {
           </div>
         ) : (
           <p>Loading user data...</p>
+        )}
+        {isEditing && (
+          <div className="space-y-4 mt-6 border-t pt-6">
+            <h2 className="text-xl font-semibold mb-4">Đổi mật khẩu</h2>
+            <div className="flex justify-between items-center">
+              <label className="font-medium">Mật khẩu hiện tại:</label>
+              <input
+                type="password"
+                name="currentPassword"
+                className="border rounded-lg p-2 w-1/2"
+                value={passwordData.currentPassword}
+                onChange={handlePasswordChange}
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <label className="font-medium">Mật khẩu mới:</label>
+              <input
+                type="password"
+                name="newPassword"
+                className="border rounded-lg p-2 w-1/2"
+                value={passwordData.newPassword}
+                onChange={handlePasswordChange}
+              />
+            </div>
+            <div className="flex justify-between items-center">
+              <label className="font-medium">Xác nhận mật khẩu mới:</label>
+              <input
+                type="password"
+                name="confirmNewPassword"
+                className="border rounded-lg p-2 w-1/2"
+                value={passwordData.confirmNewPassword}
+                onChange={handlePasswordChange}
+              />
+            </div>
+            {passwordError && <p className="text-red-500">{passwordError}</p>}
+            {passwordSuccess && <p className="text-green-500">{passwordSuccess}</p>}
+          </div>
         )}
       </div>
     </div>

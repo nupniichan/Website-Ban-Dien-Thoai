@@ -80,8 +80,19 @@ userSchema.pre('save', function(next) {
     }
   }
 
+  // Validate mật khẩu mới (nếu được cập nhật)
+  if (this.isModified('password')) {
+    if (!this.password || !this.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
+      return next(new Error('Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số'));
+    }
+  }
+
   next();
 });
+
+userSchema.methods.comparePassword = function(candidatePassword) {
+  return this.password === candidatePassword;
+};
 
 const User = mongoose.model('User', userSchema);
 
