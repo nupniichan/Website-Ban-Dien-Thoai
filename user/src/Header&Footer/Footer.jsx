@@ -12,6 +12,7 @@ const FooterLinks = [
     {
         label: "Home",
         link: `${PathNames.HOMEPAGE}`,
+        onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }), // Scrolls to top on click
     },
     {
         label: "About",
@@ -26,6 +27,7 @@ const FooterLinks = [
         link: `${PathNames.VACANCIES}`,
     },
 ];
+
 
 const SupportLinks = [
     {
@@ -74,17 +76,18 @@ const Footer = () => {
                                 Navigations
                             </h1>
                             <ul className="space-y-3">
-                                {FooterLinks.map((link, index) => (
-                                    <li key={index}>
-                                        <Link
-                                            to={link.link}
-                                            className="text-gray-600 dark:text-gray-400 hover:dark:text-white hover:text-black duration-300"
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
+    {FooterLinks.map((link, index) => (
+        <li key={index}>
+            <Link
+                to={link.link}
+                onClick={link.onClick}  // Scroll to top when Home is clicked
+                className="text-gray-600 dark:text-gray-400 hover:dark:text-white hover:text-black duration-300"
+            >
+                {link.label}
+            </Link>
+        </li>
+    ))}
+</ul>
                         </div>
 
                         {/* footer second col of links */}

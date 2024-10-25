@@ -19,38 +19,38 @@ const Vacancies = () => {
                     <div className="vacancy-card bg-white rounded-lg shadow-md p-5">
                         <h3 className="text-xl font-semibold">Front-End Developer</h3>
                         <p className="mt-2 text-gray-600">Location: Remote</p>
-                        <p className="mt-2">We are looking for a skilled Front-End Developer to join our team.</p>
-                        <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded">Apply Now</button>
+                        <p className="mt-2">We are looking for a skilled Front-End Developer to build user-facing web applications. Must have experience with React, JavaScript, and CSS.</p>
+                        <p className="mt-2">Send your resume to <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a> or apply via <a href="https://linkedin.com/company/yourcompany" className="text-blue-600">LinkedIn</a>.</p>
                     </div>
                     <div className="vacancy-card bg-white rounded-lg shadow-md p-5">
                         <h3 className="text-xl font-semibold">Back-End Developer</h3>
                         <p className="mt-2 text-gray-600">Location: On-Site</p>
-                        <p className="mt-2">Join us as a Back-End Developer and help build robust server-side logic.</p>
-                        <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded">Apply Now</button>
+                        <p className="mt-2">Join us as a Back-End Developer to help build robust server-side logic. Experience with Node.js, Express, and databases is a must.</p>
+                        <p className="mt-2">Send your resume to <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a>.</p>
                     </div>
                     <div className="vacancy-card bg-white rounded-lg shadow-md p-5">
                         <h3 className="text-xl font-semibold">UI/UX Designer</h3>
                         <p className="mt-2 text-gray-600">Location: Hybrid</p>
-                        <p className="mt-2">We seek a creative UI/UX Designer to enhance our user experience.</p>
-                        <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded">Apply Now</button>
+                        <p className="mt-2">We seek a creative UI/UX Designer to enhance our user experience. Proficiency in design tools like Figma and Adobe XD is required.</p>
+                        <p className="mt-2">Send your portfolio and resume to <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a>.</p>
                     </div>
                     <div className="vacancy-card bg-white rounded-lg shadow-md p-5">
                         <h3 className="text-xl font-semibold">Project Manager</h3>
                         <p className="mt-2 text-gray-600">Location: Remote</p>
-                        <p className="mt-2">Join us as a Project Manager to oversee and deliver successful projects.</p>
-                        <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded">Apply Now</button>
+                        <p className="mt-2">Manage software development projects, coordinate teams, and ensure timely delivery. Experience in Agile methodologies is a plus.</p>
+                        <p className="mt-2">To apply, send your resume to <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a>.</p>
                     </div>
                     <div className="vacancy-card bg-white rounded-lg shadow-md p-5">
                         <h3 className="text-xl font-semibold">Data Scientist</h3>
                         <p className="mt-2 text-gray-600">Location: On-Site</p>
-                        <p className="mt-2">We are looking for a Data Scientist to help analyze and interpret complex data.</p>
-                        <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded">Apply Now</button>
+                        <p className="mt-2">We are looking for a Data Scientist to analyze and interpret complex data. Must have experience with Python, R, and machine learning techniques.</p>
+                        <p className="mt-2">Apply by emailing your resume to <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a>.</p>
                     </div>
                     <div className="vacancy-card bg-white rounded-lg shadow-md p-5">
                         <h3 className="text-xl font-semibold">Marketing Specialist</h3>
                         <p className="mt-2 text-gray-600">Location: Remote</p>
-                        <p className="mt-2">Help us grow by joining our team as a Marketing Specialist.</p>
-                        <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded">Apply Now</button>
+                        <p className="mt-2">Help us grow by joining our team as a Marketing Specialist. Experience with digital marketing, SEO, and content creation is preferred.</p>
+                        <p className="mt-2">Send your resume to <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a>.</p>
                     </div>
                 </div>
             </section>
@@ -59,3 +59,4 @@ const Vacancies = () => {
 };
 
 export default Vacancies;
+

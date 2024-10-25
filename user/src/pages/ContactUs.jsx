@@ -1,24 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 const ContactUs = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        message: '',
-    });
-    const [submitted, setSubmitted] = useState(false);
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission logic (e.g., API call)
-        setSubmitted(true);
-    };
-
     return (
         <main className="main">
             {/* Hero Section */}
@@ -29,64 +11,29 @@ const ContactUs = () => {
                     backgroundPosition: 'center'
                 }}>
                 <div className="bg-black bg-opacity-70 p-10 rounded-lg shadow-lg">
-                    <h1 className="text-5xl font-bold">Contact Us</h1>
-                    <p className="mt-4 text-xl">We'd love to hear from you!</p>
+                    <h1 className="text-5xl font-bold">Reach Out to Us</h1>
+                    <p className="mt-4 text-xl">We are here to answer your questions and provide assistance!</p>
                 </div>
-            </section>
-
-            {/* Contact Form Section */}
-            <section className="contact-section mt-10 max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md">
-                <h2 className="text-3xl font-bold text-center">Get in Touch</h2>
-                <form onSubmit={handleSubmit} className="mt-6">
-                    <div className="mb-4">
-                        <label className="block text-gray-700 font-semibold mb-2" htmlFor="name">Name</label>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            required
-                            className="border border-gray-300 rounded-md w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 font-semibold mb-2" htmlFor="email">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className="border border-gray-300 rounded-md w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                        />
-                    </div>
-                    <div className="mb-4">
-                        <label className="block text-gray-700 font-semibold mb-2" htmlFor="message">Message</label>
-                        <textarea
-                            id="message"
-                            name="message"
-                            value={formData.message}
-                            onChange={handleChange}
-                            required
-                            className="border border-gray-300 rounded-md w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-                            rows="4"
-                        />
-                    </div>
-                    <button type="submit" className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-300">
-                        Send Message
-                    </button>
-                </form>
-                {submitted && <p className="mt-4 text-green-600 text-center">Thank you for your message!</p>}
             </section>
 
             {/* Contact Information Section */}
             <section className="info-section mt-10 max-w-3xl mx-auto text-center">
                 <h2 className="text-3xl font-bold">Contact Information</h2>
-                <p className="mt-4">Email: <a href="mailto:pinkcat@example.com" className="text-blue-600">pinkcat@gmail.com</a></p>
-                <p className="mt-2">Phone: <a href="tel:+1234567890" className="text-blue-600">(+84) 947500422</a></p>
-                <p className="mt-2">Address: Sư Vạn Hạnh, TP. Hồ Chí Minh</p>
+                <p className="mt-4">Feel free to reach out via email or phone, and we'll get back to you as soon as possible.</p>
+
+                <div className="mt-6">
+                    <p className="text-xl">Email: <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a></p>
+                    <p className="mt-4 text-xl">Phone: <a href="tel:+84947500422" className="text-blue-600">(+84) 947500422</a></p>
+                    <p className="mt-4 text-xl">Address: Sư Vạn Hạnh, TP. Hồ Chí Minh</p>
+                </div>
+            </section>
+
+            {/* Interactive Section */}
+            <section className="interactive-section py-20 bg-gray-100">
+                <div className="max-w-3xl mx-auto text-center">
+                    <h2 className="text-3xl font-bold mb-8">We'd Love to Hear From You!</h2>
+                    <p className="text-lg">Whether you have a question or need support, feel free to drop us a line. Your feedback and inquiries are important to us.</p>
+                </div>
             </section>
         </main>
     );
