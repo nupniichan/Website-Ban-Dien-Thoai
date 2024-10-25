@@ -327,9 +327,18 @@ app.get('/api/counter/:id', async (req, res) => {
 
 // Thêm sản phẩm
 app.post('/api/addProduct', upload.single('image'), async (req, res) => {
-  const { name, color, quantity, price, os, brand, description, cauhinh } = req.body;
-
   try {
+    // Log để debug
+    console.log('Received request body:', req.body);
+    console.log('Received file:', req.file);
+
+    const { name, color, quantity, price, os, brand, description, cauhinh } = req.body;
+
+    // Validate dữ liệu đầu vào
+    if (!name || !price) {
+      return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
+    }
+
     const counter = await Counter.findByIdAndUpdate(
       { _id: 'productId' },
       { $inc: { seq: 1 } },
@@ -340,19 +349,26 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
       id: `SP${String(counter.seq).padStart(3, '0')}`,
       name,
       color,
-      quantity,
-      price,
+      quantity: Number(quantity),
+      price: Number(price),
       os,
       brand,
       description,
       image: req.file ? req.file.path : null,
-      cauhinh: JSON.parse(cauhinh),  // Chuyển từ chuỗi JSON sang object
+      cauhinh: JSON.parse(cauhinh),
     });
 
     await newProduct.save();
-    res.status(201).json({ message: 'Sản phẩm đã được thêm thành công!', id: newProduct.id });
+    res.status(201).json({ 
+      message: 'Sản phẩm đã được thêm thành công!', 
+      id: newProduct.id 
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm', error: err.message });
+    console.error('Error adding product:', err);
+    res.status(500).json({ 
+      message: 'Lỗi khi thêm sản phẩm', 
+      error: err.message 
+    });
   }
 });
 

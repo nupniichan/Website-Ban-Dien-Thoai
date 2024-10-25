@@ -249,148 +249,141 @@ const EditProduct = () => {
       <Typography variant="h4" gutterBottom>Chỉnh sửa sản phẩm</Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>Thông tin cơ bản</Typography>
-          </Grid>
           <Grid item xs={12} sm={6}>
-            <Autocomplete
-                freeSolo
-                options={colorOptions}
-                value={product.color}
-                onChange={(event, newValue) => {
-                    setProduct({ ...product, color: newValue || '' });
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Màu sắc"
-                        name="color"
-                        required
-                        margin="normal"
-                        fullWidth
-                        error={!!errors.color}
-                        helperText={errors.color}
-                    />
-                )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Autocomplete
-                freeSolo
-                options={osOptions}
-                value={product.os}
-                onChange={(event, newValue) => {
-                    setProduct({ ...product, os: newValue || '' });
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Hệ điều hành"
-                        name="os"
-                        required
-                        margin="normal"
-                        fullWidth
-                        error={!!errors.os}
-                        helperText={errors.os}
-                    />
-                )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Autocomplete
-                freeSolo
-                options={brandOptions}
-                value={product.brand}
-                onChange={(event, newValue) => {
-                    setProduct({ ...product, brand: newValue || '' });
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Thương hiệu"
-                        name="brand"
-                        required
-                        margin="normal"
-                        fullWidth
-                        error={!!errors.brand}
-                        helperText={errors.brand}
-                    />
-                )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <Autocomplete
-                freeSolo
-                options={screenTechOptions}
-                value={product.cauhinh.congNgheManHinh}
-                onChange={(event, newValue) => {
-                    setProduct({
-                        ...product,
-                        cauhinh: { ...product.cauhinh, congNgheManHinh: newValue || '' }
-                    });
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Công nghệ màn hình"
-                        name="cauhinh.congNgheManHinh"
-                        required
-                        margin="normal"
-                        fullWidth
-                        error={!!errors['cauhinh.congNgheManHinh']}
-                        helperText={errors['cauhinh.congNgheManHinh']}
-                    />
-                )}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <TextField 
-              label="Số lượng tồn" 
-              name="quantity" 
-              value={product.quantity || ''} 
-              onChange={handleChange} 
-              fullWidth 
+            <TextField
+              label="Tên sản phẩm"
+              name="name"
+              value={product?.name || ''}
+              onChange={handleChange}
+              fullWidth
               required
-              margin="normal" 
-              type="number"
-              inputProps={{ min: 0 }}
-              error={!!errors.quantity}
-              helperText={errors.quantity}
+              margin="normal"
             />
           </Grid>
+
           <Grid item xs={12} sm={6}>
-            <TextField 
-              label="Giá (VNĐ)" 
-              name="price" 
-              value={product.price || ''} 
-              onChange={handleChange} 
-              fullWidth 
+            <TextField
+              select
+              label="Màu sắc"
+              name="color"
+              value={product?.color || ''}
+              onChange={handleChange}
+              fullWidth
               required
-              margin="normal" 
-              type="number"
-              inputProps={{ min: 0 }}
-              error={!!errors.price}
-              helperText={errors.price}
-            />
+              margin="normal"
+            >
+              {colorOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
+
           <Grid item xs={12} sm={6}>
-            <TextField 
-              label="Hình ảnh sản phẩm hiện tại" 
-              name="image" 
-              value={imagePreview || ''} 
-              onChange={handleChange} 
-              fullWidth 
-              margin="normal" 
+            <TextField
+              label="Số lượng"
+              name="quantity"
+              type="number"
+              value={product?.quantity || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              inputProps={{ min: 0 }}
             />
           </Grid>
-          <Grid item xs={12}>
-            <Typography variant="subtitle1" gutterBottom>Hình ảnh sản phẩm hiện tại</Typography>
-            {imagePreview && <img src={imagePreview} alt="Product" style={{ maxWidth: '200px', marginBottom: '10px' }} />}
-            <input type="file" name="image" accept="image/*" onChange={handleFileChange} />
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Giá"
+              name="price"
+              type="number"
+              value={product?.price || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              inputProps={{ min: 0 }}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              label="Hệ điều hành"
+              name="os"
+              value={product?.os || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {osOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              label="Thương hiệu"
+              name="brand"
+              value={product?.brand || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+            >
+              {brandOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
           </Grid>
 
           <Grid item xs={12}>
-            <Typography variant="h6" gutterBottom>Cấu hình sản phẩm</Typography>
+            <TextField
+              label="Mô tả"
+              name="description"
+              value={product?.description || ''}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              multiline
+              rows={4}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <input
+              accept="image/*"
+              type="file"
+              onChange={handleFileChange}
+              style={{ display: 'none' }}
+              id="image-upload"
+            />
+            <label htmlFor="image-upload">
+              <Button variant="contained" component="span">
+                Chọn hình ảnh
+              </Button>
+            </label>
+            {imagePreview && (
+              <Box mt={2}>
+                <img src={imagePreview} alt="Preview" style={{ maxWidth: '200px' }} />
+              </Box>
+            )}
+          </Grid>
+
+          <Grid item xs={12}>
+            <Typography variant="h6" sx={{ mt: 3, mb: 2 }}>
+              Cấu hình sản phẩm
+            </Typography>
           </Grid>
           {product.cauhinh ? (
             Object.entries(product.cauhinh).map(([key, value]) => (
