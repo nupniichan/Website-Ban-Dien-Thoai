@@ -1,6 +1,12 @@
 const PathNames = {
     HOMEPAGE: '/',
-    ABOUT: '/about-us',
+    ABOUT: '/about',
+    CONTACTUS: '/contactus',
+    FAQ: '/faq',
+    PRIVACYPOLICY: '/privacypolicy',
+    STORIES: '/stories',
+    TERMS: '/terms',
+    VACANCIES: '/vacancies',
     SUPPORT: '/support',
     CART: '/cart',
     CHECKOUT: '/checkout',
