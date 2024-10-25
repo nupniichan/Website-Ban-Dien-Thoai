@@ -11,6 +11,7 @@ const userSchema = new mongoose.Schema({
   address: { type: String, required: true },
   password: { type: String, required: true },
   role: { type: String, default: 'user' },
+  userAvatar: { type: String},
   cart: [
     {
       productId: String,

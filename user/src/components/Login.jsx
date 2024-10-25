@@ -29,12 +29,11 @@ const Login = ({ onSwitchToRegister }) => {
 
       if (response.ok) {
         alert('Đăng nhập thành công!');
-        console.log(data)
-        console.log(data.user.accountName)
+        console.log('Full response data:', data);
         sessionStorage.setItem('userEmail', data.user.email);
         sessionStorage.setItem('userId', data.user.userId);
         sessionStorage.setItem('accountName', data.user.accountName);
-
+        console.log(data.user.userAvatar);
         window.dispatchEvent(new Event("loginSuccess"));
         navigate('/');
       } else {
