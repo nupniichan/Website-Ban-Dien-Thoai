@@ -28,7 +28,6 @@ const Login = ({ onSwitchToRegister }) => {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Đăng nhập thành công!');
         console.log('Full response data:', data);
         sessionStorage.setItem('userEmail', data.user.email);
         sessionStorage.setItem('userId', data.user.userId);
