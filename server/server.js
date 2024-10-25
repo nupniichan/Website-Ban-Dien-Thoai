@@ -449,7 +449,6 @@ app.get('/api/products/:id', async (req, res) => {
     // Lấy tất cả sản phẩm cùng tên, giá và thương hiệu nhưng khác màu
     const availableColors = await Product.find({
       name: product.name,
-      price: product.price,
       brand: product.brand,
     }).select('id color');
 
