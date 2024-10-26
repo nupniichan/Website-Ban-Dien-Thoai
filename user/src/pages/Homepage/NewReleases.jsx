@@ -1,10 +1,11 @@
-import { PlusCircleOutlined } from "@ant-design/icons";
+import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { Card } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Heading from "../../shared/Heading";
+import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
+import Heading from "../../shared/Heading";
 import StarRating from "../../shared/StarRating";
-import { useNavigate } from "react-router-dom";
 
 const NewReleases = () => {
     const [products, setProducts] = useState([]);
@@ -37,7 +38,7 @@ const NewReleases = () => {
 
     const handleProductClick = (productId) => {
         navigate(`/product/${productId}`);
-    }
+    };
     // useEffect(() => {
     //     console.log(NReleaseProducts);
     // }, [NReleaseProducts]);
@@ -57,8 +58,7 @@ const NewReleases = () => {
                         {NReleaseProducts.map((item) => (
                             <div
                                 key={item.id}
-                                className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl [box-shadow:0_1px_2px_0_rgba(60,64,67,.1),0_2px_6px_2px_rgba(60,64,67,.15)] p-4 cursor-pointer"
-                                onClick={() => handleProductClick(item.id)}
+                                className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl [box-shadow:0_1px_2px_0_rgba(60,64,67,.1),0_2px_6px_2px_rgba(60,64,67,.15)] p-4 cursor-pointer group transition"
                             >
                                 <div className="productcard-img relative">
                                     {item.image ? (
@@ -77,6 +77,7 @@ const NewReleases = () => {
                                         <PlusCircleOutlined className="text-primary text-5xl hover:-translate-y-1 active:scale-75 active:translate-y-1 transform transition-transform duration-75 ease-linear" />
                                     </div> */}
                                 </div>
+
                                 <div className="leading-7">
                                     <h2 className="lg:text-lg md:text-sm font-semibold sm:text-base">
                                         {item.name}
@@ -89,6 +90,18 @@ const NewReleases = () => {
                                 {/* Star Rating */}
                                 <div onClick={(e) => e.stopPropagation()}>
                                     <StarRating rating={item.rating} />
+                                </div>
+
+                                {/* Buttons */}
+                                <div className="absolute top-6 -right-11 group-hover:right-5 p-2 flex flex-col items-center justify-center gap-y-2 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                                    <button>
+                                        <div className="flex justify-center items-center text-white bg-red-600 w-12 h-12">
+                                            <PlusOutlined className="text-3xl" />
+                                        </div>
+                                    </button>
+                                    <div onClick={() => handleProductClick(item.id)} className="w-12 h-12 bg-white justify-center items-center text-black drop-shadow-xl">
+                                        <EyeOutlined className="text-3xl" />
+                                    </div>
                                 </div>
                             </div>
                         ))}
