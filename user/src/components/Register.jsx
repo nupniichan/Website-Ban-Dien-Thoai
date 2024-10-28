@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate } from 'react-router-dom';
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
 
 const Register = ({ onRegisterSuccess }) => {
   const [name, setName] = useState('');
@@ -8,7 +9,7 @@ const Register = ({ onRegisterSuccess }) => {
   const [gender, setGender] = useState('');
   const [address, setAddress] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  const [dayOfBirth, setDayOfBirth] = useState('');  
+  const [dayOfBirth, setDayOfBirth] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -20,12 +21,13 @@ const Register = ({ onRegisterSuccess }) => {
   const [genderError, setGenderError] = useState('');
   const [addressError, setAddressError] = useState('');
   const [phoneNumberError, setPhoneNumberError] = useState('');
-  const [dayOfBirthError, setDayOfBirthError] = useState('');  
+  const [dayOfBirthError, setDayOfBirthError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
 
   const navigate = useNavigate();
+  const auth = getAuth(); // Initialize Firebase Auth
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -71,7 +73,7 @@ const Register = ({ onRegisterSuccess }) => {
         setDayOfBirthError('Ngày sinh không thể là ngày trong tương lai.');
         isValid = false;
       }
-    } 
+    }
 
     if (!address.trim()) {
       setAddressError('Địa chỉ không được để trống.');
@@ -102,35 +104,48 @@ const Register = ({ onRegisterSuccess }) => {
 
     if (isValid) {
       try {
-          const formData = new FormData();
-          formData.append('name', name);
-          formData.append('accountName', accountName);
-          formData.append('gender', gender);
-          formData.append('address', address);
-          formData.append('phoneNumber', phoneNumber);
-          formData.append('dayOfBirth', dayOfBirth);
-          formData.append('email', email);
-          formData.append('password', password);
-          if (userAvatar) {
-              formData.append('userAvatar', userAvatar);
+        // Create user in Firebase
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+
+        // Send email verification
+        await sendEmailVerification(user);
+        console.log("User registered successfully, verification email sent.");
+
+        // Prepare user data to send to your server
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('accountName', accountName);
+        formData.append('gender', gender);
+        formData.append('address', address);
+        formData.append('phoneNumber', phoneNumber);
+        formData.append('dayOfBirth', dayOfBirth);
+        formData.append('email', email);
+        formData.append('password', password);  // Include password here
+        formData.append('userId', user.uid);  // Include Firebase user ID
+
+        if (userAvatar) {
+          formData.append('userAvatar', userAvatar);
+        }
+
+        // Log the FormData
+        for (const [key, value] of formData.entries()) {
+          console.log(`${key}:`, value);
+        }
+
+        // Send user data to your backend for storage
+        await axios.post('http://localhost:5000/api/register', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
           }
+        });
 
-          // Log the FormData
-          for (const [key, value] of formData.entries()) {
-              console.log(`${key}:`, value);
-          }
-
-          await axios.post('http://localhost:5000/api/register', formData, {
-              headers: {
-                  'Content-Type': 'multipart/form-data'
-              }
-          });
-
-          alert("Đăng ký thành công!");
-          onRegisterSuccess();
+        alert("Đăng ký thành công!");
+        onRegisterSuccess();
+        navigate('/login'); // Optionally redirect to the login page after successful registration
       } catch (error) {
-          console.error("Error during registration:", error.response?.data || error.message);
-          alert("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.");
+        console.error("Error during registration:", error.response?.data || error.message);
+        alert("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.");
       }
     }
   };
@@ -140,7 +155,6 @@ const Register = ({ onRegisterSuccess }) => {
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center transition-transform hover:translate-y-1">
         <h2 className="text-3xl font-bold mb-6 text-gray-800">Đăng ký</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          
           <div className="text-left">
             <label className="block text-sm font-medium text-gray-700">Họ tên:</label>
             <input
@@ -208,7 +222,7 @@ const Register = ({ onRegisterSuccess }) => {
             <input
               type="text"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value.replace(/\D/g, ''))} // Allow only numbers
+              onChange={(e) => setPhoneNumber(e.target.value)}
               placeholder="Nhập số điện thoại"
               className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
             />
@@ -218,7 +232,7 @@ const Register = ({ onRegisterSuccess }) => {
           <div className="text-left">
             <label className="block text-sm font-medium text-gray-700">Email:</label>
             <input
-              type="text"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Nhập email"
@@ -255,15 +269,13 @@ const Register = ({ onRegisterSuccess }) => {
             <label className="block text-sm font-medium text-gray-700">Avatar:</label>
             <input
               type="file"
-              accept="image/*"  // Accept image files only
-              onChange={(e) => setUserAvatar(e.target.files[0])} // Set the selected file
-              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+              accept="image/*"
+              onChange={(e) => setUserAvatar(e.target.files[0])}
+              className="mt-1 block w-full text-sm border border-gray-300 rounded-md"
             />
           </div>
 
-          <button type="submit" className="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transform hover:translate-y-1 mt-4">
-            Đăng ký
-          </button>
+          <button type="submit" className="w-full bg-green-500 text-white font-bold py-2 rounded-md hover:bg-green-600">Đăng ký</button>
         </form>
       </div>
     </div>

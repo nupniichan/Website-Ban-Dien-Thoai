@@ -63,29 +63,6 @@ app.post('/loginAdmin', async (req, res) => {
     res.status(401).json({ message: err.message });
   }
 });
-// Đăng nhập người dùng
-app.post('/api/login', async (req, res) => {
-  const { email, password } = req.body;
-  try {
-    const user = await User.findOne({ email, password });
-
-    if (!user) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    // Assuming the user is found, send the accountName and userId in the response
-    res.status(200).json({
-      message: 'Đăng nhập thành công',
-      user: {
-        accountName: user.accountName,
-        userId: user.id,
-        email: user.email
-      }
-    });
-  } catch (err) {
-    res.status(500).json({ message: 'Server error', error: err.message });
-  }
-});
 
 
 // Get orders by customer ID
@@ -171,10 +148,8 @@ app.post('/api/login', async (req, res) => {
       return res.status(400).json({ message: 'Email hoặc mật khẩu không hợp lệ' });
     }
 
-    // Return user information upon successful login
     res.status(200).json({
       message: 'Đăng nhập thành công',
-      
       user: {
         userId: user.id,
         accountName: user.accountName,
@@ -183,7 +158,6 @@ app.post('/api/login', async (req, res) => {
         userAvatar: user.userAvatar
       }
     });
-    console.log('User object:', user); // Log the user object
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình đăng nhập.', error: error.message });
