@@ -74,8 +74,8 @@ const NewReleases = () => {
                                     )}
                                     {/* hover button */}
                                     {/* <div className="hidden group-hover:flex absolute top-1/2 -translate-x-1/2 left-1/2 -translate-y-1/2 h-full w-full text-center group-hover:backdrop-blur-sm justify-center items-center duration-200">
-                                        <PlusCircleOutlined className="text-primary text-5xl hover:-translate-y-1 active:scale-75 active:translate-y-1 transform transition-transform duration-75 ease-linear" />
-                                    </div> */}
+                    <PlusCircleOutlined className="text-primary text-5xl hover:-translate-y-1 active:scale-75 active:translate-y-1 transform transition-transform duration-75 ease-linear" />
+                </div> */}
                                 </div>
 
                                 <div className="leading-7">
@@ -99,7 +99,12 @@ const NewReleases = () => {
                                             <PlusOutlined className="text-3xl" />
                                         </div>
                                     </button>
-                                    <div onClick={() => handleProductClick(item.id)} className="w-12 h-12 bg-white justify-center items-center text-black drop-shadow-xl">
+                                    <div
+                                        onClick={() =>
+                                            handleProductClick(item.id)
+                                        }
+                                        className="w-12 h-12 bg-white justify-center items-center text-black drop-shadow-xl"
+                                    >
                                         <EyeOutlined className="text-3xl" />
                                     </div>
                                 </div>
