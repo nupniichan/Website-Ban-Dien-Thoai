@@ -12,6 +12,7 @@ const Register = ({ onRegisterSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [userAvatar, setUserAvatar] = useState(null);  // State for user avatar
 
   // Error state
   const [nameError, setNameError] = useState('');
@@ -101,21 +102,35 @@ const Register = ({ onRegisterSuccess }) => {
 
     if (isValid) {
       try {
-        await axios.post('http://localhost:5000/api/register', {
-          name,
-          accountName,
-          gender,
-          address,
-          phoneNumber,
-          dayOfBirth,  
-          email,
-          password,
-        });
+          const formData = new FormData();
+          formData.append('name', name);
+          formData.append('accountName', accountName);
+          formData.append('gender', gender);
+          formData.append('address', address);
+          formData.append('phoneNumber', phoneNumber);
+          formData.append('dayOfBirth', dayOfBirth);
+          formData.append('email', email);
+          formData.append('password', password);
+          if (userAvatar) {
+              formData.append('userAvatar', userAvatar);
+          }
 
-        alert("Đăng ký thành công!");
-        onRegisterSuccess();  // Close Register modal and open Login modal
+          // Log the FormData
+          for (const [key, value] of formData.entries()) {
+              console.log(`${key}:`, value);
+          }
+
+          await axios.post('http://localhost:5000/api/register', formData, {
+              headers: {
+                  'Content-Type': 'multipart/form-data'
+              }
+          });
+
+          alert("Đăng ký thành công!");
+          onRegisterSuccess();
       } catch (error) {
-        alert("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.");
+          console.error("Error during registration:", error.response?.data || error.message);
+          alert("Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.");
       }
     }
   };
@@ -158,9 +173,9 @@ const Register = ({ onRegisterSuccess }) => {
               className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
             >
               <option value="">Chọn giới tính</option>
-              <option value="male">Nam</option>
-              <option value="female">Nữ</option>
-              <option value="other">Khác</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+              <option value="Khác">Khác</option>
             </select>
             {genderError && <span className="text-red-500 text-xs">{genderError}</span>}
           </div>
@@ -234,6 +249,16 @@ const Register = ({ onRegisterSuccess }) => {
               className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
             />
             {confirmPasswordError && <span className="text-red-500 text-xs">{confirmPasswordError}</span>}
+          </div>
+
+          <div className="text-left">
+            <label className="block text-sm font-medium text-gray-700">Avatar:</label>
+            <input
+              type="file"
+              accept="image/*"  // Accept image files only
+              onChange={(e) => setUserAvatar(e.target.files[0])} // Set the selected file
+              className="mt-1 block w-full px-4 py-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+            />
           </div>
 
           <button type="submit" className="w-full bg-green-600 text-white font-bold py-2 px-4 rounded-md hover:bg-green-700 transform hover:translate-y-1 mt-4">

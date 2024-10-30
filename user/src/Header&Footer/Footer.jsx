@@ -12,37 +12,39 @@ const FooterLinks = [
     {
         label: "Home",
         link: `${PathNames.HOMEPAGE}`,
+        onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }), // Scrolls to top on click
     },
     {
         label: "About",
         link: `${PathNames.ABOUT}`,
     },
-    {
+    {   
         label: "Stories",
-        link: `/#`,
+        link: `${PathNames.STORIES}`,
     },
     {
         label: "Vacancies",
-        link: `/#`,
+        link: `${PathNames.VACANCIES}`,
     },
 ];
+
 
 const SupportLinks = [
     {
         label: "FAQ",
-        link: `/#`,
+        link: `${PathNames.FAQ}`,
     },
     {
         label: "Contact Us",
-        link: `/#`,
+        link: `${PathNames.CONTACTUS}`,
     },
     {
         label: "Privacy Policy",
-        link: `/#`,
+        link: `${PathNames.PRIVACYPOLICY}`,
     },
     {
         label: "Terms & Conditions",
-        link: `/#`,
+        link: `${PathNames.TERMS}`,
     },
 ];
 
@@ -74,17 +76,18 @@ const Footer = () => {
                                 Navigations
                             </h1>
                             <ul className="space-y-3">
-                                {FooterLinks.map((link, index) => (
-                                    <li key={index}>
-                                        <Link
-                                            to={link.link}
-                                            className="text-gray-600 dark:text-gray-400 hover:dark:text-white hover:text-black duration-300"
-                                        >
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
+    {FooterLinks.map((link, index) => (
+        <li key={index}>
+            <Link
+                to={link.link}
+                onClick={link.onClick}  // Scroll to top when Home is clicked
+                className="text-gray-600 dark:text-gray-400 hover:dark:text-white hover:text-black duration-300"
+            >
+                {link.label}
+            </Link>
+        </li>
+    ))}
+</ul>
                         </div>
 
                         {/* footer second col of links */}

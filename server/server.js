@@ -101,8 +101,8 @@ app.get('/api/orders/customer/:customerId', async (req, res) => {
 
 
 
-// Registration route
-app.post('/api/register', async (req, res) => {
+// Updated Registration route to handle user avatar upload
+app.post('/api/register', upload.single('userAvatar'), async (req, res) => {
   const { name, accountName, gender, address, phoneNumber, dayOfBirth, email, password } = req.body;
 
   try {
@@ -124,6 +124,7 @@ app.post('/api/register', async (req, res) => {
     const lastUser = await User.findOne().sort({ id: -1 });
     const lastId = lastUser ? parseInt(lastUser.id.substring(2), 10) : 0;
     const userId = `KH${(lastId + 1).toString().padStart(3, '0')}`;
+    const defaultAvatarUrl = 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg';
 
     // Create new user document
     const newUser = new User({
@@ -136,6 +137,7 @@ app.post('/api/register', async (req, res) => {
       gender,
       address,
       password,
+      userAvatar: req.file ? req.file.path : defaultAvatarUrl, // Use uploaded file path or default URL
     });
 
     // Save the new user to the database
@@ -147,9 +149,10 @@ app.post('/api/register', async (req, res) => {
   } catch (error) {
     // Error handling
     console.error("Error during registration:", error);
-    res.status(500).json({ message: "Đã xảy ra lỗi trong quá trình đăng ký." });
+    res.status(500).json({ message: "Đã xảy ra lỗi trong quá trình đăng ký.", error: error.message});
   }
 });
+
 
 
 
@@ -171,13 +174,16 @@ app.post('/api/login', async (req, res) => {
     // Return user information upon successful login
     res.status(200).json({
       message: 'Đăng nhập thành công',
+      
       user: {
-        id: user.id,
+        userId: user.id,
         accountName: user.accountName,
         email: user.email,
-        phoneNumber: user.phoneNumber
+        phoneNumber: user.phoneNumber,
+        userAvatar: user.userAvatar
       }
     });
+    console.log('User object:', user); // Log the user object
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình đăng nhập.', error: error.message });
@@ -321,9 +327,18 @@ app.get('/api/counter/:id', async (req, res) => {
 
 // Thêm sản phẩm
 app.post('/api/addProduct', upload.single('image'), async (req, res) => {
-  const { name, color, quantity, price, os, brand, description, cauhinh } = req.body;
-
   try {
+    // Log để debug
+    console.log('Received request body:', req.body);
+    console.log('Received file:', req.file);
+
+    const { name, color, quantity, price, os, brand, description, cauhinh } = req.body;
+
+    // Validate dữ liệu đầu vào
+    if (!name || !price) {
+      return res.status(400).json({ message: 'Thiếu thông tin bắt buộc' });
+    }
+
     const counter = await Counter.findByIdAndUpdate(
       { _id: 'productId' },
       { $inc: { seq: 1 } },
@@ -334,19 +349,26 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
       id: `SP${String(counter.seq).padStart(3, '0')}`,
       name,
       color,
-      quantity,
-      price,
+      quantity: Number(quantity),
+      price: Number(price),
       os,
       brand,
       description,
       image: req.file ? req.file.path : null,
-      cauhinh: JSON.parse(cauhinh),  // Chuyển từ chuỗi JSON sang object
+      cauhinh: JSON.parse(cauhinh),
     });
 
     await newProduct.save();
-    res.status(201).json({ message: 'Sản phẩm đã được thêm thành công!', id: newProduct.id });
+    res.status(201).json({ 
+      message: 'Sản phẩm đã được thêm thành công!', 
+      id: newProduct.id 
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm', error: err.message });
+    console.error('Error adding product:', err);
+    res.status(500).json({ 
+      message: 'Lỗi khi thêm sản phẩm', 
+      error: err.message 
+    });
   }
 });
 
@@ -443,7 +465,6 @@ app.get('/api/products/:id', async (req, res) => {
     // Lấy tất cả sản phẩm cùng tên, giá và thương hiệu nhưng khác màu
     const availableColors = await Product.find({
       name: product.name,
-      price: product.price,
       brand: product.brand,
     }).select('id color');
 
@@ -583,7 +604,7 @@ const generateCustomerId = async () => {
 
 // Thêm người dùng mới
 app.post('/api/addUser', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
 
   try {
     // Kiểm tra xem email đã tồn tại hay chưa
@@ -607,6 +628,7 @@ app.post('/api/addUser', async (req, res) => {
       accountName,
       password,
       role: role || 'user',
+      userAvatar: userAvatar || ''
     });
 
     await newUser.save();
@@ -616,24 +638,8 @@ app.post('/api/addUser', async (req, res) => {
   }
 });
 
-// Sửa thông tin người dùng
-app.put('/api/users/:id', async (req, res) => {
-  const { id } = req.params;
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
 
-  try {
-    const updateData = { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role };
 
-    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true });
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' });
-    }
-
-    res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
-  } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
-  }
-});
 
 // Xóa người dùng
 app.delete('/api/users/:id', async (req, res) => {
@@ -651,9 +657,9 @@ app.delete('/api/users/:id', async (req, res) => {
   }
 });
 
-// Lấy danh sách tất cả người dùng
+// ADD
 app.post('/api/users', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
 
   try {
     // Kiểm tra xem email đã tồn tại hay chưa
@@ -677,6 +683,7 @@ app.post('/api/users', async (req, res) => {
       accountName,
       password,
       role: role || 'user',
+      userAvatar
     });
 
     await newUser.save();
@@ -687,12 +694,30 @@ app.post('/api/users', async (req, res) => {
 });
 
 
-// Lấy thông tin người dùng theo ID
-app.put('/api/users/:id', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role } = req.body;
-  const { id } = req.params; // Get the id from the URL parameters
+// SỬA
+app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, currentPassword, newPassword } = req.body;
+  const { id } = req.params;
 
   try {
+    const user = await User.findOne({ id });
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Kiểm tra mật khẩu hiện tại nếu người dùng muốn đổi mật khẩu
+    if (newPassword) {
+      if (user.password !== currentPassword) {
+        return res.status(400).json({ message: 'Mật khẩu hiện tại không đúng' });
+      }
+      // Validate mật khẩu mới
+      if (!newPassword.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
+        return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số' });
+      }
+    }
+
+    const userAvatar = req.file ? req.file.path : undefined;
+
     const updateData = {
       name,
       email,
@@ -701,22 +726,18 @@ app.put('/api/users/:id', async (req, res) => {
       gender,
       address,
       accountName,
-      password,
-      role
+      ...(newPassword && { password: newPassword }),
+      ...(userAvatar && { userAvatar }),
     };
 
-    const updatedUser = await User.findOneAndUpdate({ _id: id }, updateData, { new: true }); // Use _id for MongoDB ObjectID
-    if (!updatedUser) {
-      return res.status(404).json({ message: 'Người dùng không tồn tại' });
-    }
-
+    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true, runValidators: true });
     res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
   }
 });
 
-// Lấy thông tin người dùng theo ID
+// GET
 app.get('/api/users/:id', async (req, res) => {
   const { id } = req.params; // Lấy ID từ params
 

@@ -68,6 +68,7 @@ const AddProduct = () => {
     }
     formData.append('cauhinh', JSON.stringify(product.cauhinh));
 
+    console.log(product)
     try {
       const response = await fetch(`${BASE_URL}/api/addProduct`, {
         method: 'POST',
@@ -193,6 +194,13 @@ const AddProduct = () => {
     // Validate cổng sạc
     if (!product.cauhinh.congSac) {
       newErrors['cauhinh.congSac'] = 'Vui lòng chọn cổng sạc';
+    }
+
+    // Validate pin
+    if (!product.cauhinh.pin) {
+      newErrors['cauhinh.pin'] = 'Vui lòng nhập dung lượng pin';
+    } else if (!/^\d+mAh$/.test(product.cauhinh.pin)) {
+      newErrors['cauhinh.pin'] = 'Định dạng không hợp lệ';
     }
 
     setErrors(newErrors);
@@ -447,6 +455,32 @@ const AddProduct = () => {
                 </MenuItem>
               ))}
             </TextField>
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Độ phân giải màn hình"
+              name="cauhinh.doPhanGiaiManHinh"
+              value={product.cauhinh.doPhanGiaiManHinh}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              helperText="Định dạng: AxB (ví dụ: 1920x1080)"
+              error={product.cauhinh.doPhanGiaiManHinh && !/^\d+x\d+$/.test(product.cauhinh.doPhanGiaiManHinh)}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Pin"
+              name="cauhinh.pin"
+              value={product.cauhinh.pin}
+              onChange={handleChange}
+              fullWidth
+              required
+              margin="normal"
+              helperText="Định dạng: xmAh (ví dụ: 4000mAh)"
+              error={product.cauhinh.pin && !/^\d+mAh$/.test(product.cauhinh.pin)}
+            />
           </Grid>
         </Grid>
 
