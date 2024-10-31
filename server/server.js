@@ -1101,7 +1101,7 @@ app.post('/callback', async (req, res) => {
         }
 
         // Chuyển hướng về trang lịch sử đơn hàng
-        res.redirect('http://localhost:5173/payment-history');
+        res.redirect('http://4.242.20.80:5173/payment-history');
       } else {
         console.error('ExtraData is missing or empty');
         res.status(400).send('ExtraData is missing or empty');
@@ -1144,7 +1144,7 @@ app.post('/callback', async (req, res) => {
     } catch (error) {
       console.error('Error handling failed payment:', error);
     }
-    res.redirect('http://localhost:5173/cart');
+    res.redirect('http://4.242.20.80:5173/cart');
   }
 });
 

@@ -14,7 +14,7 @@ const NewReleases = () => {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get(
-                    "http://localhost:5000/api/products/"
+                    "http://4.242.20.80:5000/api/products/"
                 );
                 const productsData = response.data;
                 setProducts(productsData);

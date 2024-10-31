@@ -148,7 +148,7 @@ const Register = ({ onRegisterSuccess }) => {
 
                 // Send user data to your backend for storage
                 await axios.post(
-                    "http://localhost:5000/api/register",
+                    "http://4.242.20.80:5000/api/register",
                     formData,
                     {
                         headers: {

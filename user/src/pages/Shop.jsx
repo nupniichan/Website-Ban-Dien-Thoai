@@ -34,7 +34,7 @@ const Shop = () => {
     useEffect(() => {
         const fetchAllProducts = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/products/");
+                const response = await axios.get("http://4.242.20.80:5000/api/products/");
                 setProducts(response.data);
                 setFilteredProducts(response.data);
 
@@ -49,7 +49,7 @@ const Shop = () => {
 
         const fetchBrands = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/brands");
+                const response = await axios.get("http://4.242.20.80:5000/api/brands");
                 setBrands(response.data);
             } catch (error) {
                 console.error(error);
@@ -58,7 +58,7 @@ const Shop = () => {
 
         const fetchColors = async () => {
             try {
-                const response = await axios.get("http://localhost:5000/api/colors");
+                const response = await axios.get("http://4.242.20.80:5000/api/colors");
                 setColors(response.data);
             } catch (error) {
                 console.error(error);
