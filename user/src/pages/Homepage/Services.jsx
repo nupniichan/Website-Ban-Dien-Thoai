@@ -40,7 +40,7 @@ const ServiceData = [
 
 const Services = () => {
     return (
-        <div className="container my-14 md:my-20">
+        <div className="container my-14 md:my-20 2xl:translate-x-14 xl:translate-x-8">
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 gap-y-8">
                 {ServiceData.map((service) => (
                     <div

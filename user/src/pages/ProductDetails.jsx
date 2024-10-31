@@ -232,7 +232,7 @@ const ProductDetails = () => {
                             <button
                                 className={`ml-4 py-2 px-4 rounded-md transition-colors duration-200 ${
                                     userId
-                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        ? "bg-primary text-white hover:bg-red-600"
                                         : "bg-gray-400 text-gray-100 cursor-not-allowed"
                                 }`}
                                 onClick={handleBuyNow}

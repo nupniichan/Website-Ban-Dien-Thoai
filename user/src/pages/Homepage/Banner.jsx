@@ -5,7 +5,7 @@ const Banner = ({ data }) => {
     const navigate = useNavigate();
 
     const handleButtonClick = () => {
-        navigate(`${PathNames}/SP023`);
+        navigate(`${PathNames.PRODUCT_DETAILS}/SP023`);
     };
     return (
         <div className="min-h-[550px] flex justify-center items-center py-12">
@@ -15,13 +15,12 @@ const Banner = ({ data }) => {
                 >
                     {/* first col */}
                     <div className="p-6 sm:p-8">
-                        <p className="text-sm">{data.title2}</p>
                         <h1
                             data-aos="fade-up"
                             data-aos-duration="500"
                             data-aos-once={false}
                             data-aos-anchor-placement="bottom-bottom"
-                            className="uppercase text-4xl lg:text-7xl font-bold"
+                            className="font-bold uppercase 2xl:text-7xl xl:text-6xl lg:text-5xl md:text-5xl sm:"
                         >
                             {data.title}
                         </h1>
@@ -39,7 +38,7 @@ const Banner = ({ data }) => {
 
                     {/* second col */}
                     <div
-                        className="h-full flex items-center"
+                        className="flex items-center h-full"
                         data-aos="zoom-in"
                         data-aos-duration="500"
                         data-aos-once={false}
@@ -55,7 +54,7 @@ const Banner = ({ data }) => {
                     {/* third col */}
                     <div className="flex flex-col justify-center gap-4 p-6 sm:p-8">
                         <p
-                            className="font-bold text-xl"
+                            className="text-xl font-bold"
                             data-aos="fade-up"
                             data-aos-duration="500"
                             data-aos-once={false}
@@ -64,7 +63,7 @@ const Banner = ({ data }) => {
                             {data.title2}
                         </p>
                         <p
-                            className="font-bold text-xl"
+                            className="2xl:text-xl xl:text-lg font-bold"
                             data-aos="fade-up"
                             data-aos-duration="500"
                             data-aos-once={false}
@@ -77,7 +76,7 @@ const Banner = ({ data }) => {
                             data-aos-duration="500"
                             data-aos-once={false}
                             data-aos-anchor-placement="bottom-bottom"
-                            className="text-3xl sm:text-5xl font-bold"
+                            className="font-bold 2xl:text-6xl xl:text-5xl lg:text-4xl text-5xl"
                         >
                             {data.discount}
                         </p>
@@ -86,7 +85,7 @@ const Banner = ({ data }) => {
                             data-aos-duration="500"
                             data-aos-once={false}
                             data-aos-anchor-placement="bottom-bottom"
-                            className="text-sm tracking-wide leading-5"
+                            className="text-sm leading-5 tracking-wide"
                         >
                             {data.title4}
                         </p>

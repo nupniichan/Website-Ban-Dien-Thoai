@@ -64,7 +64,7 @@ const Header = () => {
     }, []);
 
     return (
-        <header className="bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40 ">
+        <header className={`bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40 ${isMobile ? "my-4" : ""}`}>
             <div className="container flex justify-between items-center">
                 {/* Logo */}
                 <Link
@@ -98,7 +98,7 @@ const Header = () => {
                                 onClick={toggleSearch}
                             />
                         </div>
-                        <button className=" p-2" onClick={toggleMobileMenu}>
+                        <button className="mr-4 p-2" onClick={toggleMobileMenu}>
                             <MenuOutlined className={`text-xl text-gray-600 dark:text-gray-400 transition-transform duration-200 ease-linear transform ${
                                     isMobileMenuOpen ? `-rotate-90` : `rotate-0`
                                 }`} />

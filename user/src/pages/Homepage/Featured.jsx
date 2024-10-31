@@ -59,19 +59,19 @@ const Featured = () => {
                         <img
                             src={Image1}
                             alt=""
-                            className="w-[150px] sm:w-[200px] absolute bottom-0 right-2 sm:right-3 md:right-4 lg:right-2 xl:right-1 object-contain top-1/2 -translate-y-1/2"
+                            className="2xl:w-[220px] xl:w-48 lg:w-32 md:w-52 sm:w-44 w-48 absolute bottom-0 right-2 sm:-right-4 md:-right-3 lg:-right-2 xl:-right-4 2xl:-right-2 object-contain top-1/2 -translate-y-1/2"
                         />
                     </div>
 
                     {/* cột thứ hai */}
-                    <div className="py-10 pl-5 bg-gradient-to-br from-brandYellow/90 to-brandYellow/90 text-white rounded-3xl relative h-[250px] sm:h-[320px] flex items-end">
+                    <div className="py-10 pl-5 bg-gradient-to-br from-brandYellow/90 to-brandYellow/90 text-white rounded-3xl relative h-[320px] flex items-end">
                         <div>
                             <div className="mb-4">
                                 <p className="mb-[2px] text-white">Trải nghiệm</p>
                                 <p className="text-2xl font-semibold mb-[2px]">
                                     Cùng
                                 </p>
-                                <p className="-mt-6 text-4xl font-bold">
+                                <p className="text-4xl font-bold xl:text-5xl 2xl:my-[0.15rem] xl:-my-2 2xl:-translate-x-4 lg:-translate-x-3 md:-translate-x-3 sm:-translate-x-3">
                                     <img
                                         src={Xiaomi}
                                         alt="Xiaomi logo"
@@ -132,7 +132,7 @@ const Featured = () => {
                         <img
                             src={Image3}
                             alt=""
-                            className="w-[200px] sm:w-[290px] h-auto object-contain absolute top-1/2 -translate-y-1/2 right-2 sm:right-2 md:right-16 lg:right-1 xl:right-7 2xl:right-14 max-h-full"
+                            className="w-[200px] sm:w-[290px] h-auto object-contain absolute top-1/2 -translate-y-1/2 right-2 sm:right-2 md:right-16 lg:-right-3 xl:right-7 2xl:right-14 max-h-full"
                             style={{ maxHeight: "calc(100%)" }}
                         />
                     </div>

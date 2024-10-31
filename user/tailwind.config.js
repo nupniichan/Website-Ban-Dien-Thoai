@@ -9,6 +9,7 @@ export default {
                 secondary: "#fff6a9",
                 brandYellow: "#ff6900",
                 brandBlue: "#1376f4",
+                brandSony: 'rgba(0,0,128,1)',
                 brandGreen: "#1d9e63",
                 brandWhite: "#eeeeee",
             },
