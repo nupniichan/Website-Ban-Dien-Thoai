@@ -7,14 +7,13 @@ import {
 
 // Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyAhFn2C1Ww5d4BAuHiJykmATIMaQCK6l8o",
-    authDomain: "dapm-d1f9a.firebaseapp.com",
-    projectId: "dapm-d1f9a",
-    storageBucket: "dapm-d1f9a.appspot.com",
-    messagingSenderId: "322224119736",
-    appId: "1:322224119736:web:43693bb3efd24f3f2af94d",
-    measurementId: "G-LSCT6SLWJQ",
-};
+    apiKey: "AIzaSyC5VtwnMVQiV0nAbwVbkZOry8rLYbwMQo8",
+    authDomain: "dsaasdas-ee8dd.firebaseapp.com",
+    projectId: "dsaasdas-ee8dd",
+    storageBucket: "dsaasdas-ee8dd.firebasestorage.app",
+    messagingSenderId: "269011875256",
+    appId: "1:269011875256:web:aef958ee9487859833cb4d"
+  };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
