@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton } from '@mui/material';
+import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton, Pagination } from '@mui/material';
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,6 +10,8 @@ const ProductManagement = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [products, setProducts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -68,6 +70,17 @@ const ProductManagement = () => {
     product.name.toLowerCase().includes(searchTerm.toLowerCase()) || product.id.includes(searchTerm)
   );
 
+  // Tính toán phân trang
+  const totalPages = Math.ceil(filteredProducts.length / rowsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
+
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Quản lý sản phẩm</Typography>
@@ -77,7 +90,10 @@ const ProductManagement = () => {
         variant="outlined"
         fullWidth
         value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setPage(1);  // Reset về trang 1 khi tìm kiếm
+        }}
         margin="normal"
       />
 
@@ -98,7 +114,7 @@ const ProductManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredProducts.map((product) => (
+            {paginatedProducts.map((product) => (
               <TableRow key={product.id}>
                 <TableCell>{product.id}</TableCell>
                 <TableCell>{product.name}</TableCell>
@@ -122,22 +138,84 @@ const ProductManagement = () => {
         </Table>
       </TableContainer>
 
+      <Box display="flex" justifyContent="center" marginTop={2}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
+
       {selectedProduct && (
-        <Dialog open={true} onClose={handleCloseDialog}>
-          <DialogTitle>Chi tiết sản phẩm</DialogTitle>
-          <DialogContent>
-            <Typography>Mã sản phẩm: {selectedProduct.id}</Typography>
-            <Typography>Tên sản phẩm: {selectedProduct.name}</Typography>
-            <Typography>Màu: {selectedProduct.color}</Typography>
-            <Typography>Số lượng: {selectedProduct.quantity}</Typography>
-            <Typography>Đơn giá: {formatPrice(selectedProduct.price)}</Typography>
-            <Typography>Mô tả: {selectedProduct.description}</Typography>
-            <Box marginTop={2}>
-            <img
-              src={`${BASE_URL}/${selectedProduct.image.replace(/\\/g, '/')}`}
-              alt={selectedProduct.name}
-              style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }}
-            />
+        <Dialog 
+          open={true} 
+          onClose={handleCloseDialog}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle 
+            sx={{
+              borderBottom: '1px solid #e0e0e0',
+              padding: '16px 24px'
+            }}
+          >
+            Chi tiết sản phẩm
+          </DialogTitle>
+          <DialogContent sx={{ padding: '24px' }}>
+            <Box display="flex" gap={3}>
+              <Box flex={1}>
+                <img
+                  src={`${BASE_URL}/${selectedProduct.image.replace(/\\/g, '/')}`}
+                  alt={selectedProduct.name}
+                  style={{ 
+                    width: '100%',
+                    height: 'auto',
+                    borderRadius: '8px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+                  }}
+                />
+              </Box>
+              
+              <Box flex={1}>
+                <Typography variant="h6" gutterBottom color="primary">
+                  {selectedProduct.name}
+                </Typography>
+                
+                <Box sx={{ 
+                  display: 'grid', 
+                  gap: 2,
+                  '& .MuiTypography-root': { 
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }
+                }}>
+                  <Typography>
+                    <strong>Mã sản phẩm:</strong> {selectedProduct.id}
+                  </Typography>
+                  <Typography>
+                    <strong>Màu sắc:</strong> {selectedProduct.color}
+                  </Typography>
+                  <Typography>
+                    <strong>Số lượng:</strong> {selectedProduct.quantity}
+                  </Typography>
+                  <Typography>
+                    <strong>Đơn giá:</strong> {formatPrice(selectedProduct.price)}
+                  </Typography>
+                  <Typography>
+                    <strong>Mô tả:</strong>
+                  </Typography>
+                  <Typography sx={{ 
+                    backgroundColor: '#f5f5f5',
+                    padding: 2,
+                    borderRadius: 1,
+                    whiteSpace: 'pre-wrap'
+                  }}>
+                    {selectedProduct.description}
+                  </Typography>
+                </Box>
+              </Box>
             </Box>
           </DialogContent>
         </Dialog>

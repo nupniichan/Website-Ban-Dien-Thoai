@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton} from "@mui/material";
-import { Edit, Delete, Visibility } from "@mui/icons-material";
+import { Box, TextField, Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton, Pagination } from "@mui/material";
+import { Edit, Delete, Visibility, Close } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import {format} from "date-fns"
 import axios from "axios";
@@ -30,6 +30,8 @@ const VoucherManagement = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedVoucher, setSelectedVoucher] = useState(null);
     const [vouchers, setVouchers] = useState(exampleVouchers);
+    const [page, setPage] = useState(1);
+    const [rowsPerPage] = useState(10);
 
     useEffect(() => {
         const fetchVouchers = async () => {
@@ -83,6 +85,17 @@ const VoucherManagement = () => {
             (voucher.id?.includes(searchTerm) || false)
     );
 
+    // Tính toán phân trang
+    const totalPages = Math.ceil(filteredVouchers.length / rowsPerPage);
+    const paginatedVouchers = filteredVouchers.slice(
+        (page - 1) * rowsPerPage,
+        page * rowsPerPage
+    );
+
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage);
+    };
+
     return (
         <Box padding={3}>
             <Typography variant="h4" gutterBottom>
@@ -94,7 +107,10 @@ const VoucherManagement = () => {
                 variant="outlined"
                 fullWidth
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                    setSearchTerm(e.target.value);
+                    setPage(1);  // Reset về trang 1 khi tìm kiếm
+                }}
                 margin="normal"
             />
 
@@ -122,7 +138,7 @@ const VoucherManagement = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {filteredVouchers.map((voucher) => (
+                        {paginatedVouchers.map((voucher) => (
                             <TableRow key={voucher.id}>
                                 <TableCell>{voucher.id}</TableCell>
                                 <TableCell>{voucher.name}</TableCell>
@@ -162,30 +178,196 @@ const VoucherManagement = () => {
                 </Table>
             </TableContainer>
 
+            <Box display="flex" justifyContent="center" marginTop={2}>
+                <Pagination
+                    count={totalPages}
+                    page={page}
+                    onChange={handlePageChange}
+                    color="primary"
+                />
+            </Box>
+
             {selectedVoucher && (
-                <Dialog open={true} onClose={handleCloseDialog}>
-                    <DialogTitle>Chi tiết mã giảm giá</DialogTitle>
-                    <DialogContent>
-                        <Typography>ID: {selectedVoucher.id}</Typography>
-                        <Typography>Tên mã: {selectedVoucher.name}</Typography>
-                        <Typography>
-                            Ngày sử dụng: {new Date(selectedVoucher.startDate || selectedVoucher.usageDate).toLocaleDateString('vi-VN')}
-                        </Typography>
-                        <Typography>
-                            Ngày hết hạn: {new Date(selectedVoucher.endDate || selectedVoucher.expirationDate).toLocaleDateString("vi-VN")}
-                        </Typography>
-                        <Typography>
-                            Tỉ lệ chiết khấu: {(selectedVoucher.discountPercent || selectedVoucher.discountRate)}%
-                        </Typography>
-                        <Typography>
-                            Mã áp dụng: {selectedVoucher.code || selectedVoucher.applicableCode}
-                        </Typography>
-                        <Typography>
-                            Giá trị đơn hàng tối thiểu: {selectedVoucher.minOrderValue?.toLocaleString('vi-VN')} VNĐ
-                        </Typography>
-                        <Typography>
-                            Số tiền giảm tối đa: {selectedVoucher.maxDiscountAmount?.toLocaleString('vi-VN')} VNĐ
-                        </Typography>
+                <Dialog 
+                    open={true} 
+                    onClose={handleCloseDialog}
+                    maxWidth="md"
+                    fullWidth
+                >
+                    <DialogTitle 
+                        sx={{
+                            borderBottom: '1px solid #e0e0e0',
+                            padding: '16px 24px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}
+                    >
+                        <Box>
+                            <Typography variant="h6" gutterBottom>
+                                Chi tiết mã giảm giá
+                            </Typography>
+                            <Typography 
+                                variant="subtitle2" 
+                                sx={{ 
+                                    color: 'text.secondary',
+                                    fontWeight: 500
+                                }}
+                            >
+                                #{selectedVoucher.id}
+                            </Typography>
+                        </Box>
+                        <IconButton onClick={handleCloseDialog} size="small">
+                            <Close />
+                        </IconButton>
+                    </DialogTitle>
+
+                    <DialogContent sx={{ padding: '24px' }}>
+                        <Box display="flex" gap={3}>
+                            {/* Cột trái - Thông tin cơ bản */}
+                            <Box flex={1}>
+                                <Typography variant="h6" color="primary" gutterBottom>
+                                    Thông tin chung
+                                </Typography>
+                                
+                                <Box 
+                                    sx={{ 
+                                        backgroundColor: '#f8f9fa',
+                                        padding: 3,
+                                        borderRadius: 2,
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        gap: 2.5
+                                    }}
+                                >
+                                    <Box>
+                                        <Typography 
+                                            variant="h4" 
+                                            sx={{ 
+                                                color: 'primary.main',
+                                                fontWeight: 'bold',
+                                                textAlign: 'center',
+                                                backgroundColor: '#fff',
+                                                padding: 2,
+                                                borderRadius: 1,
+                                                border: '2px dashed',
+                                                borderColor: 'primary.main'
+                                            }}
+                                        >
+                                            {selectedVoucher.name}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box 
+                                        sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: 1
+                                        }}
+                                    >
+                                        <Typography 
+                                            variant="h3" 
+                                            color="error.main" 
+                                            sx={{ fontWeight: 'bold' }}
+                                        >
+                                            {(selectedVoucher.discountPercent || selectedVoucher.discountRate)}%
+                                        </Typography>
+                                        <Typography variant="h6">giảm</Typography>
+                                    </Box>
+
+                                    <Box 
+                                        sx={{ 
+                                            textAlign: 'center',
+                                            backgroundColor: '#fff',
+                                            padding: 1.5,
+                                            borderRadius: 1
+                                        }}
+                                    >
+                                        <Typography 
+                                            sx={{ 
+                                                color: selectedVoucher.code === 'ALL' ? 'success.main' : 'text.primary',
+                                                fontWeight: 500
+                                            }}
+                                        >
+                                            Áp dụng cho: {selectedVoucher.code || selectedVoucher.applicableCode}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
+
+                            {/* Cột phải - Thông tin chi tiết */}
+                            <Box flex={1.5}>
+                                <Typography variant="h6" color="primary" gutterBottom>
+                                    Điều kiện áp dụng
+                                </Typography>
+
+                                <Box 
+                                    sx={{ 
+                                        display: 'grid',
+                                        gap: 2,
+                                        '& .info-item': {
+                                            backgroundColor: '#f8f9fa',
+                                            padding: 2,
+                                            borderRadius: 1,
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center'
+                                        },
+                                        '& .label': {
+                                            color: '#666',
+                                            fontSize: '0.875rem',
+                                            fontWeight: 500
+                                        },
+                                        '& .value': {
+                                            fontSize: '1rem',
+                                            fontWeight: 500
+                                        }
+                                    }}
+                                >
+                                    <Box className="info-item">
+                                        <Typography className="label">Thời gian bắt đầu</Typography>
+                                        <Typography className="value">
+                                            {format(new Date(selectedVoucher.startDate || selectedVoucher.usageDate), 'dd/MM/yyyy HH:mm')}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box className="info-item">
+                                        <Typography className="label">Thời gian kết thúc</Typography>
+                                        <Typography className="value">
+                                            {format(new Date(selectedVoucher.endDate || selectedVoucher.expirationDate), 'dd/MM/yyyy HH:mm')}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box className="info-item">
+                                        <Typography className="label">Đơn hàng tối thiểu</Typography>
+                                        <Typography className="value" color="primary">
+                                            {selectedVoucher.minOrderValue?.toLocaleString('vi-VN')} ₫
+                                        </Typography>
+                                    </Box>
+
+                                    <Box className="info-item">
+                                        <Typography className="label">Giảm tối đa</Typography>
+                                        <Typography className="value" color="error">
+                                            {selectedVoucher.maxDiscountAmount?.toLocaleString('vi-VN')} ₫
+                                        </Typography>
+                                    </Box>
+
+                                    <Box 
+                                        sx={{ 
+                                            backgroundColor: '#fff3e0', 
+                                            padding: 2, 
+                                            borderRadius: 1,
+                                            border: '1px solid #ffe0b2'
+                                        }}
+                                    >
+                                        <Typography variant="body2" color="warning.dark">
+                                            <strong>Lưu ý:</strong> Mã giảm giá chỉ áp dụng một lần cho mỗi đơn hàng và không thể kết hợp với các mã giảm giá khác.
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Box>
                     </DialogContent>
                 </Dialog>
             )}

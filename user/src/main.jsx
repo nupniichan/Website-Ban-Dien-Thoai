@@ -36,7 +36,9 @@ createRoot(document.getElementById("root")).render(
         <ConfigProvider
             theme={{
                 components: {
-
+                    Badge: {
+                        textFontSize: 11,
+                    }
                 },
             }}
         >

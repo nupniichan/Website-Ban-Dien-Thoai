@@ -1,9 +1,9 @@
 const PathNames = {
     HOMEPAGE: '/',
     ABOUT: '/about',
-    CONTACTUS: '/contactus',
+    CONTACTUS: '/contact-us',
     FAQ: '/faq',
-    PRIVACYPOLICY: '/privacypolicy',
+    PRIVACYPOLICY: '/privacy-policy',
     STORIES: '/stories',
     TERMS: '/terms',
     VACANCIES: '/vacancies',

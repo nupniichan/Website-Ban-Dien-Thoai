@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton, Button, TextField } from '@mui/material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, Dialog, DialogTitle, DialogContent, IconButton, Button, TextField, Pagination } from '@mui/material';
 import { Edit, Delete, Visibility } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
@@ -9,6 +9,8 @@ const OrderManagement = () => {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [searchQuery, setSearchQuery] = useState(''); // Search query state
+  const [page, setPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -78,11 +80,22 @@ const OrderManagement = () => {
     }
   };
 
-  // Filter orders based on the search query (Order ID or Customer Name)
+  // Filter orders based on the search query
   const filteredOrders = orders.filter(order =>
     order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
     order.customerName.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  // Tính toán phân trang
+  const totalPages = Math.ceil(filteredOrders.length / rowsPerPage);
+  const paginatedOrders = filteredOrders.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
 
   return (
     <Box padding={3}>
@@ -94,7 +107,10 @@ const OrderManagement = () => {
         variant="outlined"
         fullWidth
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+          setPage(1);  // Reset về trang 1 khi tìm kiếm
+        }}
         style={{ marginBottom: '20px' }}
       />
 
@@ -123,7 +139,7 @@ const OrderManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredOrders.map((order) => (
+            {paginatedOrders.map((order) => (
               <TableRow key={order.id}>
                 <TableCell>{order.id}</TableCell>
                 <TableCell>{order.customerName}</TableCell>
@@ -152,26 +168,132 @@ const OrderManagement = () => {
         </Table>
       </TableContainer>
 
+      <Box display="flex" justifyContent="center" marginTop={2}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
+
       {selectedOrder && (
-        <Dialog open={true} onClose={handleCloseDialog}>
-          <DialogTitle>Order Details</DialogTitle>
-          <DialogContent>
-            <Typography>Order ID: {selectedOrder.id}</Typography>
-            <Typography>Khách hàng: {selectedOrder.customerName}</Typography>
-            <Typography>Địa chỉ giao hàng: {selectedOrder.shippingAddress}</Typography>
-            <Typography>Ngày đặt: {new Date(selectedOrder.orderDate).toLocaleDateString('vi-VN')}</Typography>
-            <Typography>Phương thức thanh toán: {selectedOrder.paymentMethod}</Typography>
-            <Typography>Trạng thái: {selectedOrder.status}</Typography>
-            <Typography>Tổng tiền: {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedOrder.totalAmount)}</Typography>
-            <Typography>Ghi chú: {selectedOrder.notes}</Typography>
-            <Typography>Sản phẩm đặt:</Typography>
-            <ul>
-              {selectedOrder.items.map((item) => (
-                <li key={item.productId}>
-                  ID sản phẩm: {item.productId} - Số lượng: {item.quantity}
-                </li>
-              ))}
-            </ul>
+        <Dialog 
+          open={true} 
+          onClose={handleCloseDialog}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle 
+            sx={{
+              borderBottom: '1px solid #e0e0e0',
+              padding: '16px 24px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center'
+            }}
+          >
+            <Typography variant="h6">Chi tiết đơn hàng #{selectedOrder.id}</Typography>
+            <Typography 
+              variant="subtitle1" 
+              sx={{ 
+                ...getStatusColor(selectedOrder.status),
+                fontWeight: 'bold' 
+              }}
+            >
+              {selectedOrder.status}
+            </Typography>
+          </DialogTitle>
+          <DialogContent sx={{ padding: '24px' }}>
+            <Box display="flex" flexDirection="column" gap={3}>
+              {/* Thông tin khách hàng */}
+              <Box>
+                <Typography variant="h6" gutterBottom color="primary">
+                  Thông tin khách hàng
+                </Typography>
+                <Box 
+                  sx={{ 
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: 2,
+                    backgroundColor: '#f8f9fa',
+                    padding: 2,
+                    borderRadius: 1
+                  }}
+                >
+                  <Typography><strong>Tên khách hàng:</strong> {selectedOrder.customerName}</Typography>
+                  <Typography><strong>Địa chỉ:</strong> {selectedOrder.shippingAddress}</Typography>
+                  <Typography><strong>Ngày đặt:</strong> {new Date(selectedOrder.orderDate).toLocaleDateString('vi-VN')}</Typography>
+                  <Typography><strong>Phương thức thanh toán:</strong> {selectedOrder.paymentMethod}</Typography>
+                </Box>
+              </Box>
+
+              {/* Chi tiết đơn hàng */}
+              <Box>
+                <Typography variant="h6" gutterBottom color="primary">
+                  Chi tiết sản phẩm
+                </Typography>
+                <TableContainer sx={{ backgroundColor: '#f8f9fa', borderRadius: 1 }}>
+                  <Table size="small">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell><strong>ID Sản phẩm</strong></TableCell>
+                        <TableCell><strong>Số lượng</strong></TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {selectedOrder.items.map((item) => (
+                        <TableRow key={item.productId}>
+                          <TableCell>{item.productId}</TableCell>
+                          <TableCell>{item.quantity}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              </Box>
+
+              {/* Thông tin thanh toán */}
+              <Box>
+                <Typography variant="h6" gutterBottom color="primary">
+                  Thông tin thanh toán
+                </Typography>
+                <Box 
+                  sx={{ 
+                    backgroundColor: '#f8f9fa',
+                    padding: 2,
+                    borderRadius: 1,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center'
+                  }}
+                >
+                  <Typography variant="h6">Tổng tiền:</Typography>
+                  <Typography variant="h6" color="primary">
+                    {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedOrder.totalAmount)}
+                  </Typography>
+                </Box>
+              </Box>
+
+              {/* Ghi chú */}
+              {selectedOrder.notes && (
+                <Box>
+                  <Typography variant="h6" gutterBottom color="primary">
+                    Ghi chú
+                  </Typography>
+                  <Box 
+                    sx={{ 
+                      backgroundColor: '#f8f9fa',
+                      padding: 2,
+                      borderRadius: 1,
+                      whiteSpace: 'pre-wrap'
+                    }}
+                  >
+                    {selectedOrder.notes}
+                  </Box>
+                </Box>
+              )}
+            </Box>
           </DialogContent>
         </Dialog>
       )}
