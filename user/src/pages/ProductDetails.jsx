@@ -50,6 +50,7 @@ const ProductDetails = () => {
                 description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             window.location.href = "/login";
@@ -62,6 +63,7 @@ const ProductDetails = () => {
                 description: 'Không tìm thấy thông tin sản phẩm',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             return;
@@ -73,6 +75,7 @@ const ProductDetails = () => {
                 description: 'Số lượng không hợp lệ!',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             return;
@@ -111,6 +114,7 @@ const ProductDetails = () => {
                 description: 'Đã thêm sản phẩm vào giỏ hàng',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
         } catch (error) {
@@ -120,6 +124,7 @@ const ProductDetails = () => {
                 description: error.message,
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
         }

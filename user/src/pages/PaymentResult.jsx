@@ -20,6 +20,7 @@ const PaymentResult = () => {
                 description: 'Thanh toán thành công!',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             navigate(`${pagesName.PAYMENT_SUCCESS}`); // Điều hướng đến trang thành công
@@ -30,6 +31,7 @@ const PaymentResult = () => {
                 description: `Thanh toán thất bại: ${message}`,
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             navigate(`${pagesName.PAYMENT_FAILED}`); // Điều hướng đến trang thất bại

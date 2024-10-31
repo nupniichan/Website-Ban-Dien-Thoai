@@ -46,6 +46,7 @@ const NewReleases = () => {
                 description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             window.location.href = "/login";
@@ -58,6 +59,7 @@ const NewReleases = () => {
                 description: 'Không tìm thấy thông tin sản phẩm',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             return;
@@ -69,6 +71,7 @@ const NewReleases = () => {
                 description: 'Số lượng không hợp lệ!',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             return;

@@ -167,6 +167,7 @@ const Checkout = () => {
                         description: 'Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.',
                         duration: 4,
                         placement: "bottomRight",
+                        showProgress: true,
                         pauseOnHover: true
                     });
                     navigate("/payment-history");
@@ -180,6 +181,7 @@ const Checkout = () => {
                     description: "Có lỗi xảy ra khi tạo đơn hàng",
                     duration: 4,
                     placement: "bottomRight",
+                    showProgress: true,
                     pauseOnHover: true
                 });
             }

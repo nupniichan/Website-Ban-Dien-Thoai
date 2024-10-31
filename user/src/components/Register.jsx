@@ -6,7 +6,7 @@ import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
 } from "firebase/auth";
-import { notification } from "antd";
+import { message, notification } from "antd";
 
 const Register = ({ onRegisterSuccess }) => {
     const [name, setName] = useState("");
@@ -157,13 +157,18 @@ const Register = ({ onRegisterSuccess }) => {
                     }
                 );
 
-                notification.success({
-                    message: 'Thành công',
-                    description: 'Đăng ký thành công!',
-                    duration: 4,
-                    placement: "bottomRight",
-                    pauseOnHover: true
-                });
+                // notification.success({
+                //     message: 'Thành công',
+                //     description: 'Đăng ký thành công!',
+                //     duration: 4,
+                //     placement: "bottomRight",
+                //     pauseOnHover: true
+                // });
+                message.open({
+                    type: "success",
+                    content: "Đăng ký thành công!",
+                    duration: 4
+                })
                 onRegisterSuccess();
                 navigate("/login"); // Optionally redirect to the login page after successful registration
             } catch (error) {
@@ -171,12 +176,17 @@ const Register = ({ onRegisterSuccess }) => {
                     "Error during registration:",
                     error.response?.data || error.message
                 );
-                notification.error({
-                    message: 'Lỗi',
-                    description: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
-                    duration: 4,
-                    placement: "bottomRight",
-                    pauseOnHover: true
+                // notification.error({
+                //     message: 'Lỗi',
+                //     description: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
+                //     duration: 4,
+                //     placement: "bottomRight",
+                //     pauseOnHover: true
+                // })
+                message.open({
+                    type: "error",
+                    content: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
+                    duration: 4
                 })
             }
         }

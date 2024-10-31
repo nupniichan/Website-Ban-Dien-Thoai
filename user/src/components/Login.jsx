@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { message } from 'antd';
 import {
     auth,
     signInWithEmailAndPassword,
@@ -11,7 +12,7 @@ const Login = ({ onSwitchToRegister }) => {
         email: "",
         password: "",
     });
-    const [errorMessage, setErrorMessage] = useState("");
+    // const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -20,7 +21,7 @@ const Login = ({ onSwitchToRegister }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrorMessage("");
+        // setErrorMessage("");
 
         try {
             // Firebase sign-in
@@ -51,15 +52,28 @@ const Login = ({ onSwitchToRegister }) => {
                 window.dispatchEvent(new Event("loginSuccess"));
                 navigate("/");
                 console.log("Logged in successfully with user data:", data);
+                message.open({
+                    type: 'success',
+                    content: 'Đăng nhập thành công',
+                });
             } else {
                 const errorData = await response.json();
-                setErrorMessage(
-                    errorData.message || "Email hoặc mật khẩu không chính xác"
+                message.open({
+                    type: 'warning',
+                    content: errorData.message || "Email hoặc mật khẩu không chính xác",
+                    duration: 3
+                }
+                    // errorData.message || "Email hoặc mật khẩu không chính xác"
                 );
             }
         } catch (err) {
             console.error("Error:", err);
-            setErrorMessage("Email hoặc mật khẩu không chính xác");
+            // setErrorMessage("Email hoặc mật khẩu không chính xác");
+            message.open({
+                type: 'warning',
+                content: 'Email hoặc mật khẩu không chính xác',
+                duration: 3
+            });
         }
     };
 
@@ -73,11 +87,11 @@ const Login = ({ onSwitchToRegister }) => {
                     Đăng Nhập
                 </h2>
 
-                {errorMessage && (
+                {/* {errorMessage && (
                     <p className="text-red-500 text-center mb-4">
                         {errorMessage}
                     </p>
-                )}
+                )} */}
 
                 <input
                     type="email"
