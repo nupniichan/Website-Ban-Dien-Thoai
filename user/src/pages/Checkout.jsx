@@ -1,7 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { BASE_URL } from "../config";
+import { useLocation, useNavigate } from "react-router-dom";
+import { notification } from "antd";
 
 const Checkout = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+
     const [customerInfo, setCustomerInfo] = useState({
         name: "",
         email: "",
@@ -39,45 +44,31 @@ const Checkout = () => {
             }
         };
 
-        const fetchCartItems = async () => {
-            try {
-                const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
-                if (!response.ok) {
-                    throw new Error("Failed to fetch cart items");
-                }
-                const data = await response.json();
-                setCartItems(data);
-
-                const total = data.reduce(
-                    (sum, item) => sum + item.price * item.quantity,
-                    0,
-                );
-                setTotalAmount(total);
-            } catch (error) {
-                console.error("Error fetching cart items:", error);
-            }
-        };
+        if (location.state?.cartItems) {
+            setCartItems(location.state.cartItems);
+            setTotalAmount(location.state.total);
+        } else {
+            navigate("/cart");
+        }
 
         if (userId) {
             fetchCustomerInfo();
-            fetchCartItems();
         } else {
             console.error("No userId found in sessionStorage");
         }
-    }, [userId]);
+    }, [userId, location.state]);
 
     // Thêm useEffect để fetch mã giảm giá
     useEffect(() => {
         const fetchDiscountCodes = async () => {
             try {
                 const response = await fetch(`${BASE_URL}/api/discountCodes`);
-                if (!response.ok) {
+                if (!response.ok)
                     throw new Error("Failed to fetch discount codes");
-                }
                 const data = await response.json();
                 // Sắp xếp theo phn trăm giảm giá từ cao đến thấp
                 const sortedCodes = data.sort(
-                    (a, b) => b.discountPercent - a.discountPercent,
+                    (a, b) => b.discountPercent - a.discountPercent
                 );
                 setDiscountCodes(sortedCodes);
             } catch (error) {
@@ -91,8 +82,8 @@ const Checkout = () => {
     const handleSelectDiscount = (discount) => {
         setSelectedDiscount(discount);
         const discountAmount = Math.min(
-            (totalAmount * discount.discountPercent) / 100,
-            discount.maxDiscountAmount,
+            Math.floor((totalAmount * discount.discountPercent) / 100),
+            discount.maxDiscountAmount
         );
         setDiscountedAmount(discountAmount);
         setShowDiscountDialog(false);
@@ -105,22 +96,22 @@ const Checkout = () => {
     };
 
     const handleContinue = async () => {
-        const finalAmount = totalAmount - discountedAmount; // Tính tổng tiền sau khi giảm giá
+        const finalAmount = totalAmount - discountedAmount;
+
         const orderData = {
             customerId: userId,
             customerName: customerInfo.name,
             shippingAddress: customerInfo.address,
             items: cartItems,
             paymentMethod: paymentMethod,
-            totalAmount: totalAmount,
+            totalAmount: finalAmount,
             notes: notes,
-            // Thêm thông tin về mã giảm giá nếu có
             discount: selectedDiscount
                 ? {
-                    discountId: selectedDiscount.id,
-                    discountName: selectedDiscount.name,
-                    discountAmount: discountedAmount,
-                }
+                      discountId: selectedDiscount.id,
+                      discountName: selectedDiscount.name,
+                      discountAmount: discountedAmount,
+                  }
                 : null,
         };
 
@@ -147,10 +138,51 @@ const Checkout = () => {
                 console.error("Error initiating payment:", error);
             }
         } else {
-            console.log("Thanh toán bằng tiền mặt");
-            alert(
-                "Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.",
-            );
+            try {
+                // Gọi API để tạo đơn hàng và xóa sản phẩm khỏi giỏ hàng
+                const response = await fetch(`${BASE_URL}/api/orders/create`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(orderData),
+                });
+
+                if (response.ok) {
+                    // Xóa sản phẩm đã mua khỏi giỏ hàng
+                    const productIds = cartItems.map((item) => item.productId);
+                    await fetch(
+                        `${BASE_URL}/api/cart/${userId}/removeMultiple`,
+                        {
+                            method: "DELETE",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ productIds }),
+                        }
+                    );
+
+                    notification.success({
+                        message: 'Thành công',
+                        description: 'Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.',
+                        duration: 4,
+                        placement: "bottomRight",
+                        pauseOnHover: true
+                    });
+                    navigate("/payment-history");
+                } else {
+                    throw new Error("Lỗi khi tạo đơn hàng");
+                }
+            } catch (error) {
+                console.error("Error creating order:", error);
+                notification.warning({
+                    message: 'Lỗi',
+                    description: "Có lỗi xảy ra khi tạo đơn hàng",
+                    duration: 4,
+                    placement: "bottomRight",
+                    pauseOnHover: true
+                });
+            }
         }
     };
 
@@ -171,44 +203,43 @@ const Checkout = () => {
             </div>
 
             {/* Hiển thị sản phẩm trong giỏ hàng của user */}
-            {cartItems.length > 0
-                ? (
-                    cartItems.map((item) => (
-                        <div
-                            key={item.productId}
-                            className="bg-white p-4 rounded-lg shadow mb-4"
-                        >
-                            <div className="flex items-center">
-                                <img
-                                    src={item.image
-                                        ? `${BASE_URL}/${
-                                            item.image.replace(
-                                                /\\/g,
-                                                "/",
-                                            )
-                                        }`
-                                        : "/default-image.jpg"}
-                                    alt={item.name}
-                                    className="w-20 h-20 object-cover"
-                                />
-                                <div className="ml-4">
-                                    <h3 className="text-lg font-semibold">
-                                        {item.name}
-                                    </h3>
-                                    <p className="text-red-500">
-                                        {item.price.toLocaleString()}{" "}
-                                        <span className="line-through text-gray-500">
-                                            {item.originalPrice
-                                                ?.toLocaleString()}
-                                        </span>
-                                    </p>
-                                    <p>Số lượng: {item.quantity}</p>
-                                </div>
+            {cartItems.length > 0 ? (
+                cartItems.map((item) => (
+                    <div
+                        key={item.productId}
+                        className="bg-white p-4 rounded-lg shadow mb-4"
+                    >
+                        <div className="flex items-center">
+                            <img
+                                src={
+                                    item.image
+                                        ? `${BASE_URL}/${item.image.replace(
+                                              /\\/g,
+                                              "/"
+                                          )}`
+                                        : "/default-image.jpg"
+                                }
+                                alt={item.name}
+                                className="w-20 h-20 object-cover"
+                            />
+                            <div className="ml-4">
+                                <h3 className="text-lg font-semibold">
+                                    {item.name}
+                                </h3>
+                                <p className="text-red-500">
+                                    {item.price.toLocaleString()}{" "}
+                                    <span className="line-through text-gray-500">
+                                        {item.originalPrice?.toLocaleString()}
+                                    </span>
+                                </p>
+                                <p>Số lượng: {item.quantity}</p>
                             </div>
                         </div>
-                    ))
-                )
-                : <p>Giỏ hàng của bạn trống. Hãy mua gì đó rồi quay lại nhé</p>}
+                    </div>
+                ))
+            ) : (
+                <p>Giỏ hàng của bạn trống. Hãy mua gì đó rồi quay lại nhé</p>
+            )}
 
             {/* Thông tin giao / nhận hàng */}
             <div className="bg-white p-4 rounded-lg shadow mb-4">
@@ -228,8 +259,7 @@ const Checkout = () => {
                             } mr-2 flex items-center justify-center`}
                         >
                             {shippingOption === "store" && (
-                                <div className="w-2.5 h-2.5 bg-white rounded-full">
-                                </div>
+                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                             )}
                         </div>
                         <label className="text-gray-800">
@@ -248,8 +278,7 @@ const Checkout = () => {
                             } mr-2 flex items-center justify-center`}
                         >
                             {shippingOption === "delivery" && (
-                                <div className="w-2.5 h-2.5 bg-white rounded-full">
-                                </div>
+                                <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
                             )}
                         </div>
                         <label className="text-gray-800">
@@ -257,58 +286,52 @@ const Checkout = () => {
                         </label>
                     </div>
                 </div>
-                {shippingOption === "store"
-                    ? (
-                        <>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block mb-2">
-                                        Tỉnh / Thành phố
-                                    </label>
-                                    <select
-                                        className="w-full p-2 border rounded-lg"
-                                        disabled
-                                    >
-                                        <option value="Ho Chi Minh">
-                                            Hồ Chí Minh
-                                        </option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block mb-2">
-                                        Quận/huyện
-                                    </label>
-                                    <select
-                                        className="w-full p-2 border rounded-lg"
-                                        disabled
-                                    >
-                                        <option value="Hoc Mon">Hóc Môn</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="mt-4">
+                {shippingOption === "store" ? (
+                    <>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
                                 <label className="block mb-2">
-                                    Địa chỉ cửa hàng
+                                    Tỉnh / Thành phố
                                 </label>
-                                <p className="bg-gray-100 p-2 rounded-lg">
-                                    {storeAddress}
-                                </p>
+                                <select
+                                    className="w-full p-2 border rounded-lg"
+                                    disabled
+                                >
+                                    <option value="Ho Chi Minh">
+                                        Hồ Chí Minh
+                                    </option>
+                                </select>
                             </div>
-                        </>
-                    )
-                    : (
-                        <>
+                            <div>
+                                <label className="block mb-2">Quận/huyện</label>
+                                <select
+                                    className="w-full p-2 border rounded-lg"
+                                    disabled
+                                >
+                                    <option value="Hoc Mon">Hóc Môn</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="mt-4">
                             <label className="block mb-2">
-                                Địa chỉ nhận hàng
+                                Địa chỉ cửa hàng
                             </label>
-                            <input
-                                type="text"
-                                className="w-full p-2 border rounded-lg mb-4"
-                                value={customerInfo.address}
-                                readOnly
-                            />
-                        </>
-                    )}
+                            <p className="bg-gray-100 p-2 rounded-lg">
+                                {storeAddress}
+                            </p>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        <label className="block mb-2">Địa chỉ nhận hàng</label>
+                        <input
+                            type="text"
+                            className="w-full p-2 border rounded-lg mb-4"
+                            value={customerInfo.address}
+                            readOnly
+                        />
+                    </>
+                )}
             </div>
 
             {/* Thêm ghi chú */}
@@ -334,6 +357,9 @@ const Checkout = () => {
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
+                    {shippingOption === "store" && (
+                        <option value="Tiền mặt">Tiền mặt</option>
+                    )}
                     <option value="Thanh toán qua MOMO">
                         Thanh toán qua MOMO
                     </option>
@@ -347,24 +373,25 @@ const Checkout = () => {
             <div className="bg-white p-4 rounded-lg shadow mb-4">
                 <div className="flex justify-between items-center">
                     <h3 className="text-lg font-semibold">Mã giảm giá</h3>
-                    {!selectedDiscount
-                        ? (
-                            <button
-                                onClick={() => setShowDiscountDialog(true)}
-                                className="text-blue-500 hover:text-blue-700"
-                            >
-                                Chọn mã giảm giá
-                            </button>
-                        )
-                        : (
-                            <button
-                                onClick={handleRemoveDiscount}
-                                className="text-red-500 hover:text-red-700"
-                            >
-                                Xóa mã giảm giá
-                            </button>
-                        )}
+                    {!selectedDiscount ? (
+                        <button
+                            onClick={() => setShowDiscountDialog(true)}
+                            className="text-blue-500 hover:text-blue-700"
+                        >
+                            Chọn mã giảm giá
+                        </button>
+                    ) : (
+                        <button
+                            onClick={handleRemoveDiscount}
+                            className="text-red-500 hover:text-red-700"
+                        >
+                            Xóa mã giảm giá
+                        </button>
+                    )}
                 </div>
+                <p className="text-sm text-gray-500 mt-1">
+                    * Đơn hàng chỉ được sử dụng 1 mã giảm giá
+                </p>
                 {selectedDiscount && (
                     <div className="mt-2 p-2 bg-blue-50 rounded">
                         <div className="flex justify-between items-center">
@@ -373,11 +400,9 @@ const Checkout = () => {
                                     {selectedDiscount.name}
                                 </p>
                                 <p className="text-sm text-gray-600">
-                                    Giảm{" "}
-                                    {selectedDiscount.discountPercent}% (Tối đa
-                                    {" "}
-                                    {selectedDiscount.maxDiscountAmount
-                                        .toLocaleString()}
+                                    Giảm {selectedDiscount.discountPercent}%
+                                    (Tối đa{" "}
+                                    {selectedDiscount.maxDiscountAmount.toLocaleString()}
                                     đ)
                                 </p>
                                 <p className="text-green-600 font-medium">
@@ -433,18 +458,16 @@ const Checkout = () => {
                                                 <div className="space-y-1 mt-1">
                                                     <p className="text-sm text-gray-600">
                                                         Giảm{" "}
-                                                        {discount
-                                                            .discountPercent}
+                                                        {
+                                                            discount.discountPercent
+                                                        }
                                                         % (Tối đa{" "}
-                                                        {discount
-                                                            .maxDiscountAmount
-                                                            .toLocaleString()}
+                                                        {discount.maxDiscountAmount.toLocaleString()}
                                                         đ)
                                                     </p>
                                                     <p className="text-xs text-gray-500">
                                                         Đơn tối thiểu{" "}
-                                                        {discount.minOrderValue
-                                                            .toLocaleString()}
+                                                        {discount.minOrderValue.toLocaleString()}
                                                         đ
                                                     </p>
                                                     {!isApplicable && (
@@ -455,11 +478,11 @@ const Checkout = () => {
                                                     )}
                                                     {discount.endDate && (
                                                         <p className="text-xs text-gray-500">
-                                                            HSD: {new Date(
-                                                                discount
-                                                                    .endDate,
+                                                            HSD:{" "}
+                                                            {new Date(
+                                                                discount.endDate
                                                             ).toLocaleDateString(
-                                                                "vi-VN",
+                                                                "vi-VN"
                                                             )}
                                                         </p>
                                                     )}
@@ -475,8 +498,9 @@ const Checkout = () => {
                                                     onClick={() =>
                                                         isApplicable &&
                                                         handleSelectDiscount(
-                                                            discount,
-                                                        )}
+                                                            discount
+                                                        )
+                                                    }
                                                     disabled={!isApplicable}
                                                 >
                                                     {isApplicable

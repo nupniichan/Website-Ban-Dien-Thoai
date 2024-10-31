@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { Dropdown, Space, Modal, Avatar, notification } from "antd";
+import { Dropdown, Space, Modal, Avatar } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login"; // Import your Login component
 import Register from "./Register"; // Import your Register component

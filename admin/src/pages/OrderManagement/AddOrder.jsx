@@ -13,9 +13,10 @@ const AddOrder = () => {
     customerName: '',
     shippingAddress: '',
     items: [{ productId: '', quantity: 1 }],
-    paymentMethod: 'Cash',
+    paymentMethod: 'Tiền mặt',
     totalAmount: 0,
-    status: 'Chờ xác nhận',
+    orderStatus: 'Chờ xác nhận',
+    paymentStatus: 'Chưa thanh toán',
     orderDate: new Date().toISOString().slice(0, 16), // Set default order date to current date and time
     notes: '',
   });
@@ -78,6 +79,10 @@ const AddOrder = () => {
         newErrors.orderDate = 'Vui lòng chọn ngày đặt hàng';
     } else if (isPastDate(order.orderDate)) {
         newErrors.orderDate = 'Không thể chọn ngày trong quá khứ';
+    }
+
+    if (!order.status) {
+      newErrors.status = 'Vui lòng chọn trạng thái đơn hàng';
     }
 
     setErrors(newErrors);
@@ -223,9 +228,18 @@ const AddOrder = () => {
     }
   };
 
-  const orderStatusOptions = ['Đang xử lý', 'Đã xác nhận', 'Đang giao hàng', 'Đã giao hàng', 'Đã huỷ'];
-  const paymentStatusOptions = ['Chưa thanh toán', 'Đã thanh toán', 'Thanh toán lỗi'];
-  const paymentMethodOptions = ['Tiền mặt', 'Thẻ tín dụng', 'Thanh toán trực tuyến', 'Chuyển khoản ngân hàng'];
+  const orderStatusOptions = [
+    'Chờ xác nhận',
+    'Đã xác nhận',
+    'Đang xử lý',
+    'Đang giao hàng',
+    'Đã giao hàng',
+    'Đã thanh toán',
+    'Thanh toán lỗi',
+    'Đã hủy',
+    'Đã hoàn tiền'
+  ];
+  const paymentMethodOptions = ['COD', 'MoMo', 'Bank Transfer'];
 
   return (
     <Box padding={3}>
@@ -360,10 +374,10 @@ const AddOrder = () => {
           <Grid item xs={12} sm={6}>
             <Autocomplete
               options={orderStatusOptions}
-              value={order.orderStatus}
+              value={order.status}
               onChange={(event, newValue) => {
                 handleChange({
-                  target: { name: 'orderStatus', value: newValue }
+                  target: { name: 'status', value: newValue }
                 });
               }}
               renderInput={(params) => (
@@ -372,30 +386,8 @@ const AddOrder = () => {
                   label="Trạng thái đơn hàng"
                   required
                   margin="normal"
-                  error={!!errors.orderStatus}
-                  helperText={errors.orderStatus}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <Autocomplete
-              options={paymentStatusOptions}
-              value={order.paymentStatus}
-              onChange={(event, newValue) => {
-                handleChange({
-                  target: { name: 'paymentStatus', value: newValue }
-                });
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Trạng thái thanh toán"
-                  required
-                  margin="normal"
-                  error={!!errors.paymentStatus}
-                  helperText={errors.paymentStatus}
+                  error={!!errors.status}
+                  helperText={errors.status}
                 />
               )}
             />
