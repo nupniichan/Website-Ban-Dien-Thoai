@@ -42,6 +42,13 @@ const NewReleases = () => {
     //     console.log(NReleaseProducts);
     // }, [NReleaseProducts]);
 
+    const formatCurrency = (price) => {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(price);
+    };
+
     return (
         <div className="mb-32">
             <div className="container">
@@ -92,7 +99,7 @@ const NewReleases = () => {
                                     </div> */}
                                     <div className="flex items-center justify-between mt-5">
                                         <span className="text-xl font-bold text-gray-900 dark:text-white">
-                                            ${item.price}
+                                            {formatCurrency(item.price)}
                                         </span>
                                         <button
                                             onClick={(e) => e.stopPropagation()}
