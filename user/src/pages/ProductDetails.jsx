@@ -42,32 +42,53 @@ const ProductDetails = () => {
     setQuantity(value);
   };
 
-  const handleBuyNow = () => {
-    if (quantity <= product.quantity) {
-      fetch(`${BASE_URL}/api/cart/${userId}/add`, {
+  const handleBuyNow = async () => {
+    if (!userId) {
+      alert('Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
+      window.location.href = '/login';
+      return;
+    }
+
+    if (!product || !product.id) {
+      alert('Không tìm thấy thông tin sản phẩm');
+      return;
+    }
+
+    if (quantity <= 0 || quantity > product.quantity) {
+      alert('Số lượng không hợp lệ!');
+      return;
+    }
+
+    const cartItem = {
+      productId: product.id,
+      name: product.name,
+      price: product.price,
+      color: product.color,
+      quantity: parseInt(quantity),
+      image: product.image
+    };
+
+    console.log('Sending cart item:', cartItem);
+
+    try {
+      const response = await fetch(`${BASE_URL}/api/cart/${userId}/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          productId: product.id,
-          name: product.name,
-          price: product.price,
-          color: product.color,
-          quantity: quantity,
-          image: product.image,
-        }),
-      })
-        .then(response => response.json())
-        .then(data => {
-          alert(data.message || 'Đã thêm sản phẩm vào giỏ hàng');
-        })
-        .catch(error => {
-          console.error('Error adding product to cart:', error);
-          alert('Đã xảy ra lỗi, vui lòng thử lại sau');
-        });
-    } else {
-      alert('Số lượng vượt quá hàng tồn kho!');
+        body: JSON.stringify(cartItem)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng');
+      }
+
+      alert('Đã thêm sản phẩm vào giỏ hàng thành công');
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert(error.message);
     }
   };
 
@@ -140,10 +161,15 @@ const ProductDetails = () => {
                 className="w-16 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <button
-                className="ml-4 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors duration-200"
+                className={`ml-4 py-2 px-4 rounded-md transition-colors duration-200 ${
+                  userId 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                    : 'bg-gray-400 text-gray-100 cursor-not-allowed'
+                }`}
                 onClick={handleBuyNow}
+                disabled={!userId}
               >
-                Thêm vào giỏ hàng
+                {userId ? 'Thêm vào giỏ hàng' : 'Vui lòng đăng nhập'}
               </button>
             </div>
           )}

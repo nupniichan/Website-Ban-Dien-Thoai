@@ -9,6 +9,7 @@ const Cart = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [itemToRemove, setItemToRemove] = useState(null);
   const [overStockError, setOverStockError] = useState(null);
+  const [selectedItems, setSelectedItems] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -104,6 +105,22 @@ const Cart = () => {
     setShowConfirmDialog(false);
   };
 
+  // Tính tổng tiền cho các sản phẩm được chọn
+  const calculateSelectedTotal = () => {
+    return cartItems
+      .filter(item => selectedItems.includes(item.productId))
+      .reduce((total, item) => total + item.price * item.quantity, 0);
+  };
+
+  // Xử lý chọn/bỏ chọn sản phẩm
+  const handleSelectItem = (productId) => {
+    setSelectedItems(prev => 
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
+  };
+
   // Giao diện khi giỏ hàng trống
   if (loading) {
     return <div>Đang tải...</div>;
@@ -138,6 +155,18 @@ const Cart = () => {
             className="flex justify-between items-center p-4 border rounded-lg"
           >
             <div className="flex items-center">
+              <div 
+                onClick={() => handleSelectItem(item.productId)}
+                className={`w-6 h-6 rounded-full border-2 cursor-pointer mr-4 flex items-center justify-center
+                  ${selectedItems.includes(item.productId) 
+                    ? 'border-blue-500 bg-blue-500' 
+                    : 'border-gray-400'
+                  }`}
+              >
+                {selectedItems.includes(item.productId) && (
+                  <div className="w-3 h-3 bg-white rounded-full"></div>
+                )}
+              </div>
               <img
                 src={item.image ? `${BASE_URL}/${item.image.replace(/\\/g, '/')}` : '/default-image.jpg'}
                 alt={item.name}
@@ -198,14 +227,20 @@ const Cart = () => {
         <p className="text-xl">
           Tạm tính:{" "}
           <span className="text-red-500 font-semibold">
-            {calculateTotal().toLocaleString()}đ
+            {calculateSelectedTotal().toLocaleString()}đ
           </span>
         </p>
         <button
-        className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg"
-        onClick={() => navigate('/checkout', { state: { cartItems, total: calculateTotal() } })}
+          className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg disabled:bg-gray-400"
+          onClick={() => navigate('/checkout', { 
+            state: { 
+              cartItems: cartItems.filter(item => selectedItems.includes(item.productId)),
+              total: calculateSelectedTotal() 
+            } 
+          })}
+          disabled={selectedItems.length === 0}
         >
-        Mua ngay ({cartItems.length})
+          Mua ngay ({selectedItems.length})
         </button>
       </div>
     </div>

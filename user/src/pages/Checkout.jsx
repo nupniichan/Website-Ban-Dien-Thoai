@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { BASE_URL } from '../config';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const Checkout = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
     email: '',
@@ -39,29 +43,19 @@ const Checkout = () => {
       }
     };
 
-    const fetchCartItems = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/api/cart/${userId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch cart items');
-        }
-        const data = await response.json();
-        setCartItems(data);
-
-        const total = data.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        setTotalAmount(total);
-      } catch (error) {
-        console.error('Error fetching cart items:', error);
-      }
-    };
+    if (location.state?.cartItems) {
+      setCartItems(location.state.cartItems);
+      setTotalAmount(location.state.total);
+    } else {
+      navigate('/cart');
+    }
 
     if (userId) {
       fetchCustomerInfo();
-      fetchCartItems();
     } else {
       console.error('No userId found in sessionStorage');
     }
-  }, [userId]);
+  }, [userId, location.state]);
 
   // Thêm useEffect để fetch mã giảm giá
   useEffect(() => {
@@ -84,7 +78,7 @@ const Checkout = () => {
   const handleSelectDiscount = (discount) => {
     setSelectedDiscount(discount);
     const discountAmount = Math.min(
-      (totalAmount * discount.discountPercent) / 100,
+      Math.floor((totalAmount * discount.discountPercent) / 100),
       discount.maxDiscountAmount
     );
     setDiscountedAmount(discountAmount);
@@ -98,7 +92,7 @@ const Checkout = () => {
   };
 
   const handleContinue = async () => {
-    const finalAmount = totalAmount - discountedAmount; // Tính tổng tiền sau khi giảm giá
+    const finalAmount = totalAmount - discountedAmount;
 
     const orderData = {
       customerId: userId,
@@ -106,9 +100,8 @@ const Checkout = () => {
       shippingAddress: customerInfo.address,
       items: cartItems,
       paymentMethod: paymentMethod,
-      totalAmount: finalAmount, // Sử dụng số tiền sau khi đã giảm giá
+      totalAmount: finalAmount,
       notes: notes,
-      // Thêm thông tin về mã giảm giá nếu có
       discount: selectedDiscount ? {
         discountId: selectedDiscount.id,
         discountName: selectedDiscount.name,
@@ -139,8 +132,36 @@ const Checkout = () => {
         console.error('Error initiating payment:', error);
       }
     } else {
-      console.log('Thanh toán bằng tiền mặt');
-      alert('Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.');
+      try {
+        // Gọi API để tạo đơn hàng và xóa sản phẩm khỏi giỏ hàng
+        const response = await fetch(`${BASE_URL}/api/orders/create`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(orderData),
+        });
+
+        if (response.ok) {
+          // Xóa sản phẩm đã mua khỏi giỏ hàng
+          const productIds = cartItems.map(item => item.productId);
+          await fetch(`${BASE_URL}/api/cart/${userId}/removeMultiple`, {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productIds }),
+          });
+
+          alert('Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.');
+          navigate('/payment-history');
+        } else {
+          throw new Error('Lỗi khi tạo đơn hàng');
+        }
+      } catch (error) {
+        console.error('Error creating order:', error);
+        alert('Có lỗi xảy ra khi tạo đơn hàng');
+      }
     }
   };
 
@@ -261,6 +282,7 @@ const Checkout = () => {
           value={paymentMethod}
           onChange={(e) => setPaymentMethod(e.target.value)}
         >
+          {shippingOption === 'store' && <option value="Tiền mặt">Tiền mặt</option>}
           <option value="Thanh toán qua MOMO">Thanh toán qua MOMO</option>
           <option value="Thanh toán qua VNpay">Thanh toán qua VNpay</option>
         </select>
@@ -286,6 +308,7 @@ const Checkout = () => {
             </button>
           )}
         </div>
+        <p className="text-sm text-gray-500 mt-1">* Đơn hàng chỉ được sử dụng 1 mã giảm giá</p>
         {selectedDiscount && (
           <div className="mt-2 p-2 bg-blue-50 rounded">
             <div className="flex justify-between items-center">

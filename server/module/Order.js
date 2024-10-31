@@ -13,16 +13,33 @@ const orderSchema = new mongoose.Schema({
   ],
   paymentMethod: { type: String, required: true },
   totalAmount: { type: Number, required: true },
-  status: { type: String, required: true, default: 'Chờ xác nhận' },
+  status: { 
+    type: String, 
+    required: true, 
+    default: 'Chờ xác nhận',
+    enum: [
+      'Chờ xác nhận',
+      'Đã xác nhận', 
+      'Đang xử lý',
+      'Đang giao hàng', 
+      'Đã giao hàng', 
+      'Đã thanh toán',
+      'Thanh toán lỗi',
+      'Đã hủy',
+      'Đã hoàn tiền'
+    ]
+  },
   orderDate: { type: Date, required: true, default: Date.now }, 
   notes: { type: String },
+  cancellationReason: { type: String },
+  cancelledAt: { type: Date },
 });
 
 orderSchema.pre('save', function(next) {
   if (this.totalAmount < 0) {
     return next(new Error('Tổng số tiền không thể âm'));
   }
-  if (!['Chờ xác nhận', 'Đã xác nhận', 'Đang giao hàng', 'Đã giao hàng', 'Đã hủy'].includes(this.status)) {
+  if (!['Chờ xác nhận', 'Đã xác nhận', 'Đang xử lý', 'Đang giao hàng', 'Đã giao hàng', 'Đã thanh toán', 'Thanh toán lỗi', 'Đã hủy', 'Đã hoàn tiền'].includes(this.status)) {
     return next(new Error('Trạng thái đơn hàng không hợp lệ'));
   }
   if (!this.items || this.items.length === 0) {
@@ -33,6 +50,9 @@ orderSchema.pre('save', function(next) {
   }
   if (!['COD', 'MoMo', 'Bank Transfer'].includes(this.paymentMethod)) {
     return next(new Error('Phương thức thanh toán không hợp lệ'));
+  }
+  if (this.status === 'Đã hủy' && !this.cancellationReason) {
+    return next(new Error('Phải có lý do khi hủy đơn hàng'));
   }
   next();
 });

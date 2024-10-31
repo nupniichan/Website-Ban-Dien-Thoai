@@ -14,6 +14,7 @@ import {
   DialogContent,
   TextField,
   MenuItem,
+  Pagination,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
@@ -24,7 +25,9 @@ const KhoManagement = () => {
   const [entries, setEntries] = useState([]);
   const [products, setProducts] = useState([]);
   const [typeFilter, setTypeFilter] = useState('');
-  const [dateFilter, setDateFilter] = useState(new Date().toISOString().split('T')[0]);
+  const [dateFilter, setDateFilter] = useState('');
+  const [page, setPage] = useState(1);
+  const [rowsPerPage] = useState(10);
 
   useEffect(() => {
     const fetchEntries = async () => {
@@ -102,6 +105,17 @@ const KhoManagement = () => {
     return matchesType && matchesDate;
   });
 
+  // Tính toán phân trang
+  const totalPages = Math.ceil(filteredEntries.length / rowsPerPage);
+  const paginatedEntries = filteredEntries.slice(
+    (page - 1) * rowsPerPage,
+    page * rowsPerPage
+  );
+
+  const handlePageChange = (event, newPage) => {
+    setPage(newPage);
+  };
+
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Quản lý phiếu xuất nhập kho</Typography>
@@ -111,7 +125,10 @@ const KhoManagement = () => {
           select
           label="Loại phiếu"
           value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
+          onChange={(e) => {
+            setTypeFilter(e.target.value);
+            setPage(1);  // Reset về trang 1 khi lọc
+          }}
           variant="outlined"
           style={{ marginRight: '1rem', minWidth: '120px' }}
         >
@@ -124,8 +141,14 @@ const KhoManagement = () => {
           type="date"
           label="Ngày"
           value={dateFilter}
-          onChange={(e) => setDateFilter(e.target.value)}
+          onChange={(e) => {
+            setDateFilter(e.target.value);
+            setPage(1);
+          }}
           variant="outlined"
+          InputLabelProps={{
+            shrink: true,
+          }}
           style={{ minWidth: '150px' }}
         />
       </Box>
@@ -148,7 +171,7 @@ const KhoManagement = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredEntries.map((entry) => (
+            {paginatedEntries.map((entry) => (
               entry.products.map(product => (
                 <TableRow key={`${entry.id}-${product.productId}`}>
                   <TableCell>{entry.id}</TableCell>
@@ -168,6 +191,15 @@ const KhoManagement = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Box display="flex" justifyContent="center" marginTop={2}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handlePageChange}
+          color="primary"
+        />
+      </Box>
 
       {selectedEntry && (
         <Dialog open={true} onClose={handleCloseDialog}>

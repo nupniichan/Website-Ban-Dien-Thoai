@@ -22,11 +22,6 @@ const MenuItems = [
     name: "Giới Thiệu",
     url: `${PathNames.ABOUT}`,
   },
-  {
-    id: "4",
-    name: "Hỗ Trợ",
-    url: `${PathNames.SUPPORT}`,
-  },
 ];
 
 const Header = () => {
