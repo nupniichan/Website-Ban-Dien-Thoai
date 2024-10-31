@@ -18,7 +18,7 @@ const FooterLinks = [
         label: "About",
         link: `${PathNames.ABOUT}`,
     },
-    {   
+    {
         label: "Stories",
         link: `${PathNames.STORIES}`,
     },
@@ -27,7 +27,6 @@ const FooterLinks = [
         link: `${PathNames.VACANCIES}`,
     },
 ];
-
 
 const SupportLinks = [
     {
@@ -62,7 +61,8 @@ const Footer = () => {
                             SPhoneC
                         </Link>
                         <p className="text-gray-600 dark:text-white/70 lg:pr-24 pt-3">
-                            Your one-stop shop for smartphones that are almost as good as the real thing.
+                            Your one-stop shop for smartphones that are almost
+                            as good as the real thing.
                         </p>
                         {/* <p className="text-gray-500 mt-4">
                             Beautifully cooked with love by <span className="text-primary">Sphonec</span>
@@ -76,18 +76,18 @@ const Footer = () => {
                                 Navigations
                             </h1>
                             <ul className="space-y-3">
-    {FooterLinks.map((link, index) => (
-        <li key={index}>
-            <Link
-                to={link.link}
-                onClick={link.onClick}  // Scroll to top when Home is clicked
-                className="text-gray-600 dark:text-gray-400 hover:dark:text-white hover:text-black duration-300"
-            >
-                {link.label}
-            </Link>
-        </li>
-    ))}
-</ul>
+                                {FooterLinks.map((link, index) => (
+                                    <li key={index}>
+                                        <Link
+                                            to={link.link}
+                                            onClick={link.onClick} // Scroll to top when Home is clicked
+                                            className="text-gray-600 dark:text-gray-400 hover:dark:text-white hover:text-black duration-300"
+                                        >
+                                            {link.label}
+                                        </Link>
+                                    </li>
+                                ))}
+                            </ul>
                         </div>
 
                         {/* footer second col of links */}

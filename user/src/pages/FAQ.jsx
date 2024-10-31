@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const FAQ = () => {
+const FaQ = () => {
     const [activeIndex, setActiveIndex] = useState(null);
 
     const faqs = [
@@ -65,4 +65,4 @@ const FAQ = () => {
     );
 };
 
-export default FAQ;
+export default FaQ;

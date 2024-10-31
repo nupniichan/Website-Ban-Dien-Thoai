@@ -19,7 +19,7 @@ const ContactUs = () => {
             {/* Contact Information Section */}
             <section className="info-section mt-10 max-w-3xl mx-auto text-center">
                 <h2 className="text-3xl font-bold">Contact Information</h2>
-                <p className="mt-4">Feel free to reach out via email or phone, and we'll get back to you as soon as possible.</p>
+                <p className="mt-4">Feel free to reach out via email or phone, and we will get back to you as soon as possible.</p>
 
                 <div className="mt-6">
                     <p className="text-xl">Email: <a href="mailto:pinkcat@gmail.com" className="text-blue-600">pinkcat@gmail.com</a></p>
@@ -31,7 +31,7 @@ const ContactUs = () => {
             {/* Interactive Section */}
             <section className="interactive-section py-20 bg-gray-100">
                 <div className="max-w-3xl mx-auto text-center">
-                    <h2 className="text-3xl font-bold mb-8">We'd Love to Hear From You!</h2>
+                    <h2 className="text-3xl font-bold mb-8">We Would Love to Hear From You!</h2>
                     <p className="text-lg">Whether you have a question or need support, feel free to drop us a line. Your feedback and inquiries are important to us.</p>
                 </div>
             </section>
