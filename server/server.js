@@ -375,7 +375,7 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
 // Hiển thị tất cả sản phẩm
 app.get('/api/products', async (req, res) => {
   try {
-    const { query, minPrice, maxPrice, colors, brands } = req.query;
+    const { query} = req.query;
     const searchCondition = {
       ...(query ? { name: { $regex: query, $options: 'i' } } : {})
     };
