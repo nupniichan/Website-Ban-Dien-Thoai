@@ -10,39 +10,39 @@ import LocationArrow from "../assets/svg/LocationArrow.jsx";
 
 const FooterLinks = [
     {
-        label: "Home",
+        label: "Trang Chủ",
         link: `${PathNames.HOMEPAGE}`,
         onClick: () => window.scrollTo({ top: 0, behavior: "smooth" }), // Scrolls to top on click
     },
     {
-        label: "About",
+        label: "Giới Thiệu",
         link: `${PathNames.ABOUT}`,
     },
-    {
-        label: "Stories",
+    {   
+        label: "Câu chuyện",
         link: `${PathNames.STORIES}`,
     },
     {
-        label: "Vacancies",
+        label: "Tuyển Dụng",
         link: `${PathNames.VACANCIES}`,
     },
 ];
 
 const SupportLinks = [
     {
-        label: "FAQ",
+        label: "Câu Hỏi Thường Gặp",
         link: `${PathNames.FAQ}`,
     },
     {
-        label: "Contact Us",
+        label: "Liên hệ với chúng tôi",
         link: `${PathNames.CONTACTUS}`,
     },
     {
-        label: "Privacy Policy",
+        label: "Chính Sách Bảo Mật",
         link: `${PathNames.PRIVACYPOLICY}`,
     },
     {
-        label: "Terms & Conditions",
+        label: "Điều Khoản & Điều Kiện",
         link: `${PathNames.TERMS}`,
     },
 ];
@@ -52,7 +52,7 @@ const Footer = () => {
         <footer className="dark:bg-gray-950">
             <div className="container">
                 <div className="grid md:grid-cols-3 pb-14 pt-5">
-                    {/* company details */}
+                    {/* Thông tin công ty */}
                     <div className="py-8 px-4">
                         <Link
                             to="#"
@@ -61,26 +61,25 @@ const Footer = () => {
                             SPhoneC
                         </Link>
                         <p className="text-gray-600 dark:text-white/70 lg:pr-24 pt-3">
-                            Your one-stop shop for smartphones that are almost
-                            as good as the real thing.
+                            Cửa hàng điện thoại thông minh uy tín, chất lượng hàng đầu Việt Nam.
                         </p>
                         {/* <p className="text-gray-500 mt-4">
                             Beautifully cooked with love by <span className="text-primary">Sphonec</span>
                         </p> */}
                     </div>
 
-                    {/* footer links */}
+                    {/* Liên kết footer */}
                     <div className="col-span-2 grid grid-cols-2 sm:grid-cols-3 md:pl-10">
                         <div className="py-8 px-4">
                             <h1 className="text-xl font-bold sm:text-left mb-3">
-                                Navigations
+                                Điều Hướng
                             </h1>
                             <ul className="space-y-3">
                                 {FooterLinks.map((link, index) => (
                                     <li key={index}>
                                         <Link
                                             to={link.link}
-                                            onClick={link.onClick} // Scroll to top when Home is clicked
+                                            onClick={link.onClick}
                                             className="text-gray-600 dark:text-gray-400 hover:dark:text-white hover:text-black duration-300"
                                         >
                                             {link.label}
@@ -90,10 +89,10 @@ const Footer = () => {
                             </ul>
                         </div>
 
-                        {/* footer second col of links */}
+                        {/* Cột liên kết thứ hai */}
                         <div className="py-8 px-4">
                             <h1 className="text-xl font-bold sm:text-left mb-3">
-                                Support
+                                Hỗ Trợ
                             </h1>
                             <ul className="space-y-3">
                                 {SupportLinks.map((link, index) => (
@@ -109,10 +108,10 @@ const Footer = () => {
                             </ul>
                         </div>
 
-                        {/* company  addresses */}
+                        {/* Địa chỉ công ty */}
                         <div className="py-8 px-4 col-span-2 sm:col-auto">
                             <h1 className="text-xl font-bold sm:text-left mb-3">
-                                Connect
+                                Kết Nối
                             </h1>
                             <div>
                                 <div className="flex items-center gap-3">
@@ -124,15 +123,15 @@ const Footer = () => {
                                     <p>+84 947500422</p>
                                 </div>
 
-                                {/* social links */}
+                                {/* Liên kết mạng xã hội */}
                                 <div className="flex item-center gap-3 mt-6">
-                                    <Link to={`#`}>
+                                    <Link to="https://www.instagram.com/thepinkkitten/" target="_blank" rel="noopener noreferrer">
                                         <InstagramOutlined className="text-3xl hover:text-primary duration-300" />
                                     </Link>
-                                    <Link to={`#`}>
+                                    <Link to="https://www.facebook.com/ThePinkKitten" target="_blank" rel="noopener noreferrer">
                                         <FacebookOutlined className="text-3xl hover:text-primary duration-200" />
                                     </Link>
-                                    <Link to={`#`}>
+                                    <Link to="https://www.amazon.com/" target="_blank" rel="noopener noreferrer">
                                         <AmazonOutlined className="text-3xl hover:text-primary duration-200" />
                                     </Link>
                                 </div>

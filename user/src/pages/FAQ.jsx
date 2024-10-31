@@ -1,28 +1,35 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const FaQ = () => {
+const FAQ = () => {
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
     const [activeIndex, setActiveIndex] = useState(null);
 
     const faqs = [
         {
-            question: "What is your return policy?",
-            answer: "You can return any item within 30 days of purchase for a full refund, provided it is in its original condition."
+            question: "Chính sách đổi trả của SPhoneC như thế nào?",
+            answer: "Quý khách có thể đổi trả sản phẩm trong vòng 30 ngày kể từ ngày mua hàng với điều kiện sản phẩm còn nguyên vẹn, đầy đủ phụ kiện và hộp. Đối với sản phẩm lỗi do nhà sản xuất, chúng tôi sẽ đổi mới 100% trong 15 ngày đầu tiên."
         },
         {
-            question: "How long does shipping take?",
-            answer: "Shipping usually takes 5-7 business days, depending on your location."
+            question: "Thời gian giao hàng mất bao lâu?",
+            answer: "Thời gian giao hàng thông thường từ 1-3 ngày đối với khu vực nội thành TP.HCM và 3-5 ngày đối với các tỉnh thành khác. Đơn hàng trên 10 triệu được miễn phí giao hàng toàn quốc."
         },
         {
-            question: "Do you offer international shipping?",
-            answer: "Yes, we ship internationally. Shipping costs will vary based on the destination."
+            question: "Chính sách bảo hành như thế nào?",
+            answer: "Tất cả sản phẩm điện thoại tại SPhoneC được bảo hành chính hãng 12 tháng. Ngoài ra, khách hàng được hưởng thêm 1 tháng bảo hành từ cửa hàng. Chúng tôi có trung tâm bảo hành riêng để phục vụ khách hàng nhanh chóng."
         },
         {
-            question: "How can I contact customer support?",
-            answer: "You can reach our customer support team at support@example.com or call us at (123) 456-7890."
+            question: "Làm thế nào để liên hệ với bộ phận hỗ trợ?",
+            answer: "Quý khách có thể liên hệ với chúng tôi qua email sphonec@gmail.com hoặc gọi số hotline 0947500422. Đội ngũ CSKH của chúng tôi làm việc từ 8h00 - 22h00 hàng ngày, kể cả ngày lễ."
         },
         {
-            question: "Do you have a loyalty program?",
-            answer: "Yes, we have a loyalty program that rewards customers for every purchase. Sign up on our website to learn more."
+            question: "SPhoneC có chương trình khách hàng thân thiết không?",
+            answer: "Có, chúng tôi có chương trình tích điểm cho khách hàng thân thiết. Cứ mỗi 100,000đ sẽ được tích 1 điểm, và 10 điểm sẽ được quy đổi thành 100,000đ khi mua hàng. Ngoài ra còn có nhiều ưu đãi đặc biệt cho thành viên VIP."
+        },
+        {
+            question: "Làm sao để biết điện thoại tại SPhoneC là chính hãng?",
+            answer: "Tất cả sản phẩm tại SPhoneC đều có tem bảo hành chính hãng và có thể check IMEI trực tiếp trên website của nhà sản xuất. Chúng tôi cam kết 100% sản phẩm chính hãng, hoàn tiền gấp 10 lần nếu phát hiện hàng giả."
         },
     ];
 
@@ -32,24 +39,25 @@ const FaQ = () => {
 
     return (
         <main className="main">
-            {/* Hero Section */}
-            <section className="hero-section h-96 flex items-center justify-center text-center text-white"  // Adjust height to cover full viewport minus header height
+            {/* Phần Hero */}
+            <section className="hero-section h-96 flex items-center justify-center text-center text-white"
                 style={{
                     background: "linear-gradient(to bottom, rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), url('/path-to-your-background-image.jpg')",
                     backgroundSize: 'cover',
                     backgroundPosition: 'center'
                 }}>
                 <div className="bg-black bg-opacity-70 p-10 rounded-lg shadow-lg">
-                    <h1 className="text-5xl font-bold">Frequently Asked Questions</h1>
-                    <p className="mt-4 text-xl">Find answers to common queries.</p>
+                    <h1 className="text-5xl font-bold">Câu Hỏi Thường Gặp</h1>
+                    <p className="mt-4 text-xl">Tìm câu trả lời cho những thắc mắc phổ biến.</p>
                 </div>
             </section>
 
-            {/* FAQ Section */}
-            <section className="faq-section mt-10 max-w-3xl mx-auto">
+            {/* Phần FAQ */}
+            <section className="faq-section mt-10 max-w-3xl mx-auto pb-20">
                 {faqs.map((faq, index) => (
                     <div key={index} className="faq-item bg-white rounded-lg shadow-md my-2">
-                        <div className="faq-question p-4 flex justify-between items-center cursor-pointer" onClick={() => toggleFAQ(index)}>
+                        <div className="faq-question p-4 flex justify-between items-center cursor-pointer hover:bg-gray-50" 
+                             onClick={() => toggleFAQ(index)}>
                             <h3 className="text-xl font-semibold">{faq.question}</h3>
                             <span className="text-2xl">{activeIndex === index ? '-' : '+'}</span>
                         </div>

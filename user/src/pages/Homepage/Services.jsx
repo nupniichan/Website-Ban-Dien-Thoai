@@ -9,28 +9,28 @@ const ServiceData = [
     {
         id: 1,
         icon: <TruckOutlined className="text-4xl md:text-5xl text-primary" />,
-        title: "Free Shipping",
-        description: "Free Shipping On Orders Over $300",
+        title: "Miễn Phí Vận Chuyển",
+        description: "Miễn phí vận chuyển cho đơn hàng trên 7.000.000 VND",
     },
     {
         id: 2,
         icon: <WalletOutlined className="text-4xl md:text-5xl text-primary" />,
-        title: "Safe Money",
-        description: "30 Days Money Back Guarantee",
+        title: "Hoàn Tiền An Toàn",
+        description: "Đảm bảo hoàn tiền trong vòng 30 ngày",
     },
     {
         id: 3,
         icon: <SafetyOutlined className="text-4xl md:text-5xl text-primary" />,
-        title: "Secure Payment",
-        description: "All Payment Are Secured",
+        title: "Thanh Toán An Toàn",
+        description: "Tất cả thanh toán đều được bảo mật",
     },
     {
         id: 4,
         icon: (
             <CustomerServiceOutlined className="text-4xl md:text-5xl text-primary" />
         ),
-        title: "Online Support 24/7",
-        description: "Technical Support Available 24/7",
+        title: "Hỗ Trợ 24/7",
+        description: "Hỗ trợ kỹ thuật 24/7",
     },
 ];
 

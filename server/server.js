@@ -375,7 +375,7 @@ app.post('/api/addProduct', upload.single('image'), async (req, res) => {
 // Hiển thị tất cả sản phẩm
 app.get('/api/products', async (req, res) => {
   try {
-    const { query, minPrice, maxPrice, colors, brands } = req.query;
+    const { query} = req.query;
     const searchCondition = {
       ...(query ? { name: { $regex: query, $options: 'i' } } : {})
     };
@@ -398,7 +398,6 @@ app.get('/api/colors', async (req, res) => {
   }
 });
 
-// Fetch available brands
 app.get('/api/brands', async (req, res) => {
   try {
     const products = await Product.find({});
@@ -408,6 +407,7 @@ app.get('/api/brands', async (req, res) => {
     res.status(500).json({ message: 'Error fetching brands', error: err.message });
   }
 });
+
 
 
 

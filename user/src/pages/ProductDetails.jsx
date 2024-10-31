@@ -209,165 +209,83 @@ const ProductDetails = () => {
 
             {/* Specifications Section */}
             <div className="mt-6 w-full max-w-6xl">
-                <h2 className="text-lg font-semibold text-gray-800 mb-2">
-                    Thông số kỹ thuật:
-                </h2>
-                <table className="min-w-full border border-gray-300 table-auto">
+                    <h2 className="text-lg font-semibold text-gray-800 mb-2">Thông số kỹ thuật:</h2>
+                    <table className="min-w-full border border-gray-300 table-auto">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="border border-gray-300 px-4 py-2 text-left">
-                                Thông số
-                            </th>
-                            <th className="border border-gray-300 px-4 py-2 text-left">
-                                Chi tiết
-                            </th>
+                        <th className="border border-gray-300 px-4 py-2 text-left">Thông số</th>
+                        <th className="border border-gray-300 px-4 py-2 text-left">Chi tiết</th>
                         </tr>
                     </thead>
                     <tbody className="text-gray-600">
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Màu sắc:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.color || "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Màu sắc:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.color || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Hệ điều hành:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.os || "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Hệ điều hành:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.os || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Thương hiệu:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.brand || "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Thương hiệu:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.brand || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>RAM:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.dungLuongRAM ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>RAM:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.dungLuongRAM || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Bộ nhớ trong:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.boNhoTrong ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Bộ nhớ trong:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.boNhoTrong || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Pin:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.pin || "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Pin:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.pin || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Kích thước màn hình:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.kichThuocManHinh ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Kích thước màn hình:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.kichThuocManHinh || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Công nghệ màn hình:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.congNgheManHinh ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Công nghệ màn hình:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.congNgheManHinh || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Camera sau:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.cameraSau ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Camera sau:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.cameraSau || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Camera trước:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.cameraTruoc ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Camera trước:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.cameraTruoc || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Chipset:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.chipset ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Chipset:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.chipset || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>GPU:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.gpu || "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>GPU:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.gpu || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Công nghệ NFC:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.congNgheNFC ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Công nghệ NFC:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.congNgheNFC || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Thẻ SIM:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.theSIM ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Thẻ SIM:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.theSIM || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Độ phân giải màn hình:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.doPhanGiaiManHinh ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Độ phân giải màn hình:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.doPhanGiaiManHinh || 'Không có thông tin'}</td>
                         </tr>
                         <tr>
-                            <td className="border border-gray-300 px-4 py-2">
-                                <strong>Công sạc:</strong>
-                            </td>
-                            <td className="border border-gray-300 px-4 py-2">
-                                {product.cauhinh?.congSac ||
-                                    "Không có thông tin"}
-                            </td>
+                        <td className="border border-gray-300 px-4 py-2"><strong>Cổng sạc:</strong></td>
+                        <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.congSac || 'Không có thông tin'}</td>
                         </tr>
                     </tbody>
-                </table>
-            </div>
+                    </table>
+                </div>
         </div>
-    );
-};
+)};
 
 export default ProductDetails;
