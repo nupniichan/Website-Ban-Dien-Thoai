@@ -13,9 +13,30 @@ const EditOrder = () => {
   const [products, setProducts] = useState([]);
 
   // Options cho các dropdown
-  const orderStatusOptions = ['Đang xử lý', 'Đã xác nhận', 'Đang giao hàng', 'Đã giao hàng', 'Đã huỷ'];
-  const paymentStatusOptions = ['Chưa thanh toán', 'Đã thanh toán', 'Thanh toán lỗi'];
-  const paymentMethodOptions = ['Tiền mặt', 'Thẻ tín dụng', 'Thanh toán trực tuyến', 'Chuyển khoản ngân hàng'];
+  const orderStatusOptions = [
+    'Chờ xác nhận',
+    'Đã xác nhận',
+    'Đang xử lý',
+    'Đang giao hàng',
+    'Đã giao hàng',
+    'Đã thanh toán',
+    'Thanh toán lỗi',
+    'Đã hủy',
+    'Đã hoàn tiền'
+  ];
+
+  // Thêm options cho phương thức thanh toán
+  const paymentMethodOptions = ['Tiền mặt', 'MoMo', 'VNPay', 'Chuyển khoản ngân hàng'];
+
+  // Thêm hàm để format ngày giờ cho input datetime-local
+  const formatDateForInput = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return ''; // Kiểm tra ngày hợp lệ
+    
+    // Format thành YYYY-MM-DDThh:mm
+    return date.toISOString().slice(0, 16);
+  };
 
   // Fetch order data
   useEffect(() => {
@@ -24,7 +45,11 @@ const EditOrder = () => {
         const response = await fetch(`${BASE_URL}/api/orders/${orderId}`);
         if (response.ok) {
           const data = await response.json();
-          setOrder(data);
+          // Format orderDate trước khi set vào state
+          setOrder({
+            ...data,
+            orderDate: formatDateForInput(data.orderDate)
+          });
         } else {
           throw new Error('Failed to fetch order');
         }
@@ -51,13 +76,6 @@ const EditOrder = () => {
     fetchOrder();
     fetchProducts();
   }, [orderId]);
-
-  // Thêm hàm kiểm tra ngày trong quá khứ
-  const isPastDate = (date) => {
-    const orderDate = new Date(date);
-    const now = new Date();
-    return orderDate < now;
-  };
 
   // Validate form
   const validateForm = () => {
@@ -90,24 +108,13 @@ const EditOrder = () => {
       });
     }
 
-    // Validate payment and status
-    if (!order.paymentMethod) {
-      newErrors.paymentMethod = 'Vui lòng chọn phương thức thanh toán';
-    }
-
-    if (!order.orderStatus) {
-      newErrors.orderStatus = 'Vui lòng chọn trạng thái đơn hàng';
-    }
-
-    if (!order.paymentStatus) {
-      newErrors.paymentStatus = 'Vui lòng chọn trạng thái thanh toán';
-    }
-
     // Validate ngày đặt hàng
     if (!order.orderDate) {
       newErrors.orderDate = 'Vui lòng chọn ngày đặt hàng';
-    } else if (isPastDate(order.orderDate)) {
-      newErrors.orderDate = 'Không thể chọn ngày trong quá khứ';
+    }
+
+    if (!order.status) {
+      newErrors.status = 'Vui lòng chọn trạng thái đơn hàng';
     }
 
     setErrors(newErrors);
@@ -275,10 +282,10 @@ const EditOrder = () => {
           <Grid item xs={12} sm={6}>
             <Autocomplete
               options={orderStatusOptions}
-              value={order.orderStatus || ''}
+              value={order.status || ''}
               onChange={(event, newValue) => {
                 handleChange({
-                  target: { name: 'orderStatus', value: newValue }
+                  target: { name: 'status', value: newValue }
                 });
               }}
               renderInput={(params) => (
@@ -287,30 +294,8 @@ const EditOrder = () => {
                   label="Trạng thái đơn hàng"
                   required
                   margin="normal"
-                  error={!!errors.orderStatus}
-                  helperText={errors.orderStatus}
-                />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={12} sm={6}>
-            <Autocomplete
-              options={paymentStatusOptions}
-              value={order.paymentStatus || ''}
-              onChange={(event, newValue) => {
-                handleChange({
-                  target: { name: 'paymentStatus', value: newValue }
-                });
-              }}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="Trạng thái thanh toán"
-                  required
-                  margin="normal"
-                  error={!!errors.paymentStatus}
-                  helperText={errors.paymentStatus}
+                  error={!!errors.status}
+                  helperText={errors.status}
                 />
               )}
             />

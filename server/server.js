@@ -14,6 +14,7 @@ const DiscountCode = require('./module/DiscountCode.js');
 const config = require('./config.js')
 const multer = require('multer');
 const path = require('path');
+const { ObjectId } = require('mongodb');
 
 const app = express(); // Initialize express app
 
@@ -113,7 +114,7 @@ app.post('/api/register', upload.single('userAvatar'), async (req, res) => {
 
     if (emailExists || phoneNumberExists || accountNameExists) {
       return res.status(400).json({
-        message: "Email, số điện thoại hoặc tên tài khoản đã tồn tại.",
+        message: "Email, số điện thoại hoặc tên ti khoản đã tồn tại.",
         emailExists: !!emailExists,
         phoneNumberExists: !!phoneNumberExists,
         accountNameExists: !!accountNameExists, // Add this field to the response
@@ -183,7 +184,6 @@ app.post('/api/login', async (req, res) => {
         userAvatar: user.userAvatar
       }
     });
-    console.log('User object:', user); // Log the user object
   } catch (error) {
     console.error('Error logging in:', error);
     res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình đăng nhập.', error: error.message });
@@ -255,31 +255,18 @@ app.post('/api/orders', async (req, res) => {
 // Update order, adjust stock if necessary
 app.put('/api/orders/:id', async (req, res) => {
   const { id } = req.params;
-  const { status, items, shippingAddress, orderDate } = req.body;
+  const { status, paymentStatus, items, shippingAddress, orderDate } = req.body;
 
   try {
-    const existingOrder = await Order.findOne({ id });
-    if (!existingOrder) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-
-    // If status is 'Cancelled' revert the stock quantities
-    if (status === 'Đã hủy') {
-      await adjustProductStock(existingOrder.items, true); // Revert the original stock changes
-    }
-
-    // If the items in the order have changed, we need to adjust the stock
-    if (items && JSON.stringify(items) !== JSON.stringify(existingOrder.items)) {
-      await adjustProductStock(existingOrder.items, true); // Revert the old items' stock
-      await adjustProductStock(items); // Apply the new items' stock
-    }
-
-    // Update order with new status/items
     const updatedOrder = await Order.findOneAndUpdate(
       { id },
-      { status, items, shippingAddress, orderDate },
-      { new: true }
+      { status, paymentStatus, items, shippingAddress, orderDate },
+      { new: true, runValidators: true }
     );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
 
     res.json({ message: 'Order updated successfully', order: updatedOrder });
   } catch (err) {
@@ -328,9 +315,7 @@ app.get('/api/counter/:id', async (req, res) => {
 // Thêm sản phẩm
 app.post('/api/addProduct', upload.single('image'), async (req, res) => {
   try {
-    // Log để debug
-    console.log('Received request body:', req.body);
-    console.log('Received file:', req.file);
+
 
     const { name, color, quantity, price, os, brand, description, cauhinh } = req.body;
 
@@ -577,7 +562,7 @@ app.get('/api/users/email/:email', async (req, res) => {
     const { password, ...userInfo } = user.toObject();
     res.json(userInfo); // Send the filtered user object back as the response
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
+    res.status(500).json({ message: 'Lỗi khi lấy thông tin ngời dùng', error: err.message });
   }
 });
 
@@ -671,7 +656,7 @@ app.post('/api/users', async (req, res) => {
     // Tạo ID cho khách hàng mới
     const userId = await generateCustomerId();
 
-    // Tạo người dùng mới với tất cả các trường
+    // Tạo người dùng mới với tất c các trường
     const newUser = new User({
       id: userId,
       name,
@@ -708,11 +693,11 @@ app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
     // Kiểm tra mật khẩu hiện tại nếu người dùng muốn đổi mật khẩu
     if (newPassword) {
       if (user.password !== currentPassword) {
-        return res.status(400).json({ message: 'Mật khẩu hiện tại không đúng' });
+        return res.status(400).json({ message: 'Mật khẩu hiện tại khng đúng' });
       }
-      // Validate mật khẩu mới
-      if (!newPassword.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
-        return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số' });
+      // Sửa regex để khớp với client
+      if (!newPassword.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+        return res.status(400).json({ message: 'Mật khẩu mới phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt' });
       }
     }
 
@@ -730,10 +715,21 @@ app.put('/api/users/:id', upload.single('avatar'), async (req, res) => {
       ...(userAvatar && { userAvatar }),
     };
 
-    const updatedUser = await User.findOneAndUpdate({ id }, updateData, { new: true, runValidators: true });
-    res.json({ message: 'Người dùng đã được cập nhật thành công', user: updatedUser });
+    const updatedUser = await User.findOneAndUpdate(
+      { id }, 
+      updateData, 
+      { new: true, runValidators: true }
+    );
+    
+    res.json({ 
+      message: 'Người dùng đã được cập nhật thành công', 
+      user: updatedUser 
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi cập nhật người dùng', error: err.message });
+    res.status(500).json({ 
+      message: 'Lỗi khi cập nhật người dùng', 
+      error: err.message 
+    });
   }
 });
 
@@ -746,7 +742,6 @@ app.get('/api/users/:id', async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
-    console.log(user);
     res.json(user);
   } catch (err) {
     res.status(500).json({ message: 'Lỗi khi lấy thông tin người dùng', error: err.message });
@@ -816,7 +811,7 @@ app.put('/api/discountCodes/:id', async (req, res) => {
     try {
         const discountCode = await DiscountCode.findOne({ id }); // Tìm theo id không phải _id
         if (!discountCode) {
-            return res.status(404).json({ message: 'Không tìm thấy mã giảm giá' });
+            return res.status(404).json({ message: 'Khng tìm thấy mã giảm giá' });
         }
 
         const { name, startDate, endDate, discountPercent, code, minOrderValue, maxDiscountAmount } = req.body;
@@ -882,44 +877,55 @@ app.get('/api/discountCodes/:id', async (req, res) => {
 // Thêm sản phẩm vào giỏ hàng
 app.post('/api/cart/:userId/add', async (req, res) => {
   const { userId } = req.params;
-  const { productId, name, price, color, quantity, image } = req.body; // Đảm bảo bạn truyền đúng số lượng sản phẩm vào body
+  const { productId, name, price, color, quantity, image } = req.body;
+  
 
   try {
-    const user = await User.findOne({ id: userId });
-    const product = await Product.findOne({ id: productId });
+    // Sử dụng findOneAndUpdate thay vì findOne và save
+    const user = await User.findOneAndUpdate(
+      { id: userId },
+      {
+        $push: {
+          cart: {
+            productId,
+            name,
+            price,
+            color,
+            quantity,
+            image
+          }
+        }
+      },
+      { new: true, runValidators: false } // Tắt validation
+    );
 
     if (!user) {
-      return res.status(500).json({ message: 'Xin hãy đăng nhập trước khi thêm vào giỏ hàng' });
+      return res.status(404).json({ message: 'Không tìm thấy thông tin người dùng' });
     }
-    else if (!product) {
-      return res.status(500).json({ message: 'Sản phẩm không tồn tại hoặc đã hết hàng' });
+
+    const product = await Product.findOne({ id: productId });
+    if (!product) {
+      return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
     }
-    else {
-          // Kiểm tra nếu số lượng yêu cầu vượt quá số lượng tồn kho
+
+    // Kiểm tra số lượng tồn kho
     if (quantity > product.quantity) {
-      return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
-    }
-    const existingProduct = user.cart.find(item => item.productId === productId);
-
-    if (existingProduct) {
-      const newQuantity = existingProduct.quantity + quantity;
-
-      // Kiểm tra nếu tổng số lượng vượt quá tồn kho
-      if (newQuantity > product.quantity) {
-        return res.status(400).json({ message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` });
-      }
-
-      existingProduct.quantity = newQuantity;
-    } else {
-      // Thêm sản phẩm mới vào giỏ hàng
-      user.cart.push({ productId, name, price,color,quantity, image });
+      return res.status(400).json({ 
+        message: `Số lượng yêu cầu vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` 
+      });
     }
 
-    await user.save();
-    res.status(200).json({ message: 'Đã thêm sản phẩm vào giỏ hàng', cart: user.cart });
-    }
+    res.status(200).json({ 
+      message: 'Đã thêm sản phẩm vào giỏ hàng thành công',
+      cart: user.cart 
+    });
+
   } catch (error) {
-    res.status(500).json({ message: 'Lỗi khi thêm sản phẩm vào giỏ hàng', error: error.message });
+    console.error('Server error:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi thêm sản phẩm vào giỏ hàng',
+      error: error.message 
+    });
   }
 });
 
@@ -1043,7 +1049,6 @@ app.post('/callback', async (req, res) => {
     try {
       if (extraData) {
         const orderData = JSON.parse(extraData);
-        // Kiểm tra và gán giá trị mặc định cho notes nếu không có
         const notes = orderData.notes ? orderData.notes : '';
 
         // Tạo ID cho đơn hàng mới
@@ -1054,7 +1059,7 @@ app.post('/callback', async (req, res) => {
         );
         const newOrderId = `OD${String(counter.seq).padStart(3, '0')}`;
 
-        // Lưu đơn hàng vào MongoDB
+        // Lưu đơn hàng vào MongoDB với trạng thái mới
         const newOrder = new Order({
           id: newOrderId,
           orderId: orderId,
@@ -1071,7 +1076,7 @@ app.post('/callback', async (req, res) => {
 
         await newOrder.save();
 
-        // Trừ số lượng tồn kho
+        // Trừ s lượng tồn kho
         await adjustProductStock(orderData.items);
 
         // Xóa các sản phẩm đã thanh toán ra khỏi giỏ hàng
@@ -1082,9 +1087,11 @@ app.post('/callback', async (req, res) => {
           );
 
           user.cart = updatedCart;
-          await user.save(); // Lưu giỏ hàng đã được cập nhật
+          await user.save();
+          
         }
 
+        // Chuyển hướng về trang lịch sử đơn hàng
         res.redirect('http://localhost:5173/payment-history');
       } else {
         console.error('ExtraData is missing or empty');
@@ -1095,6 +1102,39 @@ app.post('/callback', async (req, res) => {
       res.status(500).send('Error processing order');
     }
   } else {
+    // Thanh toán thất bại
+    try {
+      if (extraData) {
+        const orderData = JSON.parse(extraData);
+        const notes = orderData.notes ? orderData.notes : '';
+
+        // Tạo đơn hàng với trạng thái thất bại
+        const counter = await Counter.findByIdAndUpdate(
+          { _id: 'orderId' },
+          { $inc: { seq: 1 } },
+          { new: true, upsert: true }
+        );
+        const newOrderId = `OD${String(counter.seq).padStart(3, '0')}`;
+
+        const newOrder = new Order({
+          id: newOrderId,
+          orderId: orderId,
+          customerId: orderData.customerId,
+          customerName: orderData.customerName,
+          shippingAddress: orderData.shippingAddress,
+          items: orderData.items,
+          paymentMethod: 'MoMo',
+          totalAmount: amount,
+          status: 'Thanh toán lỗi',
+          orderDate: new Date(),
+          notes: notes,
+        });
+
+        await newOrder.save();
+      }
+    } catch (error) {
+      console.error('Error handling failed payment:', error);
+    }
     res.redirect('http://localhost:5173/cart');
   }
 });
@@ -1150,31 +1190,94 @@ app.get('/api/discountCodes/:id', async (req, res) => {
 // Thêm các endpoints mới cho dashboard
 app.get('/api/dashboard/stats', async (req, res) => {
   try {
-    // Lấy thống kê người dùng
+    // Lấy thời điểm đầu tháng này
+    const thisMonthStart = new Date();
+    thisMonthStart.setDate(1); // Ngày đầu tiên của tháng này
+    thisMonthStart.setHours(0, 0, 0, 0);
+
+    // Lấy thời điểm đầu tháng trước
+    const lastMonthStart = new Date(thisMonthStart);
+    lastMonthStart.setMonth(thisMonthStart.getMonth() - 1); // Lùi về tháng trước
+
+    // Lấy thời điểm tuần trước
+    const lastWeekStart = new Date();
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+    lastWeekStart.setHours(0, 0, 0, 0);
+
+    // Lấy thời điểm hôm qua
+    const yesterdayStart = new Date();
+    yesterdayStart.setDate(yesterdayStart.getDate() - 1);
+    yesterdayStart.setHours(0, 0, 0, 0);
+
+
+    // Thống kê người dùng
     const totalUsers = await User.countDocuments() || 0;
     const lastMonthUsers = await User.countDocuments({
-      createdAt: { $gte: new Date(new Date().setMonth(new Date().getMonth() - 1)) }
+      createdAt: { $lt: lastMonthStart }
     }) || 0;
 
-    // Lấy thống kê đơn hàng và doanh thu
+    // Thống kê đơn hàng
     const totalOrders = await Order.countDocuments() || 0;
     const lastWeekOrders = await Order.countDocuments({
-      orderDate: { $gte: new Date(new Date().setDate(new Date().getDate() - 7)) }
+      orderDate: { $lt: lastWeekStart }
     }) || 0;
 
-    // Lấy đơn hàng gần đây và populate thông tin sản phẩm
-    const recentOrders = await Order.find()
-      .sort({ orderDate: -1 })
-      .limit(10)
-      .populate('items.productId', 'name');
+    // Đơn hàng đã thanh toán
+    const pendingOrdersToday = await Order.countDocuments({
+      status: 'Đã thanh toán'
+    }) || 0;
 
-    // Lấy doanh thu theo tháng
+    const pendingOrdersYesterday = await Order.countDocuments({
+      status: 'Đã thanh toán',
+      orderDate: { $lt: yesterdayStart }
+    }) || 0;
+
+    // Doanh thu tháng này và tháng trước
+    const thisMonthRevenue = await Order.aggregate([
+      {
+        $match: {
+          orderDate: { 
+            $gte: thisMonthStart,
+            $lt: new Date()
+          },
+          status: { $in: ['Đã thanh toán', 'Đã giao hàng'] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalAmount" }
+        }
+      }
+    ]);
+
+    const lastMonthRevenue = await Order.aggregate([
+      {
+        $match: {
+          orderDate: { 
+            $gte: lastMonthStart,
+            $lt: thisMonthStart
+          },
+          status: { $in: ['Đã thanh toán', 'Đã giao hàng'] }
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalAmount" }
+        }
+      }
+    ]);
+
+    // Tính doanh thu theo tháng cho năm hiện tại
     const monthlyRevenue = await Order.aggregate([
       {
         $match: {
           orderDate: {
-            $gte: new Date(new Date().getFullYear(), 0, 1)
-          }
+            $gte: new Date(new Date().getFullYear(), 0, 1),
+            $lt: new Date(new Date().getFullYear() + 1, 0, 1)
+          },
+          status: { $in: ['Đã thanh toán', 'Đã giao hàng'] }
         }
       },
       {
@@ -1184,28 +1287,51 @@ app.get('/api/dashboard/stats', async (req, res) => {
         }
       },
       { $sort: { _id: 1 } }
-    ]) || [];
+    ]);
+
+    // Đảm bảo có đủ 12 tháng với giá trị mặc định là 0
+    const fullMonthlyRevenue = Array.from({ length: 12 }, (_, index) => {
+      const monthData = monthlyRevenue.find(item => item._id === index + 1);
+      return {
+        _id: index + 1,
+        total: monthData ? monthData.total : 0
+      };
+    });
+
+    // Tính phần trăm thay đổi
+    const thisMonthTotal = thisMonthRevenue[0]?.total || 0;
+    const lastMonthTotal = lastMonthRevenue[0]?.total || 0;
+    const userChange = lastMonthUsers ? ((totalUsers - lastMonthUsers) / lastMonthUsers * 100) : 0;
+    const orderChange = lastWeekOrders ? ((totalOrders - lastWeekOrders) / lastWeekOrders * 100) : 0;
+    const pendingOrderChange = pendingOrdersYesterday ? 
+      ((pendingOrdersToday - pendingOrdersYesterday) / pendingOrdersYesterday * 100) : 0;
+    const revenueChange = lastMonthTotal ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal * 100) : 0;
+
+    // Lấy 5 đơn hàng gần nhất
+    const recentOrders = await Order.find()
+      .sort({ orderDate: -1 })
+      .limit(5);
 
     res.json({
       stats: {
         users: {
           total: totalUsers,
-          change: lastMonthUsers ? ((totalUsers - lastMonthUsers) / lastMonthUsers * 100).toFixed(1) : 0
+          change: parseFloat(userChange.toFixed(1))
         },
         orders: {
           total: totalOrders,
-          change: lastWeekOrders ? ((totalOrders - lastWeekOrders) / lastWeekOrders * 100).toFixed(1) : 0
+          change: parseFloat(orderChange.toFixed(1))
         },
         revenue: {
-          total: monthlyRevenue.reduce((sum, month) => sum + month.total, 0),
-          change: 0
+          total: thisMonthTotal,
+          change: parseFloat(revenueChange.toFixed(1))
         },
         pendingOrders: {
-          total: await Order.countDocuments({ status: 'Chờ xác nhận' }) || 0,
-          change: 0
+          total: pendingOrdersToday,
+          change: parseFloat(pendingOrderChange.toFixed(1))
         }
       },
-      monthlyRevenue,
+      monthlyRevenue: fullMonthlyRevenue,
       recentOrders
     });
 
@@ -1215,6 +1341,179 @@ app.get('/api/dashboard/stats', async (req, res) => {
       message: 'Lỗi khi lấy thống kê', 
       error: error.message 
     });
+  }
+});
+
+// Hủy đơn hàng
+app.post('/api/orders/:id/cancel', async (req, res) => {
+  const { id } = req.params;
+  const { cancellationReason } = req.body;
+
+  try {
+    const order = await Order.findOne({ id });
+    
+    if (!order) {
+      return res.status(404).json({ message: 'Không tìm thấy đơn hàng' });
+    }
+
+    // Kiểm tra xem đơn hàng có thể hủy không
+    if (['Đang giao hàng', 'Đã giao hàng', 'Đã hủy'].includes(order.status)) {
+      return res.status(400).json({ 
+        message: 'Không thể hủy đơn hàng trong trạng thái này' 
+      });
+    }
+
+    if (!cancellationReason) {
+      return res.status(400).json({ 
+        message: 'Vui lòng cung cấp lý do hủy đơn hàng' 
+      });
+    }
+
+    // Cập nhật trạng thái đơn hàng
+    order.status = 'Đã hủy';
+    order.cancellationReason = cancellationReason;
+    order.cancelledAt = new Date();
+
+    // Hoàn lại số lượng sản phẩm vào kho
+    await adjustProductStock(order.items, true);
+
+    await order.save();
+
+    res.json({ 
+      message: 'Đơn hàng đã được hủy thành công', 
+      order 
+    });
+  } catch (err) {
+    console.error('Lỗi khi hủy đơn hàng:', err);
+    res.status(500).json({ 
+      message: 'Lỗi khi hủy đơn hàng', 
+      error: err.message 
+    });
+  }
+});
+
+// Xóa nhiều sản phẩm khỏi giỏ hàng
+app.delete('/api/cart/:userId/removeMultiple', async (req, res) => {
+  const { userId } = req.params;
+  const { productIds } = req.body;
+
+  try {
+    const user = await User.findOne({ id: userId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'Người dùng không tồn tại' });
+    }
+
+    // Xóa các sản phẩm được chọn khỏi giỏ hàng
+    user.cart = user.cart.filter(item => !productIds.includes(item.productId));
+
+    await user.save();
+    res.status(200).json({ 
+      message: 'Các sản phẩm đã được xóa khỏi giỏ hàng', 
+      cart: user.cart 
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Lỗi khi xóa sản phẩm khỏi giỏ hàng', 
+      error: error.message 
+    });
+  }
+});
+
+// API tạo đơn hàng cho thanh toán tiền mặt
+app.post('/api/orders/create', async (req, res) => {
+  try {
+    const orderData = req.body;
+    
+    // Tạo ID cho đơn hàng mới
+    const counter = await Counter.findByIdAndUpdate(
+      { _id: 'orderId' },
+      { $inc: { seq: 1 } },
+      { new: true, upsert: true }
+    );
+    const newOrderId = `OD${String(counter.seq).padStart(3, '0')}`;
+
+    // Tạo đơn hàng mới
+    const newOrder = new Order({
+      id: newOrderId,
+      ...orderData,
+      status: 'Chờ xác nhận',
+      orderDate: new Date(),
+    });
+
+    await newOrder.save();
+    await adjustProductStock(orderData.items);
+
+    res.status(201).json({ 
+      message: 'Đơn hàng đã được tạo thành công', 
+      order: newOrder 
+    });
+  } catch (error) {
+    console.error('Error creating order:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi tạo đơn hàng', 
+      error: error.message 
+    });
+  }
+});
+
+// Thêm các endpoints mới cho doanh thu theo ngày và tuần
+app.get('/api/dashboard/revenue/daily', async (req, res) => {
+  try {
+    // Lấy doanh thu 7 ngày gần nhất
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+
+    const dailyRevenue = await Order.aggregate([
+      {
+        $match: {
+          orderDate: { $gte: sevenDaysAgo },
+          status: { $in: ['Đã thanh toán', 'Đã giao hàng'] }
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$orderDate" } },
+          total: { $sum: "$totalAmount" }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ]);
+
+    res.json(dailyRevenue);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy doanh thu theo ngày', error: error.message });
+  }
+});
+
+app.get('/api/dashboard/revenue/weekly', async (req, res) => {
+  try {
+    // Lấy doanh thu 4 tuần gần nhất
+    const fourWeeksAgo = new Date();
+    fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+    fourWeeksAgo.setHours(0, 0, 0, 0);
+
+    const weeklyRevenue = await Order.aggregate([
+      {
+        $match: {
+          orderDate: { $gte: fourWeeksAgo },
+          status: { $in: ['Đã thanh toán', 'Đã giao hàng'] }
+        }
+      },
+      {
+        $group: {
+          _id: { $week: "$orderDate" },
+          total: { $sum: "$totalAmount" },
+          startDate: { $min: "$orderDate" }
+        }
+      },
+      { $sort: { startDate: 1 } }
+    ]);
+
+    res.json(weeklyRevenue);
+  } catch (error) {
+    res.status(500).json({ message: 'Lỗi khi lấy doanh thu theo tuần', error: error.message });
   }
 });
 
