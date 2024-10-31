@@ -66,6 +66,7 @@ const Header = () => {
     return (
         <header className="bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40 ">
             <div className="container flex justify-between items-center">
+                {/* Logo */}
                 <Link
                     to={`${PathNames.HOMEPAGE}`}
                     className="flex items-center gap-4"
@@ -97,9 +98,10 @@ const Header = () => {
                                 onClick={toggleSearch}
                             />
                         </div>
-
                         <button className=" p-2" onClick={toggleMobileMenu}>
-                            <MenuOutlined className="text-xl text-gray-600 dark:text-gray-400" />
+                            <MenuOutlined className={`text-xl text-gray-600 dark:text-gray-400 transition-transform duration-200 ease-linear transform ${
+                                    isMobileMenuOpen ? `-rotate-90` : `rotate-0`
+                                }`} />
                         </button>
 
                         {isMobileMenuOpen && (
@@ -119,6 +121,7 @@ const Header = () => {
                                     ))}
                                 </div>
 
+                                {/* User Menu, Shopping Bag, and Dark Mode Button all in the same row */}
                                 <div className="flex flex-row items-center gap-4 mb-4">
                                     <UserMenu />
                                     <button
@@ -132,6 +135,7 @@ const Header = () => {
                             </div>
                         )}
                     </>
+
                 )}
 
                 {isDesktop && (
@@ -152,6 +156,7 @@ const Header = () => {
                             </ul>
                         </div>
 
+                        {/* Search for desktop */}
                         <div className="relative flex-1 mx-4">
                             <input
                                 type="text"
@@ -174,7 +179,8 @@ const Header = () => {
                             />
                         </div>
 
-                        <div className="flex justify-between items-center 2xl:gap-4 xl:gap-3 lg:gap-0">
+                        {/* Header right section for desktop only */}
+                        <div className="flex justify-between items-center 2xl:gap-4 xl:gap-2 lg:gap-0">
                             <button
                                 className="relative p-3"
                                 onClick={() => navigate(PathNames.CART)}
