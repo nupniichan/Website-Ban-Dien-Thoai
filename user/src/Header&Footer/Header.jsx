@@ -9,22 +9,22 @@ import DarkModeBtn from "../shared/DarkModeBtn.jsx";
 const MenuItems = [
   {
     id: "1",
-    name: "Home",
+    name: "Trang Chủ",
     url: `${PathNames.HOMEPAGE}`,
   },
   {
     id: "2",
-    name: "Shop",
+    name: "Cửa Hàng",
     url: `${PathNames.PRODUCTS}`,
   },
   {
     id: "3",
-    name: "About",
+    name: "Giới Thiệu",
     url: `${PathNames.ABOUT}`,
   },
   {
     id: "4",
-    name: "Support",
+    name: "Hỗ Trợ",
     url: `${PathNames.SUPPORT}`,
   },
 ];
@@ -80,7 +80,7 @@ const Header = () => {
             <div className="relative flex-1 mx-4">
               <input
                 type="text"
-                placeholder="What are you looking for?"
+                placeholder="Bạn đang tìm gì?"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900 absolute top-1/2 transform -translate-y-1/2 right-0
@@ -98,39 +98,38 @@ const Header = () => {
               />
             </div>
 
-            {/* Mobile Menu Toggle Button with MenuOutlined Icon */}
+            {/* Mobile Menu Toggle Button */}
             <button className="md:hidden p-2" onClick={toggleMobileMenu}>
               <MenuOutlined className="text-xl text-gray-600 dark:text-gray-400" />
             </button>
 
             {/* Mobile Menu */}
-              {isMobileMenuOpen && (
-                <div className="bg-white dark:bg-gray-900 flex flex-col items-center p-4 absolute top-full w-full left-0 shadow-lg h-36">
-                  {/* Menu items in a row */}
-                  <div className="flex flex-row gap-4 mb-4">
-                    {MenuItems.map((item) => (
-                      <Link
-                        key={item.id}
-                        to={item.url}
-                        className="header-menu-item inline-block px-4 font-semibold text-gray-500 hover:text-black dark:hover:text-white duration-200"
-                        onClick={() => setIsMobileMenuOpen(false)} // Close menu on item click
-                      >
-                        {item.name}
-                      </Link>
-                    ))}
-                  </div>
-
-                  {/* User Menu, Shopping Bag, and Dark Mode Button all in the same row */}
-                  <div className="flex flex-row items-center gap-4 mb-4">
-                    <UserMenu />
-                    <button onClick={() => navigate(PathNames.CART)} className="relative p-3 mr-4">
-                      <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
-                    </button>
-                    <DarkModeBtn />
-                  </div>
+            {isMobileMenuOpen && (
+              <div className="bg-white dark:bg-gray-900 flex flex-col items-center p-4 absolute top-full w-full left-0 shadow-lg h-36">
+                {/* Menu items in a row */}
+                <div className="flex flex-row gap-4 mb-4">
+                  {MenuItems.map((item) => (
+                    <Link
+                      key={item.id}
+                      to={item.url}
+                      className="header-menu-item inline-block px-4 font-semibold text-gray-500 hover:text-black dark:hover:text-white duration-200"
+                      onClick={() => setIsMobileMenuOpen(false)} // Close menu on item click
+                    >
+                      {item.name}
+                    </Link>
+                  ))}
                 </div>
-              )}
 
+                {/* User Menu, Shopping Bag, and Dark Mode Button all in the same row */}
+                <div className="flex flex-row items-center gap-4 mb-4">
+                  <UserMenu />
+                  <button onClick={() => navigate(PathNames.CART)} className="relative p-3 mr-4">
+                    <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
+                  </button>
+                  <DarkModeBtn />
+                </div>
+              </div>
+            )}
           </>
         ) : (
           // Render Desktop Header
@@ -155,7 +154,7 @@ const Header = () => {
             <div className="relative flex-1 mx-4">
               <input
                 type="text"
-                placeholder="What are you looking for?"
+                placeholder="Bạn đang tìm gì?"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className={`transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900 absolute top-1/2 transform -translate-y-1/2 right-0

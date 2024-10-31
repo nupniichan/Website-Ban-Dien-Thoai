@@ -103,7 +103,7 @@ const Shop = () => {
     return (
         <div className="mb-32">
             <div className="container">
-                <Heading title="Shop" subtitle="Browse All Products" />
+                <Heading title="Cửa Hàng" subtitle="Khám Phá Tất Cả Sản Phẩm" />
 
                 <div className="mb-10 relative" ref={dropdownRef}>
                     <button
@@ -133,7 +133,7 @@ const Shop = () => {
                     {isDropdownOpen && (
                         <div className="absolute z-10 mt-2 w-72 bg-white border border-gray-300 rounded-md shadow-lg p-4">
                             <div className="mb-4">
-                                <h3 className="font-semibold mb-1">Brands</h3>
+                                <h3 className="font-semibold mb-1">Thương hiệu</h3>
                                 <ul>
                                     {brands.map((brand, index) => (
                                         <li key={index} className="flex items-center">
@@ -155,7 +155,7 @@ const Shop = () => {
                             </div>
 
                             <div>
-                                <h3 className="font-semibold mb-2">Price Range</h3>
+                                <h3 className="font-semibold mb-2">Khoảng giá</h3>
                                 <div className="flex items-center gap-2 mb-2">
                                     <input
                                         type="number"
@@ -164,7 +164,7 @@ const Shop = () => {
                                         className="border border-gray-300 rounded px-2 py-1 w-full"
                                         min="0"
                                         max={maxPrice}
-                                        placeholder="Min price"
+                                        placeholder="Giá thấp nhất"
                                     />
                                     <span>-</span>
                                     <input
@@ -173,7 +173,7 @@ const Shop = () => {
                                         onChange={handleMaxPriceChange}
                                         className="border border-gray-300 rounded px-2 py-1 w-full"
                                         min={minPrice}
-                                        placeholder="Max price"
+                                        placeholder="Giá cao nhất"
                                     />
                                 </div>
                                 <Slider
@@ -211,7 +211,7 @@ const Shop = () => {
                                         />
                                     ) : (
                                         <div className="h-[180px] w-[260px] flex items-center justify-center bg-gray-200 rounded-xl mb-3">
-                                            <span>No Image Available</span>
+                                            <span>Không có hình ảnh</span>
                                         </div>
                                     )}
                                 </div>

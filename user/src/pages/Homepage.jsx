@@ -20,11 +20,11 @@ const Homepage = () => {
       if (response.ok) {
         setProducts(data);
       } else {
-        throw new Error(data.message || 'Error fetching products');
+        throw new Error(data.message || 'Lỗi khi tải sản phẩm');
       }
     } catch (err) {
-      setError('Error fetching products.');
-      console.error('Error fetching products:', err);
+      setError('Lỗi khi tải sản phẩm.');
+      console.error('Lỗi khi tải sản phẩm:', err);
     }
   };
 
@@ -46,14 +46,14 @@ const Homepage = () => {
 
   return (
     <main className="max-w-6xl mx-auto p-4">
-      <h1 className="text-4xl font-bold text-center mb-8">Home</h1>
+      <h1 className="text-4xl font-bold text-center mb-8">Trang Chủ</h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {filteredProducts.slice(0, visibleProducts).map(product => (
           <div key={product.id} className="bg-white border border-gray-200 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 cursor-pointer" onClick={() => handleProductClick(product.id)}>
             <img
               src={`${BASE_URL}/${product.image}`}
               alt={product.name}
-              className="w-full h-80 rounded-t-lg" // Adjusted height
+              className="w-full h-80 rounded-t-lg"
             />
             <div className="p-4">
               <h2 className="text-lg font-semibold">{product.name}</h2>
