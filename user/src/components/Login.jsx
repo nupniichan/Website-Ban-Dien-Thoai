@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import {
     auth,
     signInWithEmailAndPassword,
-    sendEmailVerification,
 } from "../firebase";
 import { BASE_URL } from "../config";
 
@@ -13,8 +12,6 @@ const Login = ({ onSwitchToRegister }) => {
         password: "",
     });
     const [errorMessage, setErrorMessage] = useState("");
-    const [showResend, setShowResend] = useState(false);
-    const [resendMessage, setResendMessage] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -24,8 +21,6 @@ const Login = ({ onSwitchToRegister }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage("");
-        setResendMessage("");
-        setShowResend(false);
 
         try {
             // Firebase sign-in
@@ -36,15 +31,6 @@ const Login = ({ onSwitchToRegister }) => {
             );
             const user = userCredential.user;
 
-            // Check if the user's email is verified
-            if (!user.emailVerified) {
-                setErrorMessage(
-                    "Vui lòng xác minh email của bạn trước khi đăng nhập."
-                );
-                setShowResend(true);
-                return;
-            }
-
             // Send a request to the backend API for additional user data
             const response = await fetch(`${BASE_URL}/api/login`, {
                 method: "POST",
@@ -54,14 +40,14 @@ const Login = ({ onSwitchToRegister }) => {
                 body: JSON.stringify({
                     email: formData.email,
                     password: formData.password,
-                }), // You may adjust this depending on your backend logic
+                }),
             });
 
             if (response.ok) {
                 const data = await response.json();
                 sessionStorage.setItem("userEmail", formData.email);
-                sessionStorage.setItem("userId", data.user.userId); // Ensure your backend sends this in the response
-                sessionStorage.setItem("accountName", data.user.accountName); // Ensure your backend sends this in the response
+                sessionStorage.setItem("userId", data.user.userId);
+                sessionStorage.setItem("accountName", data.user.accountName);
                 window.dispatchEvent(new Event("loginSuccess"));
                 navigate("/");
                 console.log("Logged in successfully with user data:", data);
@@ -74,23 +60,6 @@ const Login = ({ onSwitchToRegister }) => {
         } catch (err) {
             console.error("Error:", err);
             setErrorMessage("Email hoặc mật khẩu không chính xác");
-        }
-    };
-    
-    const handleResendVerification = async () => {
-        try {
-            const user = auth.currentUser;
-            if (user) {
-                await sendEmailVerification(user);
-                setResendMessage(
-                    "Email xác minh đã được gửi lại. Vui lòng kiểm tra hộp thư đến của bạn."
-                );
-            }
-        } catch (err) {
-            console.error("Error resending verification email:", err);
-            setResendMessage(
-                "Đã xảy ra lỗi khi gửi lại email xác minh. Vui lòng thử lại sau."
-            );
         }
     };
 
@@ -107,11 +76,6 @@ const Login = ({ onSwitchToRegister }) => {
                 {errorMessage && (
                     <p className="text-red-500 text-center mb-4">
                         {errorMessage}
-                    </p>
-                )}
-                {resendMessage && (
-                    <p className="text-green-500 text-center mb-4">
-                        {resendMessage}
                     </p>
                 )}
 
@@ -139,16 +103,6 @@ const Login = ({ onSwitchToRegister }) => {
                 >
                     Đăng Nhập
                 </button>
-
-                {showResend && (
-                    <button
-                        type="button"
-                        onClick={handleResendVerification}
-                        className="w-full bg-yellow-500 text-white mt-4 p-3 rounded hover:bg-yellow-600 transition duration-300"
-                    >
-                        Gửi lại Email Xác Minh
-                    </button>
-                )}
 
                 <p className="text-center mt-4">
                     Chưa có tài khoản?{" "}
