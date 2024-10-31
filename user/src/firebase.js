@@ -17,4 +17,8 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
 // Export the auth object, signIn function, and sendEmailVerification function
+<<<<<<< HEAD
 export { auth, signInWithEmailAndPassword, sendEmailVerification };
+=======
+export { auth, signInWithEmailAndPassword, sendEmailVerification };
+>>>>>>> ee40c7e143fd949019d103c75cc6c03d748e1da5

@@ -54,11 +54,28 @@ const Login = ({ onSwitchToRegister }) => {
         console.log('Logged in successfully with user data:', data);
       } else {
         const errorData = await response.json();
+<<<<<<< HEAD
         setErrorMessage(errorData.message || 'Đã xảy ra lỗi trong quá trình đăng nhập.');
+=======
+        setErrorMessage(errorData.message || 'Email hoặc mật khẩu không chính xác');
+>>>>>>> ee40c7e143fd949019d103c75cc6c03d748e1da5
       }
     } catch (err) {
       console.error('Error:', err);
-      setErrorMessage('Đã xảy ra lỗi trong quá trình đăng nhập.');
+      setErrorMessage('Email hoặc mật khẩu không chính xác');
+    }
+  };
+
+  const handleResendVerification = async () => {
+    try {
+      const user = auth.currentUser;
+      if (user) {
+        await sendEmailVerification(user);
+        setResendMessage("Email xác minh đã được gửi lại. Vui lòng kiểm tra hộp thư đến của bạn.");
+      }
+    } catch (err) {
+      console.error("Error resending verification email:", err);
+      setResendMessage("Đã xảy ra lỗi khi gửi lại email xác minh. Vui lòng thử lại sau.");
     }
   };
 
@@ -76,7 +93,11 @@ const Login = ({ onSwitchToRegister }) => {
   };
 
   return (
+<<<<<<< HEAD
     <div className="flex justify-center items-center bg-gray-100 min-h-screen">
+=======
+    <div className="flex justify-center items-center bg-gray-100 ">
+>>>>>>> ee40c7e143fd949019d103c75cc6c03d748e1da5
       <form className="bg-white p-8 rounded-lg shadow-md max-w-lg w-full" onSubmit={handleSubmit}>
         <h2 className="text-2xl mb-6 text-center text-gray-800">Đăng Nhập</h2>
 

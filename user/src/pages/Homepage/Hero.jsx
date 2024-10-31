@@ -86,7 +86,7 @@ const Hero = () => {
                                         </h1>
                                         <div>
                                             <Button
-                                                text="Discover"
+                                                text="Khám phá"
                                                 bgColor="bg-primary"
                                                 textColor="text-white"
                                                 onClick={() => handleHeroClick(product.id)}

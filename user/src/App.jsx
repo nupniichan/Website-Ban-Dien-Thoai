@@ -24,6 +24,7 @@ import FAQ from "./pages/FAQ.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import Terms from "./pages/Terms.jsx";
+import Shop from "./pages/Shop.jsx";
 
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
                 <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
                 <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
                 <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
+                <Route path={PathNames.PRODUCTS} element={<Shop/>} />
                 
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>

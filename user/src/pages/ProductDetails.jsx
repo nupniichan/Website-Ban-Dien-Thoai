@@ -224,7 +224,7 @@ const ProductDetails = () => {
               <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.doPhanGiaiManHinh || 'Không có thông tin'}</td>
             </tr>
             <tr>
-              <td className="border border-gray-300 px-4 py-2"><strong>Công sạc:</strong></td>
+              <td className="border border-gray-300 px-4 py-2"><strong>Cổng sạc:</strong></td>
               <td className="border border-gray-300 px-4 py-2">{product.cauhinh?.congSac || 'Không có thông tin'}</td>
             </tr>
           </tbody>

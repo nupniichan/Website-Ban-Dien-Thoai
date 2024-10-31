@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
 import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth';
+=======
+import { getAuth, createUserWithEmailAndPassword, sendEmailVerification, signInWithEmailAndPassword } from 'firebase/auth';
+>>>>>>> ee40c7e143fd949019d103c75cc6c03d748e1da5
 
 const Register = ({ onRegisterSuccess }) => {
   const [name, setName] = useState('');
