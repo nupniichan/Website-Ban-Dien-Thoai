@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
+import * as XLSX from 'xlsx';
 
 const KhoManagement = () => {
   const navigate = useNavigate();
@@ -116,6 +117,55 @@ const KhoManagement = () => {
     setPage(newPage);
   };
 
+  const exportToExcel = () => {
+    if (!selectedEntry) return;
+
+    // Chuẩn bị dữ liệu cho sheet thông tin chung
+    const generalInfo = [
+      ['Thông tin phiếu xuất/nhập kho'],
+      ['Số phiếu', selectedEntry.id],
+      ['Tên người quản lý', selectedEntry.managementPerson],
+      ['Tên người xuất', selectedEntry.responsiblePerson],
+      ['Ngày', selectedEntry.date.split('T')[0]],
+      ['Mã kho', selectedEntry.warehouseCode],
+      ['Địa điểm', selectedEntry.location],
+      ['Ghi chú', selectedEntry.notes],
+      [],
+      ['Danh sách sản phẩm']
+    ];
+
+    // Chuẩn bị dữ liệu cho danh sách sản phẩm
+    const productHeaders = ['STT', 'Mã sản phẩm', 'Tên sản phẩm', 'Màu sắc', 'Số lượng'];
+    const productData = selectedEntry.products.map((product, index) => {
+      const productDetails = products.find(p => p.id === product.productId) || {};
+      return [
+        index + 1,
+        productDetails.id || product.productId,
+        productDetails.name || product.productName,
+        productDetails.color || product.color,
+        product.quantity
+      ];
+    });
+
+    // Tạo workbook và worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([
+      ...generalInfo,
+      productHeaders,
+      ...productData,
+      [],
+      ['Xác nhận'],
+      ['Nhân viên xuất hàng', selectedEntry.responsiblePerson],
+      ['Nhân viên quản lý kho', selectedEntry.managementPerson]
+    ]);
+
+    // Thêm worksheet vào workbook
+    XLSX.utils.book_append_sheet(wb, ws, 'Phiếu xuất nhập kho');
+
+    // Tải file Excel
+    XLSX.writeFile(wb, `Phieu_xuat_nhap_kho_${selectedEntry.id}.xlsx`);
+  };
+
   return (
     <Box padding={3}>
       <Typography variant="h4" gutterBottom>Quản lý phiếu xuất nhập kho</Typography>
@@ -203,11 +253,21 @@ const KhoManagement = () => {
 
       {selectedEntry && (
         <Dialog open={true} onClose={handleCloseDialog}>
-          <DialogTitle>Chi tiết phiếu</DialogTitle>
+          <DialogTitle>
+            Chi tiết phiếu
+            <Button 
+              variant="contained" 
+              color="primary" 
+              onClick={exportToExcel}
+              style={{ float: 'right' }}
+            >
+              Xuất Excel
+            </Button>
+          </DialogTitle>
           <DialogContent>
             <Typography variant="h6">Số phiếu: {selectedEntry.id}</Typography>
-            <Typography>Tên người quản lý: {selectedEntry.managerName}</Typography>
-            <Typography>Tên người xuất: {selectedEntry.employeeName}</Typography>
+            <Typography>Tên người quản lý: {selectedEntry.managementPerson}</Typography>
+            <Typography>Tên người xuất: {selectedEntry.responsiblePerson}</Typography>
             <Typography>Ngày: {selectedEntry.date.split('T')[0]}</Typography>
             <Typography>Mã kho: {selectedEntry.warehouseCode}</Typography>
             <Typography>Địa điểm: {selectedEntry.location}</Typography>
@@ -245,8 +305,8 @@ const KhoManagement = () => {
             <Typography>{selectedEntry.notes}</Typography>
 
             <Box marginTop={2}>
-              <Typography>Nhân viên xuất hàng: {selectedEntry.employeeName}</Typography>
-              <Typography>Nhân viên quản lý kho: {selectedEntry.managerName}</Typography>
+              <Typography>Nhân viên xuất hàng: {selectedEntry.responsiblePerson}</Typography>
+              <Typography>Nhân viên quản lý kho: {selectedEntry.managementPerson}</Typography>
             </Box>
           </DialogContent>
         </Dialog>
