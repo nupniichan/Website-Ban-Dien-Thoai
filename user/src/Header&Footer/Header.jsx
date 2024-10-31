@@ -83,7 +83,10 @@ const Header = () => {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className={`transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900 absolute top-1/2 transform -translate-y-1/2 right-0
-                                    ${isSearchExpanded ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800" : "w-0"
+                                    ${
+                                        isSearchExpanded
+                                            ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
+                                            : "w-0"
                                     }`}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") handleSearch();
@@ -95,10 +98,7 @@ const Header = () => {
                             />
                         </div>
 
-                        <button
-                            className=" p-2"
-                            onClick={toggleMobileMenu}
-                        >
+                        <button className=" p-2" onClick={toggleMobileMenu}>
                             <MenuOutlined className="text-xl text-gray-600 dark:text-gray-400" />
                         </button>
 
@@ -122,9 +122,7 @@ const Header = () => {
                                 <div className="flex flex-row items-center gap-4 mb-4">
                                     <UserMenu />
                                     <button
-                                        onClick={() =>
-                                            navigate(PathNames.CART)
-                                        }
+                                        onClick={() => navigate(PathNames.CART)}
                                         className="relative p-3 mr-4"
                                     >
                                         <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
@@ -140,7 +138,7 @@ const Header = () => {
                     <>
                         {/* Desktop header */}
                         <div className="flex items-center gap-4">
-                            <ul className="flex items-center gap-4">
+                            <ul className="flex items-center 2xl:gap-4 xl:gap-3 lg:gap-0">
                                 {MenuItems.map((item) => (
                                     <li key={item.id}>
                                         <Link
@@ -159,11 +157,12 @@ const Header = () => {
                                 type="text"
                                 placeholder="Bạn đang tìm gì?"
                                 value={searchQuery}
-                                onChange={(e) =>
-                                    setSearchQuery(e.target.value)
-                                }
+                                onChange={(e) => setSearchQuery(e.target.value)}
                                 className={`transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900 absolute top-1/2 transform -translate-y-1/2 right-0
-                                    ${isSearchExpanded ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800" : "w-0"
+                                    ${
+                                        isSearchExpanded
+                                            ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
+                                            : "w-0"
                                     }`}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") handleSearch();
@@ -175,7 +174,7 @@ const Header = () => {
                             />
                         </div>
 
-                        <div className="flex justify-between items-center gap-4">
+                        <div className="flex justify-between items-center 2xl:gap-4 xl:gap-3 lg:gap-0">
                             <button
                                 className="relative p-3"
                                 onClick={() => navigate(PathNames.CART)}
