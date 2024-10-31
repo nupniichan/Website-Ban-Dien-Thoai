@@ -4,7 +4,7 @@ import {
     MenuOutlined,
     SearchOutlined,
     ShoppingOutlined,
-} from "@ant-design/icons"; // Import MenuOutlined
+} from "@ant-design/icons";
 import NeonSign from "../assets/BrandLogos/NeonSign.jsx";
 import UserMenu from "../components/UserMenu.jsx";
 import PathNames from "../PathNames.js";
@@ -30,9 +30,10 @@ const MenuItems = [
 
 const Header = () => {
     const [searchQuery, setSearchQuery] = useState("");
-    const [isSearchExpanded, setIsSearchExpanded] = useState(false); // State for search bar expansion
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false); // State for mobile menu visibility
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 950); // State for mobile check
+    const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 1300);
+    const [isDesktop, setIsDesktop] = useState(window.innerWidth > 1300); // State for desktop check
     const navigate = useNavigate();
 
     const handleSearch = () => {
@@ -50,15 +51,13 @@ const Header = () => {
     };
 
     useEffect(() => {
-        // Function to update the isMobile state
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 950);
+            setIsMobile(window.innerWidth < 1000);
+            setIsDesktop(window.innerWidth > 1000);
         };
 
-        // Attach the resize event listener
         window.addEventListener("resize", handleResize);
 
-        // Clean up the event listener on component unmount
         return () => {
             window.removeEventListener("resize", handleResize);
         };
@@ -75,10 +74,9 @@ const Header = () => {
                     <NeonSign text="PHONY BALONEY" />
                 </Link>
 
-                {/* Render Mobile Header */}
-                {isMobile ? (
+                {isMobile && (
                     <>
-                        {/* Search for mobile */}
+                        {/* Mobile header */}
                         <div className="relative flex-1 mx-4">
                             <input
                                 type="text"
@@ -86,11 +84,11 @@ const Header = () => {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className={`transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900 absolute top-1/2 transform -translate-y-1/2 right-0
-                                        ${
-                                            isSearchExpanded
-                                                ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
-                                                : "w-0"
-                                        }`}
+                                    ${
+                                        isSearchExpanded
+                                            ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
+                                            : "w-0"
+                                    }`}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") handleSearch();
                                 }}
@@ -100,25 +98,14 @@ const Header = () => {
                                 onClick={toggleSearch}
                             />
                         </div>
-
-                        {/* Mobile Menu Toggle Button */}
-                        <button
-                            className="md:hidden p-2"
-                            onClick={toggleMobileMenu}
-                        >
-                            <MenuOutlined
-                                className={`text-xl text-gray-600 dark:text-gray-400 transition-transform duration-200 ease-linear transform ${
+                        <button className=" p-2" onClick={toggleMobileMenu}>
+                            <MenuOutlined className={`text-xl text-gray-600 dark:text-gray-400 transition-transform duration-200 ease-linear transform ${
                                     isMobileMenuOpen ? `-rotate-90` : `rotate-0`
-                                }`}
-                            />
+                                }`} />
                         </button>
 
-                        {/* Mobile Menu */}
                         {isMobileMenuOpen && (
-                            <div
-                                className={`bg-white dark:bg-gray-900 flex flex-col items-center p-4 absolute top-full w-full left-0 shadow-lg h-36`}
-                            >
-                                {/* Menu items in a row */}
+                            <div className="bg-white dark:bg-gray-900 flex flex-col items-center p-4 absolute top-full w-full left-0 shadow-lg h-36">
                                 <div className="flex flex-row gap-4 mb-4">
                                     {MenuItems.map((item) => (
                                         <Link
@@ -127,7 +114,7 @@ const Header = () => {
                                             className="header-menu-item inline-block px-4 font-semibold text-gray-500 hover:text-black dark:hover:text-white duration-200"
                                             onClick={() =>
                                                 setIsMobileMenuOpen(false)
-                                            } // Close menu on item click
+                                            }
                                         >
                                             {item.name}
                                         </Link>
@@ -148,12 +135,14 @@ const Header = () => {
                             </div>
                         )}
                     </>
-                ) : (
-                    // Render Desktop Header
+
+                )}
+
+                {isDesktop && (
                     <>
-                        {/* Menu items for desktop */}
+                        {/* Desktop header */}
                         <div className="flex items-center gap-4">
-                            <ul className="flex items-center gap-4">
+                            <ul className="flex items-center 2xl:gap-4 xl:gap-3 lg:gap-0">
                                 {MenuItems.map((item) => (
                                     <li key={item.id}>
                                         <Link
@@ -175,11 +164,11 @@ const Header = () => {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 className={`transition-all duration-300 rounded-full px-3 py-1 focus:outline-none dark:bg-gray-900 absolute top-1/2 transform -translate-y-1/2 right-0
-                                        ${
-                                            isSearchExpanded
-                                                ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
-                                                : "w-0"
-                                        }`}
+                                    ${
+                                        isSearchExpanded
+                                            ? "w-[300px] border border-gray-500 dark:border-gray-800 dark:bg-gray-800"
+                                            : "w-0"
+                                    }`}
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") handleSearch();
                                 }}
@@ -202,13 +191,8 @@ const Header = () => {
                                 </div>
                             </button>
 
-                            {/* Dark mode toggle */}
                             <DarkModeBtn />
-
-                            {/* User Menu */}
-                            <div>
-                                <UserMenu />
-                            </div>
+                            <UserMenu />
                         </div>
                     </>
                 )}
