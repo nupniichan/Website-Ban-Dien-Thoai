@@ -17,10 +17,16 @@ const StatCard = ({ title, value, change, icon: Icon, changeType }) => (
         <Box>
           <Typography variant="subtitle2" color="text.secondary">{title}</Typography>
           <Typography variant="h4">{value}</Typography>
-          <Typography variant="body2" color={changeType === 'up' ? 'success.main' : 'error.main'}>
-            {changeType === 'up' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-            {change}
-          </Typography>
+          {change !== undefined && change !== null && (
+            <Typography 
+              variant="body2" 
+              color={change >= 0 ? 'success.main' : 'error.main'}
+              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+            >
+              {change >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+              {`${Math.abs(change)}% so với kỳ trước`}
+            </Typography>
+          )}
         </Box>
         <Box sx={{ backgroundColor: 'action.hover', borderRadius: '50%', p: 1 }}>
           <Icon size={24} />
@@ -236,7 +242,7 @@ const Dashboard = () => {
             <StatCard 
               title="Tổng người dùng" 
               value={dashboardData.stats.users.total} 
-              change={`${dashboardData.stats.users.change}% so với tháng trước`}
+              change={dashboardData.stats.users.change}
               icon={Users} 
               changeType={dashboardData.stats.users.change >= 0 ? 'up' : 'down'} 
             />
@@ -245,7 +251,7 @@ const Dashboard = () => {
             <StatCard 
               title="Tổng đơn hàng" 
               value={dashboardData.stats.orders.total} 
-              change={`${dashboardData.stats.orders.change}% so với tuần trước`}
+              change={dashboardData.stats.orders.change}
               icon={Package} 
               changeType={dashboardData.stats.orders.change >= 0 ? 'up' : 'down'} 
             />
@@ -254,7 +260,7 @@ const Dashboard = () => {
             <StatCard 
               title="Doanh thu tháng này" 
               value={formatCurrency(dashboardData.stats.revenue.total)}
-              change={`${dashboardData.stats.revenue.change}% so với tháng trước`}
+              change={dashboardData.stats.revenue.change}
               icon={DollarSign} 
               changeType={dashboardData.stats.revenue.change >= 0 ? 'up' : 'down'} 
             />
@@ -263,7 +269,7 @@ const Dashboard = () => {
             <StatCard 
               title="Đơn hàng chờ xử lý" 
               value={dashboardData.stats.pendingOrders.total}
-              change={`${dashboardData.stats.pendingOrders.change}% so với hôm qua`}
+              change={dashboardData.stats.pendingOrders.change}
               icon={Clock} 
               changeType={dashboardData.stats.pendingOrders.change >= 0 ? 'up' : 'down'} 
             />

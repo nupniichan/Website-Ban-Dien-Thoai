@@ -890,7 +890,7 @@ app.post('/api/cart/:userId/add', async (req, res) => {
   
 
   try {
-    // Sử dụng findOneAndUpdate thay vì findOne và save
+    // Sử dng findOneAndUpdate thay vì findOne và save
     const user = await User.findOneAndUpdate(
       { id: userId },
       {
@@ -1100,7 +1100,7 @@ app.post('/callback', async (req, res) => {
           
         }
 
-        // Chuy��n hướng về trang lịch sử đơn hàng
+        // Chuyển hướng về trang lịch sử đơn hàng
         res.redirect('http://localhost:5173/payment-history');
       } else {
         console.error('ExtraData is missing or empty');
@@ -1307,14 +1307,22 @@ app.get('/api/dashboard/stats', async (req, res) => {
       };
     });
 
-    // Tính phần trăm thay đổi
+    // Trích xuất giá trị total từ kết quả aggregate
     const thisMonthTotal = thisMonthRevenue[0]?.total || 0;
     const lastMonthTotal = lastMonthRevenue[0]?.total || 0;
-    const userChange = lastMonthUsers ? ((totalUsers - lastMonthUsers) / lastMonthUsers * 100) : 0;
-    const orderChange = lastWeekOrders ? ((totalOrders - lastWeekOrders) / lastWeekOrders * 100) : 0;
-    const pendingOrderChange = pendingOrdersYesterday ? 
-      ((pendingOrdersToday - pendingOrdersYesterday) / pendingOrdersYesterday * 100) : 0;
-    const revenueChange = lastMonthTotal ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal * 100) : 0;
+
+    // Tính phần trăm thay đổi
+    const userChange = lastMonthUsers === 0 ? 0 :
+      ((totalUsers - lastMonthUsers) / lastMonthUsers * 100).toFixed(1);
+    
+    const orderChange = lastWeekOrders === 0 ? 0 :
+      ((totalOrders - lastWeekOrders) / lastWeekOrders * 100).toFixed(1);
+    
+    const pendingOrderChange = pendingOrdersYesterday === 0 ? 0 :
+      ((pendingOrdersToday - pendingOrdersYesterday) / pendingOrdersYesterday * 100).toFixed(1);
+    
+    const revenueChange = lastMonthTotal === 0 ? 0 :
+      ((thisMonthTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1);
 
     // Lấy 5 đơn hàng gần nhất
     const recentOrders = await Order.find()
@@ -1325,19 +1333,19 @@ app.get('/api/dashboard/stats', async (req, res) => {
       stats: {
         users: {
           total: totalUsers,
-          change: parseFloat(userChange.toFixed(1))
+          change: parseFloat(userChange)
         },
         orders: {
           total: totalOrders,
-          change: parseFloat(orderChange.toFixed(1))
+          change: parseFloat(orderChange)
         },
         revenue: {
           total: thisMonthTotal,
-          change: parseFloat(revenueChange.toFixed(1))
+          change: parseFloat(revenueChange)
         },
         pendingOrders: {
           total: pendingOrdersToday,
-          change: parseFloat(pendingOrderChange.toFixed(1))
+          change: parseFloat(pendingOrderChange)
         }
       },
       monthlyRevenue: fullMonthlyRevenue,
