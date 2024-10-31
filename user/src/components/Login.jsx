@@ -1,5 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+    auth,
+    signInWithEmailAndPassword,
+    sendEmailVerification,
+} from "../firebase";
 import { BASE_URL } from "../config";
 
 const Login = ({ onSwitchToRegister }) => {
@@ -23,7 +28,24 @@ const Login = ({ onSwitchToRegister }) => {
         setShowResend(false);
 
         try {
-            // Simulate backend login
+            // Firebase sign-in
+            const userCredential = await signInWithEmailAndPassword(
+                auth,
+                formData.email,
+                formData.password
+            );
+            const user = userCredential.user;
+
+            // Check if the user's email is verified
+            if (!user.emailVerified) {
+                setErrorMessage(
+                    "Vui lòng xác minh email của bạn trước khi đăng nhập."
+                );
+                setShowResend(true);
+                return;
+            }
+
+            // Send a request to the backend API for additional user data
             const response = await fetch(`${BASE_URL}/api/login`, {
                 method: "POST",
                 headers: {
@@ -32,7 +54,7 @@ const Login = ({ onSwitchToRegister }) => {
                 body: JSON.stringify({
                     email: formData.email,
                     password: formData.password,
-                }),
+                }), // You may adjust this depending on your backend logic
             });
 
             if (response.ok) {
@@ -52,6 +74,23 @@ const Login = ({ onSwitchToRegister }) => {
         } catch (err) {
             console.error("Error:", err);
             setErrorMessage("Email hoặc mật khẩu không chính xác");
+        }
+    };
+    
+    const handleResendVerification = async () => {
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                await sendEmailVerification(user);
+                setResendMessage(
+                    "Email xác minh đã được gửi lại. Vui lòng kiểm tra hộp thư đến của bạn."
+                );
+            }
+        } catch (err) {
+            console.error("Error resending verification email:", err);
+            setResendMessage(
+                "Đã xảy ra lỗi khi gửi lại email xác minh. Vui lòng thử lại sau."
+            );
         }
     };
 
@@ -100,6 +139,16 @@ const Login = ({ onSwitchToRegister }) => {
                 >
                     Đăng Nhập
                 </button>
+
+                {showResend && (
+                    <button
+                        type="button"
+                        onClick={handleResendVerification}
+                        className="w-full bg-yellow-500 text-white mt-4 p-3 rounded hover:bg-yellow-600 transition duration-300"
+                    >
+                        Gửi lại Email Xác Minh
+                    </button>
+                )}
 
                 <p className="text-center mt-4">
                     Chưa có tài khoản?{" "}
