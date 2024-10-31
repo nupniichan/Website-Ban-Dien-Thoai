@@ -1,7 +1,7 @@
 import AOS from "aos";
 import "aos/dist/aos.css";
-import { useEffect, useState } from "react";
-import headphoneImage from "../../assets/fakeAssets/hero/headphone.png";
+import { useEffect } from "react";
+import bannerImg from "../../assets/fakeAssets/hero/Iphone16.png";
 import AboutUsSection from "./AboutUsSection";
 import Banner from "./Banner";
 import Blogs from "./Blogs";
@@ -13,14 +13,14 @@ import Partners from "./Partners";
 import Services from "./Services";
 
 const BannerData = {
-    discount: "20% OFF",
-    title: "Cold Season",
-    date: "25 Nov to 25 Dec",
-    image: headphoneImage,
-    title2: "",
-    title3: "Sale Lớn Mùa Đông",
-    title4: "Vì Một Mùa Noel An Lành",
-    bgColor: "bg-primary",
+    discount: "Giá cực sốc",
+    title: "Giảm giá mùa đông",
+    date: "Từ ngày 31/10 đến ngày 20/11",
+    image: bannerImg,
+    title2: "iPhone 16 Pro Max",
+    title3: "Khuyến mãi mùa đông",
+    title4: "Sở hữu iPhone 16 ngay",
+    bgColor: "bg-gradient-to-br from-black/90 to-black/70",
 };
 
 const Homepage = () => {

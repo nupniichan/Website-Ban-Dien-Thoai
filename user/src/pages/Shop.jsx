@@ -26,6 +26,9 @@ const Shop = () => {
     const [isPriceOpen, setIsPriceOpen] = useState(false);
     const [isColorOpen, setIsColorOpen] = useState(false);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const productsPerPage = 20;
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -141,6 +144,20 @@ const Shop = () => {
         setFilteredProducts(products);
     };
 
+    // Tính toán sản phẩm hiển thị dựa trên trang hiện tại
+    const indexOfLastProduct = currentPage * productsPerPage;
+    const currentProducts = filteredProducts.slice(0, indexOfLastProduct);
+
+    // Hàm xử lý nút "Xem thêm"
+    const handleLoadMore = () => {
+        setCurrentPage(prevPage => prevPage + 1);
+    };
+
+    const handleBuyNow = (e, productId) => {
+        e.stopPropagation(); // Ngăn chặn sự kiện click lan ra thẻ cha
+        navigate(`/checkout/${productId}`); // Điều hướng đến trang checkout
+    };
+
     return (
         <div className="mb-32">
             <div className="container">
@@ -252,10 +269,10 @@ const Shop = () => {
 
                 <div className="mb-10">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 place-items-center">
-                        {filteredProducts.map((item) => (
+                        {currentProducts.map((item) => (
                             <div
                                 key={item.id}
-                                className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl shadow p-4 cursor-pointer"
+                                className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl shadow p-4 cursor-pointer relative"
                                 onClick={() => handleProductClick(item.id)}
                             >
                                 <div className="productcard-img relative">
@@ -273,10 +290,30 @@ const Shop = () => {
                                     <h2 className="font-bold text-lg mb-2">{item.name}</h2>
                                     <p className="text-gray-600">{item.brand}</p>
                                     <p className="text-red-500 font-semibold">{item.price.toLocaleString()} đ</p>
+                                    
+                                    {/* Thêm nút Mua ngay */}
+                                    <button
+                                        onClick={(e) => handleBuyNow(e, item.id)}
+                                        className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                    >
+                                        Mua ngay
+                                    </button>
                                 </div>
                             </div>
                         ))}
                     </div>
+
+                    {/* Thêm nút "Xem thêm" */}
+                    {currentProducts.length < filteredProducts.length && (
+                        <div className="flex justify-center mt-8">
+                            <button
+                                onClick={handleLoadMore}
+                                className="bg-blue-500 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-600"
+                            >
+                                Xem thêm
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

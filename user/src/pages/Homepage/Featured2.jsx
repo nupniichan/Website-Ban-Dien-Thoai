@@ -1,13 +1,13 @@
 import Button from "../../shared/Button";
-import Image1 from "../../assets/fakeAssets/category/gaming.png";
-import Image2 from "../../assets/fakeAssets/category/vr.png";
-import Image3 from "../../assets/fakeAssets/category/speaker.png";
+import Image1 from "../../assets/fakeAssets/category/sony.png";
+import Image2 from "../../assets/fakeAssets/category/kvr-2560.png";
+import Image3 from "../../assets/fakeAssets/category/file.png";
 import Samsung from "../../assets/BrandLogos/Samsung_Logo.svg";
 import Oppo from "../../assets/BrandLogos/OPPO_LOGO.svg";
 import Sony from "../../assets/BrandLogos/Sony_logo.svg";
 import { useNavigate } from "react-router-dom";
 
-// TODO: Navigate to product page filtered with that brand
+// TODO: Điều hướng đến trang sản phẩm được lọc theo thương hiệu đó
 const Featured2 = () => {
     const navigate = useNavigate();
 
@@ -18,37 +18,22 @@ const Featured2 = () => {
     return (
         <section className="py-8 mb-40">
             <div className="container">
-                <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                    {/* first col */}
+                <div className="grid grid-cols-1 gap-4 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                    {/* cột thứ nhất */}
                     <div
-                        className="col-span-2 py-10 pl-5 text-white rounded-3xl relative h-[320px] flex items-end"
+                        className="col-span-1 sm:col-span-2 py-6 sm:py-10 pl-3 sm:pl-5 text-white rounded-2xl sm:rounded-3xl relative h-[250px] sm:h-[320px] flex items-end"
                         style={{background: "linear-gradient(135deg, rgba(0,0,128,1) 0%, rgba(176,196,222,1) 80%, rgba(255,255,255,1) 100%)"}}>
                         <div>
                             <div className="mb-4">
-                                <p className="mb-[2px] text-gray-300">Enjoy</p>
-                                <p className="text-2xl font-semibold mb-[2px]">
-                                    With
+                                <p className="mb-[2px] text-gray-300 text-sm sm:text-base">Trải nghiệm</p>
+                                <p className="text-xl sm:text-2xl font-semibold mb-[2px]">
+                                    Cùng
                                 </p>
-                                <p className="my-6 text-4xl font-bold xl:text-5xl opacity-100">
+                                <p className="my-4 sm:my-6">
                                     <img
                                         src={Sony}
                                         alt="Sony logo"
-                                        className=""
-                                        style={{
-                                            width: "50%",
-                                            "@media (min-width: 640px)": {
-                                                width: "50%",
-                                            },
-                                            "@media (min-width: 768px)": {
-                                                width: "33.33%",
-                                            },
-                                            "@media (min-width: 1024px)": {
-                                                width: "25%",
-                                            },
-                                            "@media (min-width: 1280px)": {
-                                                width: "20%",
-                                            }
-                                        }}
+                                        className="w-[40%] sm:w-[50%]"
                                     />
                                 </p>
                                 <Button
@@ -62,52 +47,23 @@ const Featured2 = () => {
                         <img
                             src={Image1}
                             alt=""
-                            className="absolute top-1/2 -translate-y-1/2 right-9"
-                            style={{
-                                width: "35%",
-                                "@media (min-width: 640px)": {
-                                    width: "50%",
-                                },
-                                "@media (min-width: 768px)": {
-                                    width: "33.33%",
-                                },
-                                "@media (min-width: 1024px)": {
-                                    width: "25%",
-                                },
-                                "@media (min-width: 1280px)": {
-                                    width: "20%",
-                                },
-                            }}
+                            className="absolute top-1/2 -translate-y-1/2 right-4 sm:right-9 w-[30%] sm:w-[35%]"
                         />
                     </div>
 
-                    {/* second col */}
-                    <div className="py-10 pl-5 bg-gradient-to-br from-brandGreen/90 to-brandGreen/70 text-white rounded-3xl relative h-[320px] flex items-start">
+                    {/* cột thứ hai */}
+                    <div className="py-6 sm:py-10 pl-3 sm:pl-5 bg-gradient-to-br from-brandGreen/90 to-brandGreen/70 text-white rounded-2xl sm:rounded-3xl relative h-[250px] sm:h-[320px] flex items-start overflow-hidden">
                         <div>
                             <div className="mb-4">
-                                <p className="mb-[2px] text-white">Enjoy</p>
-                                <p className="text-2xl font-semibold mb-[2px]">
-                                    With
+                                <p className="mb-[2px] text-white text-sm sm:text-base">Trải nghiệm</p>
+                                <p className="text-xl sm:text-2xl font-semibold mb-[2px]">
+                                    Cùng
                                 </p>
-                                <p className="text-4xl font-bold xl:text-5xl opacity-100 my-6">
+                                <p className="my-4 sm:my-6">
                                     <img
                                         src={Oppo}
                                         alt="Oppo logo"
-                                        style={{
-                                            width: "80%",
-                                            "@media (min-width: 640px)": {
-                                                width: "50%",
-                                            },
-                                            "@media (min-width: 768px)": {
-                                                width: "33.33%",
-                                            },
-                                            "@media (min-width: 1024px)": {
-                                                width: "25%",
-                                            },
-                                            "@media (min-width: 1280px)": {
-                                                width: "20%",
-                                            },
-                                        }}
+                                        className="w-[60%] sm:w-[80%]"
                                     />
                                 </p>
                                 <Button
@@ -121,23 +77,23 @@ const Featured2 = () => {
                         <img
                             src={Image2}
                             alt=""
-                            className="2xl:w-[220px] lg:w-[185px] sm:w-[220px] absolute bottom-0 2xl:right-2 lg:right-3 sm:right-3"
+                            className="w-[150px] sm:w-[200px] md:w-[170px] lg:w-[180px] xl:w-[160px] absolute bottom-0 right-0"
                         />
                     </div>
 
-                    {/* third col */}
-                    <div className="py-10 pl-5 bg-gradient-to-br from-brandBlue to-brandBlue/70 text-white rounded-3xl relative h-[320px] flex items-start">
+                    {/* cột thứ ba */}
+                    <div className="py-6 sm:py-10 pl-3 sm:pl-5 bg-gradient-to-br from-brandBlue to-brandBlue/70 text-white rounded-2xl sm:rounded-3xl relative h-[250px] sm:h-[320px] flex items-start">
                         <div>
                             <div className="mb-4">
-                                <p className="mb-[2px] text-white">Enjoy</p>
-                                <p className="text-2xl font-semibold mb-[2px]">
-                                    With
+                                <p className="mb-[2px] text-white text-sm sm:text-base">Trải nghiệm</p>
+                                <p className="text-xl sm:text-2xl font-semibold mb-[2px]">
+                                    Cùng
                                 </p>
-                                <p className="mb-2 overflow-hidden opacity-100 2xl:-translate-x-8 lg:-translate-x-6 md:-translate-x-3 sm:-translate-x-2">
+                                <p className="mb-2 overflow-hidden">
                                     <img
                                         src={Samsung}
                                         alt="Samsung logo"
-                                        className="w-90 h-auto"
+                                        className="w-[70%] sm:w-90 h-auto"
                                     />
                                 </p>
                                 <Button
@@ -151,7 +107,7 @@ const Featured2 = () => {
                         <img
                             src={Image3}
                             alt=""
-                            className="w-[200px] absolute bottom-0 right-0"
+                            className="w-[150px] sm:w-[200px] absolute bottom-0 right-0"
                         />
                     </div>
                 </div>

@@ -46,6 +46,7 @@ export default [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
+      'no-useless-escape': 'off',
     },
   },
 ]

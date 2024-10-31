@@ -8,7 +8,7 @@ import About from "./pages/About.jsx";
 import Cart from "./pages/Cart.jsx";
 import Checkout from "./pages/Checkout.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
-import FaQ from "./pages/FaQ.jsx";
+import FaQ from "./pages/FAQ.jsx";
 import Homepage from "./pages/Homepage/Homepage.jsx";
 import MyOrders from "./pages/MyOrders.jsx";
 import PaymentFailed from "./pages/PaymentFailed.jsx";

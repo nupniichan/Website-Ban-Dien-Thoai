@@ -4,6 +4,9 @@ import PathNames from "../../PathNames";
 const Banner = ({ data }) => {
     const navigate = useNavigate();
 
+    const handleButtonClick = () => {
+        navigate(`${PathNames}/SP023`);
+    };
     return (
         <div className="min-h-[550px] flex justify-center items-center py-12">
             <div className="container">
@@ -35,10 +38,13 @@ const Banner = ({ data }) => {
                     </div>
 
                     {/* second col */}
-                    <div className="h-full flex items-center" data-aos="zoom-in"
-                            data-aos-duration="500"
-                            data-aos-once={false}
-                            data-aos-anchor-placement="center-bottom">
+                    <div
+                        className="h-full flex items-center"
+                        data-aos="zoom-in"
+                        data-aos-duration="500"
+                        data-aos-once={false}
+                        data-aos-anchor-placement="center-bottom"
+                    >
                         <img
                             src={data.image}
                             alt=""
@@ -49,7 +55,16 @@ const Banner = ({ data }) => {
                     {/* third col */}
                     <div className="flex flex-col justify-center gap-4 p-6 sm:p-8">
                         <p
-                            className="font-bold text-xl translate-y-1"
+                            className="font-bold text-xl"
+                            data-aos="fade-up"
+                            data-aos-duration="500"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="bottom-bottom"
+                        >
+                            {data.title2}
+                        </p>
+                        <p
+                            className="font-bold text-xl"
                             data-aos="fade-up"
                             data-aos-duration="500"
                             data-aos-once={false}
@@ -78,13 +93,13 @@ const Banner = ({ data }) => {
                         <div
                             data-aos="fade-up"
                             data-aos-duration="500"
-                            data-aos-delay= "250"
+                            data-aos-delay="250"
                             data-aos-once={false}
                             data-aos-anchor-placement="top-bottom"
                         >
                             <button
                                 className={`bg-white py-2 px-4 rounded-full text-primary`}
-                                onClick={() => navigate(PathNames.SHOP)}
+                                onClick={() => handleButtonClick()}
                             >
                                 Mua Ngay
                             </button>

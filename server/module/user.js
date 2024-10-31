@@ -35,9 +35,9 @@ userSchema.pre('save', function(next) {
     return next(new Error('Số điện thoại không hợp lệ'));
   }
 
-  // Validate mật khẩu (ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số)
-  if (!this.password || !this.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
-    return next(new Error('Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số'));
+  // Validate mật khẩu (ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt)
+  if (!this.password || !this.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+    return next(new Error('Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt'));
   }
 
   // Validate tên tài khoản
@@ -82,8 +82,8 @@ userSchema.pre('save', function(next) {
 
   // Validate mật khẩu mới (nếu được cập nhật)
   if (this.isModified('password')) {
-    if (!this.password || !this.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/)) {
-      return next(new Error('Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và số'));
+    if (!this.password || !this.password.match(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/)) {
+      return next(new Error('Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt'));
     }
   }
 

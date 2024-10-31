@@ -48,7 +48,7 @@ orderSchema.pre('save', function(next) {
   if (!this.shippingAddress || this.shippingAddress.trim().length === 0) {
     return next(new Error('Địa chỉ giao hàng không được để trống'));
   }
-  if (!['COD', 'MoMo', 'Bank Transfer'].includes(this.paymentMethod)) {
+  if (!['Tiền mặt', 'MoMo', 'VNPay','Chuyển khoản ngân hàng'].includes(this.paymentMethod)) {
     return next(new Error('Phương thức thanh toán không hợp lệ'));
   }
   if (this.status === 'Đã hủy' && !this.cancellationReason) {

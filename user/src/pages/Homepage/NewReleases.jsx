@@ -1,3 +1,5 @@
+import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
+import { Card } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
@@ -126,17 +128,24 @@ const NewReleases = () => {
     //     console.log(NReleaseProducts);
     // }, [NReleaseProducts]);
 
+    const formatCurrency = (price) => {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(price);
+    };
+
     return (
         <div className="mb-32 mt-80">
             <div className="container">
-                {/* Heading section */}
+                {/* Phần tiêu đề */}
                 <Heading
                     title="Sản Phẩm Mới"
                     subtitle="Khám Phá Sản Phẩm Mới Nhất"
                 />
-                {/* Body section */}
+                {/* Phần nội dung */}
                 <div className="mb-10">
-                    <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 place-items-center xl:gap-y-12 lg:gap-y-8">
+                    <div className="grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 place-items-center ">
                         {/* card selection */}
                         {NReleaseProducts.map((item) => (
                             <div
@@ -176,13 +185,13 @@ const NewReleases = () => {
                                     </div> */}
                                     <div className="flex items-center justify-between mt-5">
                                         <span className="text-xl font-bold text-gray-900 dark:text-white">
-                                            {item.price.toLocaleString()}đ
+                                            {formatCurrency(item.price)}
                                         </span>
                                         <button
                                             onClick={(e) => e.stopPropagation()}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"
                                         >
-                                            Thêm vào giỏ
+                                            Add to cart
                                         </button>
                                     </div>
                                 </div>

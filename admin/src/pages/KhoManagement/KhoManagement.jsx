@@ -122,10 +122,11 @@ const KhoManagement = () => {
 
     // Chuẩn bị dữ liệu cho sheet thông tin chung
     const generalInfo = [
-      ['Thông tin phiếu xuất/nhập kho'],
+      [`Phiếu ${selectedEntry.type} kho`.toUpperCase()],
       ['Số phiếu', selectedEntry.id],
+      ['Loại phiếu', selectedEntry.type],
       ['Tên người quản lý', selectedEntry.managementPerson],
-      ['Tên người xuất', selectedEntry.responsiblePerson],
+      ['Tên người xuất/nhập', selectedEntry.responsiblePerson],
       ['Ngày', selectedEntry.date.split('T')[0]],
       ['Mã kho', selectedEntry.warehouseCode],
       ['Địa điểm', selectedEntry.location],
@@ -155,15 +156,15 @@ const KhoManagement = () => {
       ...productData,
       [],
       ['Xác nhận'],
-      ['Nhân viên xuất hàng', selectedEntry.responsiblePerson],
+      [`Nhân viên ${selectedEntry.type.toLowerCase()} hàng`, selectedEntry.responsiblePerson],
       ['Nhân viên quản lý kho', selectedEntry.managementPerson]
     ]);
 
     // Thêm worksheet vào workbook
-    XLSX.utils.book_append_sheet(wb, ws, 'Phiếu xuất nhập kho');
+    XLSX.utils.book_append_sheet(wb, ws, `Phiếu ${selectedEntry.type.toLowerCase()} kho`);
 
     // Tải file Excel
-    XLSX.writeFile(wb, `Phieu_xuat_nhap_kho_${selectedEntry.id}.xlsx`);
+    XLSX.writeFile(wb, `Phieu_${selectedEntry.type.toLowerCase()}_kho_${selectedEntry.id}.xlsx`);
   };
 
   return (
@@ -222,21 +223,21 @@ const KhoManagement = () => {
           </TableHead>
           <TableBody>
             {paginatedEntries.map((entry) => (
-              entry.products.map(product => (
-                <TableRow key={`${entry.id}-${product.productId}`}>
-                  <TableCell>{entry.id}</TableCell>
-                  <TableCell>{entry.managementPerson}</TableCell>
-                  <TableCell>{product.productName}</TableCell>
-                  <TableCell>{entry.warehouseCode}</TableCell>
-                  <TableCell>{entry.type}</TableCell>
-                  <TableCell>{entry.date.split('T')[0]}</TableCell>
-                  <TableCell>
-                    <Button variant="outlined" onClick={() => handleViewDetails(entry.id)}>Xem</Button>
-                    <Button variant="outlined" color="secondary" onClick={() => handleDeleteEntry(entry.id)}>Xóa</Button>
-                    <Button variant="outlined" color="primary" onClick={() => handleEditEntry(entry.id)}>Sửa</Button>
-                  </TableCell>
-                </TableRow>
-              ))
+              <TableRow key={entry.id}>
+                <TableCell>{entry.id}</TableCell>
+                <TableCell>{entry.managementPerson}</TableCell>
+                <TableCell>
+                  {entry.products.map(product => product.productName).join(', ')}
+                </TableCell>
+                <TableCell>{entry.warehouseCode}</TableCell>
+                <TableCell>{entry.type}</TableCell>
+                <TableCell>{entry.date.split('T')[0]}</TableCell>
+                <TableCell>
+                  <Button variant="outlined" onClick={() => handleViewDetails(entry.id)}>Xem</Button>
+                  <Button variant="outlined" color="secondary" onClick={() => handleDeleteEntry(entry.id)}>Xóa</Button>
+                  <Button variant="outlined" color="primary" onClick={() => handleEditEntry(entry.id)}>Sửa</Button>
+                </TableCell>
+              </TableRow>
             ))}
           </TableBody>
         </Table>

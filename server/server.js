@@ -193,14 +193,27 @@ app.get('/api/orders/:id', async (req, res) => {
 
 // Create new order and reduce product stock
 app.post('/api/orders', async (req, res) => {
-  const { customerId, customerName, shippingAddress, items, paymentMethod, totalAmount, status, orderDate, notes } = req.body;
-
   try {
+    console.log('Received order data:', req.body); // Log dữ liệu nhận được
+
+    const { customerId, customerName, shippingAddress, items, paymentMethod, totalAmount, orderStatus, paymentStatus, orderDate, notes } = req.body;
+
+    // Validate dữ liệu đầu vào
+    if (!customerId || !customerName || !shippingAddress || !items || !paymentMethod) {
+      return res.status(400).json({ 
+        message: 'Missing required fields',
+        receivedData: req.body 
+      });
+    }
+
     const counter = await Counter.findByIdAndUpdate(
       { _id: 'orderId' },
       { $inc: { seq: 1 } },
       { new: true, upsert: true }
     );
+
+    // Chuyển đổi orderDate từ string sang Date object
+    const parsedOrderDate = orderDate ? new Date(orderDate) : new Date();
 
     const newOrder = new Order({
       id: `OD${String(counter.seq).padStart(3, '0')}`,
@@ -210,19 +223,26 @@ app.post('/api/orders', async (req, res) => {
       items,
       paymentMethod,
       totalAmount,
-      status: status || 'Đã thanh toán',
-      orderDate: orderDate || new Date(),
+      status: orderStatus || 'Chờ xác nhận',
+      paymentStatus: paymentStatus || 'Chưa thanh toán',
+      orderDate: parsedOrderDate,
       notes,
     });
 
     await newOrder.save();
-
-    // Reduce stock of products
+        // Thực hiện điều chỉnh stock
     await adjustProductStock(items);
-
-    res.status(201).json({ message: 'Order created successfully', order: newOrder });
+    res.status(201).json({ 
+      message: 'Order created successfully', 
+      order: newOrder 
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating order', error: err.message });
+    console.error('Error creating order:', err); // Log chi tiết lỗi
+    res.status(500).json({ 
+      message: 'Error creating order', 
+      error: err.message,
+      stack: err.stack // Thêm stack trace để debug
+    });
   }
 });
 
@@ -564,13 +584,25 @@ const generateCustomerId = async () => {
 
 // Thêm người dùng mới
 app.post('/api/addUser', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password } = req.body;
 
   try {
-    // Kiểm tra xem email đã tồn tại hay chưa
-    const existingUser = await User.findOne({ email });
+    // Kiểm tra đồng thời email, số điện thoại và tên tài khoản
+    const existingUser = await User.findOne({
+      $or: [
+        { email },
+        { phoneNumber },
+        { accountName }
+      ]
+    });
+
     if (existingUser) {
-      return res.status(400).json({ message: 'Email đã được sử dụng' });
+      return res.status(400).json({
+        message: "Email, số điện thoại hoặc tên tài khoản đã tồn tại.",
+        emailExists: existingUser.email === email,
+        phoneExists: existingUser.phoneNumber === phoneNumber,
+        accountNameExists: existingUser.accountName === accountName
+      });
     }
 
     // Tạo ID cho khách hàng mới
@@ -587,18 +619,20 @@ app.post('/api/addUser', async (req, res) => {
       address,
       accountName,
       password,
-      role: role || 'user',
-      userAvatar: userAvatar || ''
+      role: 'user',
+      userAvatar: 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'
     });
 
     await newUser.save();
     res.status(201).json({ message: 'Người dùng đã được thêm thành công', user: newUser });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi thêm người dùng', error: err.message });
+    console.error('Error creating user:', err); // Thêm log để debug
+    res.status(500).json({ 
+      message: 'Lỗi khi thêm người dùng', 
+      error: err.message 
+    });
   }
 });
-
-
 
 
 // Xóa người dùng
@@ -856,7 +890,7 @@ app.post('/api/cart/:userId/add', async (req, res) => {
   
 
   try {
-    // Sử dụng findOneAndUpdate thay vì findOne và save
+    // Sử dng findOneAndUpdate thay vì findOne và save
     const user = await User.findOneAndUpdate(
       { id: userId },
       {
@@ -1273,14 +1307,22 @@ app.get('/api/dashboard/stats', async (req, res) => {
       };
     });
 
-    // Tính phần trăm thay đổi
+    // Trích xuất giá trị total từ kết quả aggregate
     const thisMonthTotal = thisMonthRevenue[0]?.total || 0;
     const lastMonthTotal = lastMonthRevenue[0]?.total || 0;
-    const userChange = lastMonthUsers ? ((totalUsers - lastMonthUsers) / lastMonthUsers * 100) : 0;
-    const orderChange = lastWeekOrders ? ((totalOrders - lastWeekOrders) / lastWeekOrders * 100) : 0;
-    const pendingOrderChange = pendingOrdersYesterday ? 
-      ((pendingOrdersToday - pendingOrdersYesterday) / pendingOrdersYesterday * 100) : 0;
-    const revenueChange = lastMonthTotal ? ((thisMonthTotal - lastMonthTotal) / lastMonthTotal * 100) : 0;
+
+    // Tính phần trăm thay đổi
+    const userChange = lastMonthUsers === 0 ? 0 :
+      ((totalUsers - lastMonthUsers) / lastMonthUsers * 100).toFixed(1);
+    
+    const orderChange = lastWeekOrders === 0 ? 0 :
+      ((totalOrders - lastWeekOrders) / lastWeekOrders * 100).toFixed(1);
+    
+    const pendingOrderChange = pendingOrdersYesterday === 0 ? 0 :
+      ((pendingOrdersToday - pendingOrdersYesterday) / pendingOrdersYesterday * 100).toFixed(1);
+    
+    const revenueChange = lastMonthTotal === 0 ? 0 :
+      ((thisMonthTotal - lastMonthTotal) / lastMonthTotal * 100).toFixed(1);
 
     // Lấy 5 đơn hàng gần nhất
     const recentOrders = await Order.find()
@@ -1291,19 +1333,19 @@ app.get('/api/dashboard/stats', async (req, res) => {
       stats: {
         users: {
           total: totalUsers,
-          change: parseFloat(userChange.toFixed(1))
+          change: parseFloat(userChange)
         },
         orders: {
           total: totalOrders,
-          change: parseFloat(orderChange.toFixed(1))
+          change: parseFloat(orderChange)
         },
         revenue: {
           total: thisMonthTotal,
-          change: parseFloat(revenueChange.toFixed(1))
+          change: parseFloat(revenueChange)
         },
         pendingOrders: {
           total: pendingOrdersToday,
-          change: parseFloat(pendingOrderChange.toFixed(1))
+          change: parseFloat(pendingOrderChange)
         }
       },
       monthlyRevenue: fullMonthlyRevenue,

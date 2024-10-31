@@ -37,11 +37,6 @@ khoSchema.pre('save', function(next) {
     return next(new Error('Ngày không thể trong tương lai'));
   }
 
-  // Validate mã kho
-  if (!this.warehouseCode || !/^WH\d{3}$/.test(this.warehouseCode)) {
-    return next(new Error('Mã kho không hợp lệ (phải có định dạng WHxxx)'));
-  }
-
   // Validate vị trí
   if (!this.location || this.location.trim().length < 5) {
     return next(new Error('Vị trí kho phải có ít nhất 5 ký tự'));

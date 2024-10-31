@@ -17,10 +17,16 @@ const StatCard = ({ title, value, change, icon: Icon, changeType }) => (
         <Box>
           <Typography variant="subtitle2" color="text.secondary">{title}</Typography>
           <Typography variant="h4">{value}</Typography>
-          <Typography variant="body2" color={changeType === 'up' ? 'success.main' : 'error.main'}>
-            {changeType === 'up' ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
-            {change}
-          </Typography>
+          {change !== undefined && change !== null && (
+            <Typography 
+              variant="body2" 
+              color={change >= 0 ? 'success.main' : 'error.main'}
+              sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}
+            >
+              {change >= 0 ? <TrendingUp size={16} /> : <TrendingDown size={16} />}
+              {`${Math.abs(change)}% so với kỳ trước`}
+            </Typography>
+          )}
         </Box>
         <Box sx={{ backgroundColor: 'action.hover', borderRadius: '50%', p: 1 }}>
           <Icon size={24} />
@@ -111,7 +117,7 @@ const Dashboard = () => {
         let values;
 
         switch (timeRange) {
-          case 'day':
+          case 'day': {
             const dailyResponse = await fetch(`${BASE_URL}/api/dashboard/revenue/daily`);
             data = await dailyResponse.json();
             labels = data.map(item => {
@@ -123,8 +129,9 @@ const Dashboard = () => {
             });
             values = data.map(item => item.total / 1000000);
             break;
+          }
 
-          case 'week':
+          case 'week': {
             const weeklyResponse = await fetch(`${BASE_URL}/api/dashboard/revenue/weekly`);
             data = await weeklyResponse.json();
             labels = data.map(item => {
@@ -133,8 +140,9 @@ const Dashboard = () => {
             });
             values = data.map(item => item.total / 1000000);
             break;
+          }
 
-          default: // year
+          default:
             labels = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
             values = dashboardData.monthlyRevenue.map(item => item.total / 1000000);
             break;
@@ -234,7 +242,7 @@ const Dashboard = () => {
             <StatCard 
               title="Tổng người dùng" 
               value={dashboardData.stats.users.total} 
-              change={`${dashboardData.stats.users.change}% so với tháng trước`}
+              change={dashboardData.stats.users.change}
               icon={Users} 
               changeType={dashboardData.stats.users.change >= 0 ? 'up' : 'down'} 
             />
@@ -243,7 +251,7 @@ const Dashboard = () => {
             <StatCard 
               title="Tổng đơn hàng" 
               value={dashboardData.stats.orders.total} 
-              change={`${dashboardData.stats.orders.change}% so với tuần trước`}
+              change={dashboardData.stats.orders.change}
               icon={Package} 
               changeType={dashboardData.stats.orders.change >= 0 ? 'up' : 'down'} 
             />
@@ -252,7 +260,7 @@ const Dashboard = () => {
             <StatCard 
               title="Doanh thu tháng này" 
               value={formatCurrency(dashboardData.stats.revenue.total)}
-              change={`${dashboardData.stats.revenue.change}% so với tháng trước`}
+              change={dashboardData.stats.revenue.change}
               icon={DollarSign} 
               changeType={dashboardData.stats.revenue.change >= 0 ? 'up' : 'down'} 
             />
@@ -261,7 +269,7 @@ const Dashboard = () => {
             <StatCard 
               title="Đơn hàng chờ xử lý" 
               value={dashboardData.stats.pendingOrders.total}
-              change={`${dashboardData.stats.pendingOrders.change}% so với hôm qua`}
+              change={dashboardData.stats.pendingOrders.change}
               icon={Clock} 
               changeType={dashboardData.stats.pendingOrders.change >= 0 ? 'up' : 'down'} 
             />

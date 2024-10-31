@@ -107,20 +107,30 @@ const AddUser = () => {
         }
 
         try {
-            const response = await axios.post(`${BASE_URL}/api/addUser`, user, {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
+            const response = await axios.post(`${BASE_URL}/api/addUser`, user);
             if (response.status === 201) {
-                alert("Tạo tài khoản thành công");
+                alert(response.data.message);
                 navigate("/user-management");
-            } else {
-                alert("Không thể tạo tài khoản");
             }
         } catch (error) {
             console.error("Lỗi khi tạo tài khoản:", error);
-            alert(error.response?.data?.message || "Đã xảy ra lỗi khi tạo tài khoản");
+            if (error.response?.data?.message) {
+                // Hiển thị thông báo lỗi cụ thể từ server
+                alert(error.response.data.message);
+                
+                // Nếu có lỗi về trùng lặp, cập nhật trạng thái lỗi
+                if (error.response.data.emailExists) {
+                    setErrors(prev => ({ ...prev, email: 'Email đã tồn tại' }));
+                }
+                if (error.response.data.phoneExists) {
+                    setErrors(prev => ({ ...prev, phoneNumber: 'Số điện thoại đã tồn tại' }));
+                }
+                if (error.response.data.accountNameExists) {
+                    setErrors(prev => ({ ...prev, accountName: 'Tên tài khoản đã tồn tại' }));
+                }
+            } else {
+                alert("Đã xảy ra lỗi khi tạo tài khoản");
+            }
         }
     };
 
