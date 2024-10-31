@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Box, TextField, Button, Grid, Typography, MenuItem } from '@mui/material';
+import { Box, TextField, Button, Grid, Typography, MenuItem, Autocomplete } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../../config.js';
 
@@ -51,6 +51,7 @@ const AddKho = () => {
   };
 
   const handleAddItem = () => {
+    setFilteredProducts(products);
     setKho({ ...kho, products: [...kho.products, { productId: '', productName: '', quantity: 1, color: '' }] });
   };
 
@@ -66,19 +67,23 @@ const AddKho = () => {
 
     if (selectedProduct) {
       updatedItems[index]['productId'] = selectedProduct.id;
-      updatedItems[index]['color'] = selectedProduct.color; // Set color based on the selected product
+      updatedItems[index]['color'] = selectedProduct.color;
     } else {
       updatedItems[index]['productId'] = '';
       updatedItems[index]['color'] = '';
     }
 
-    updatedItems[index]['productName'] = value; // Keep the selected product name
+    updatedItems[index]['productName'] = value;
     setKho({ ...kho, products: updatedItems });
 
-    const filtered = products.filter((product) =>
-      product.name.toLowerCase().includes(value.toLowerCase())
-    );
-    setFilteredProducts(filtered);
+    if (value) {
+      const filtered = products.filter((product) =>
+        product.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setFilteredProducts(filtered);
+    } else {
+      setFilteredProducts(products);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -158,21 +163,24 @@ const AddKho = () => {
   {kho.products.map((item, index) => (
     <Grid container spacing={2} key={index} alignItems="center">
       <Grid item xs={4}>
-        <TextField
-          select
-          label="Chọn sản phẩm"
-          value={item.productName || ""}
-          onChange={(e) => handleProductFilter(index, e.target.value)}
-          fullWidth
-          margin="normal"
-          required
-        >
-          {filteredProducts.map((product) => (
-            <MenuItem key={product.id} value={product.name}>
-              {product.name}
-            </MenuItem>
-          ))}
-        </TextField>
+        <Autocomplete
+          freeSolo
+          options={filteredProducts.map((product) => product.name)}
+          value={item.productName || null}
+          onChange={(event, newValue) => handleProductFilter(index, newValue || '')}
+          onInputChange={(event, newInputValue) => {
+            handleProductFilter(index, newInputValue);
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Chọn sản phẩm"
+              margin="normal"
+              required
+              fullWidth
+            />
+          )}
+        />
       </Grid>
       <Grid item xs={3}>
         <TextField

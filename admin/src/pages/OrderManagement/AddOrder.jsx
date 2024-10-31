@@ -26,9 +26,9 @@ const AddOrder = () => {
 
   // Thêm hàm kiểm tra ngày trong quá khứ
   const isPastDate = (date) => {
-    const orderDate = new Date(date);
-    const now = new Date();
-    return orderDate < now;
+    const orderDate = new Date(date).getTime();
+    const now = new Date().getTime();
+    return orderDate < (now - 24 * 60 * 60 * 1000); // Cho phép đặt đơn trong vòng 24h
   };
 
   // Thêm hàm validate
@@ -207,6 +207,12 @@ const AddOrder = () => {
     }
 
     try {
+      // Log để kiểm tra dữ liệu trước khi gửi
+      console.log('Order data being sent:', {
+        ...order,
+        paymentMethod: order.paymentMethod // Kiểm tra giá trị này
+      });
+
       const response = await fetch(`${BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
@@ -215,16 +221,18 @@ const AddOrder = () => {
         body: JSON.stringify(order),
       });
 
-      if (response.ok) {
-        alert('Đơn hàng đã được tạo thành công');
-        navigate('/order-management');
-      } else {
-        const error = await response.json();
-        throw new Error(error.message || 'Không thể tạo đơn hàng');
+      const data = await response.json();
+      console.log('Response from server:', data); // Log response từ server
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Không thể tạo đơn hàng');
       }
+
+      alert('Đơn hàng đã được tạo thành công');
+      navigate('/order-management');
     } catch (error) {
-      console.error('Lỗi khi tạo đơn hàng:', error);
-      alert(error.message || 'Đã xảy ra lỗi khi tạo đơn hàng');
+      console.error('Error details:', error);
+      alert(`Lỗi khi tạo đơn hàng: ${error.message}`);
     }
   };
 
@@ -239,7 +247,7 @@ const AddOrder = () => {
     'Đã hủy',
     'Đã hoàn tiền'
   ];
-  const paymentMethodOptions = ['COD', 'MoMo', 'Bank Transfer'];
+  const paymentMethodOptions = ['Tiền mặt', 'MoMo', 'VNPay','Chuyển khoản ngân hàng'];
 
   return (
     <Box padding={3}>

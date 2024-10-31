@@ -1,4 +1,4 @@
-import headphoneImage from "../../assets/fakeAssets/hero/headphone.png";
+import headphoneImage from "../../assets/fakeAssets/hero/Iphone16.png";
 import Banner from "./Banner";
 import Blogs from "./Blogs";
 import Featured from "./Featured";
@@ -10,14 +10,14 @@ import Services from "./Services";
 
 
 const BannerData = {
-    discount: "20% OFF",
-    title: "Cold Season",
-    date: "20 Oct to 01 Nov",
+    discount: "Giá cực sốc",
+    title: "Giảm giá mùa đông",
+    date: "Từ ngày 31/10 đến ngày 20/11",
     image: headphoneImage,
-    title2: "Air Solo Bass",
-    title3: "Winter Sale",
-    title4: "Get Your Winter Essentials",
-    bgColor: "bg-primary",
+    title2: "iPhone 16 Pro Max",
+    title3: "Khuyến mãi mùa đông",
+    title4: "Sở hữu iPhone 16 ngay",
+    bgColor: "bg-black",
 };
 
 const Homepage = () => {

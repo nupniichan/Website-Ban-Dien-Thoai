@@ -193,14 +193,27 @@ app.get('/api/orders/:id', async (req, res) => {
 
 // Create new order and reduce product stock
 app.post('/api/orders', async (req, res) => {
-  const { customerId, customerName, shippingAddress, items, paymentMethod, totalAmount, status, orderDate, notes } = req.body;
-
   try {
+    console.log('Received order data:', req.body); // Log dữ liệu nhận được
+
+    const { customerId, customerName, shippingAddress, items, paymentMethod, totalAmount, orderStatus, paymentStatus, orderDate, notes } = req.body;
+
+    // Validate dữ liệu đầu vào
+    if (!customerId || !customerName || !shippingAddress || !items || !paymentMethod) {
+      return res.status(400).json({ 
+        message: 'Missing required fields',
+        receivedData: req.body 
+      });
+    }
+
     const counter = await Counter.findByIdAndUpdate(
       { _id: 'orderId' },
       { $inc: { seq: 1 } },
       { new: true, upsert: true }
     );
+
+    // Chuyển đổi orderDate từ string sang Date object
+    const parsedOrderDate = orderDate ? new Date(orderDate) : new Date();
 
     const newOrder = new Order({
       id: `OD${String(counter.seq).padStart(3, '0')}`,
@@ -210,19 +223,26 @@ app.post('/api/orders', async (req, res) => {
       items,
       paymentMethod,
       totalAmount,
-      status: status || 'Đã thanh toán',
-      orderDate: orderDate || new Date(),
+      status: orderStatus || 'Chờ xác nhận',
+      paymentStatus: paymentStatus || 'Chưa thanh toán',
+      orderDate: parsedOrderDate,
       notes,
     });
 
     await newOrder.save();
-
-    // Reduce stock of products
+        // Thực hiện điều chỉnh stock
     await adjustProductStock(items);
-
-    res.status(201).json({ message: 'Order created successfully', order: newOrder });
+    res.status(201).json({ 
+      message: 'Order created successfully', 
+      order: newOrder 
+    });
   } catch (err) {
-    res.status(500).json({ message: 'Error creating order', error: err.message });
+    console.error('Error creating order:', err); // Log chi tiết lỗi
+    res.status(500).json({ 
+      message: 'Error creating order', 
+      error: err.message,
+      stack: err.stack // Thêm stack trace để debug
+    });
   }
 });
 
@@ -564,13 +584,25 @@ const generateCustomerId = async () => {
 
 // Thêm người dùng mới
 app.post('/api/addUser', async (req, res) => {
-  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password, role, userAvatar } = req.body;
+  const { name, email, phoneNumber, dayOfBirth, gender, address, accountName, password } = req.body;
 
   try {
-    // Kiểm tra xem email đã tồn tại hay chưa
-    const existingUser = await User.findOne({ email });
+    // Kiểm tra đồng thời email, số điện thoại và tên tài khoản
+    const existingUser = await User.findOne({
+      $or: [
+        { email },
+        { phoneNumber },
+        { accountName }
+      ]
+    });
+
     if (existingUser) {
-      return res.status(400).json({ message: 'Email đã được sử dụng' });
+      return res.status(400).json({
+        message: "Email, số điện thoại hoặc tên tài khoản đã tồn tại.",
+        emailExists: existingUser.email === email,
+        phoneExists: existingUser.phoneNumber === phoneNumber,
+        accountNameExists: existingUser.accountName === accountName
+      });
     }
 
     // Tạo ID cho khách hàng mới
@@ -587,18 +619,20 @@ app.post('/api/addUser', async (req, res) => {
       address,
       accountName,
       password,
-      role: role || 'user',
-      userAvatar: userAvatar || ''
+      role: 'user',
+      userAvatar: 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'
     });
 
     await newUser.save();
     res.status(201).json({ message: 'Người dùng đã được thêm thành công', user: newUser });
   } catch (err) {
-    res.status(500).json({ message: 'Lỗi khi thêm người dùng', error: err.message });
+    console.error('Error creating user:', err); // Thêm log để debug
+    res.status(500).json({ 
+      message: 'Lỗi khi thêm người dùng', 
+      error: err.message 
+    });
   }
 });
-
-
 
 
 // Xóa người dùng
@@ -1066,7 +1100,7 @@ app.post('/callback', async (req, res) => {
           
         }
 
-        // Chuyển hướng về trang lịch sử đơn hàng
+        // Chuy��n hướng về trang lịch sử đơn hàng
         res.redirect('http://localhost:5173/payment-history');
       } else {
         console.error('ExtraData is missing or empty');

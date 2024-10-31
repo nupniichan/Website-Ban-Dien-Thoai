@@ -1,4 +1,11 @@
+import { useNavigate } from 'react-router-dom';
+
 const Banner = ({ data }) => {
+    const navigate = useNavigate();
+    
+    const handleButtonClick = () => {
+        navigate('/product/SP023');
+    };
     return (
         <div className="min-h-[550px] flex justify-center items-center py-12">
             <div className="container">
@@ -29,7 +36,7 @@ const Banner = ({ data }) => {
                         <p className="text-3xl sm:text-5xl font-bold">{data.title3}</p>
                         <p className="text-sm tracking-wide leading-5">{data.title4}</p>
                         <div>
-                            <button className={`bg-white py-2 px-4 rounded-full text-primary`}>Shop Now</button>
+                            <button className={`bg-white py-2 px-4 rounded-full text-black`} onClick={handleButtonClick}>Mua ngay</button>
                         </div>
                     </div>
                 </div>

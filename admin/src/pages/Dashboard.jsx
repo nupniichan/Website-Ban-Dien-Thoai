@@ -111,7 +111,7 @@ const Dashboard = () => {
         let values;
 
         switch (timeRange) {
-          case 'day':
+          case 'day': {
             const dailyResponse = await fetch(`${BASE_URL}/api/dashboard/revenue/daily`);
             data = await dailyResponse.json();
             labels = data.map(item => {
@@ -123,8 +123,9 @@ const Dashboard = () => {
             });
             values = data.map(item => item.total / 1000000);
             break;
+          }
 
-          case 'week':
+          case 'week': {
             const weeklyResponse = await fetch(`${BASE_URL}/api/dashboard/revenue/weekly`);
             data = await weeklyResponse.json();
             labels = data.map(item => {
@@ -133,8 +134,9 @@ const Dashboard = () => {
             });
             values = data.map(item => item.total / 1000000);
             break;
+          }
 
-          default: // year
+          default:
             labels = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
             values = dashboardData.monthlyRevenue.map(item => item.total / 1000000);
             break;
