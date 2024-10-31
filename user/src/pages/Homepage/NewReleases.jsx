@@ -19,7 +19,7 @@ const NewReleases = () => {
                 const productsData = response.data;
                 setProducts(productsData);
             } catch (error) {
-                console.error(error);
+                console.error("Lỗi khi tải sản phẩm:", error);
             }
         };
         fetchProducts();
@@ -45,15 +45,15 @@ const NewReleases = () => {
     return (
         <div className="mb-32">
             <div className="container">
-                {/* Heading section */}
+                {/* Phần tiêu đề */}
                 <Heading
-                    title="New Releases"
-                    subtitle="Explore Our Newcomers"
+                    title="Sản Phẩm Mới"
+                    subtitle="Khám Phá Sản Phẩm Mới Nhất"
                 />
-                {/* Body section */}
+                {/* Phần nội dung */}
                 <div className="mb-10">
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 place-items-center">
-                        {/* card selection */}
+                        {/* phần thẻ sản phẩm */}
                         {NReleaseProducts.map((item) => (
                             <div
                                 key={item.id}
@@ -69,7 +69,7 @@ const NewReleases = () => {
                                         />
                                     ) : (
                                         <div className="h-[180px] w-[260px] flex items-center justify-center bg-gray-200 rounded-xl mb-3">
-                                            <span>No Image Available</span>
+                                            <span>Không có hình ảnh</span>
                                         </div>
                                     )}
                                     {/* hover button */}
@@ -81,15 +81,16 @@ const NewReleases = () => {
                                     <h2 className="lg:text-lg md:text-sm font-semibold sm:text-base">
                                         {item.name}
                                     </h2>
-                                    <h2 className="lg:text-sm  text-red-600 font-bold sm:text-xs">
-                                        {item.price} đ
+                                    <h2 className="lg:text-sm text-red-600 font-bold sm:text-xs">
+                                        {item.price.toLocaleString()} đ
                                     </h2>
                                 </div>
 
-                                {/* Star Rating */}
+                                {/* Star Rating 
                                 <div onClick={(e) => e.stopPropagation()}>
                                     <StarRating rating={item.rating} />
                                 </div>
+                                */}
                             </div>
                         ))}
                     </div>
