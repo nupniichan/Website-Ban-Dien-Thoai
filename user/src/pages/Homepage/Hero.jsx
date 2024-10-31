@@ -22,7 +22,6 @@ import Button from "../../shared/Button.jsx";
 //         description: "Beats Duo",
 //     },
 // ];
-// TODO: Bind actual data to the carousel
 
 const Hero = () => {
     const [products, setProducts] = useState([]);
@@ -58,7 +57,7 @@ const Hero = () => {
 
     return (
         <div className="container">
-            <div className="overflow-hidden rounded-3xl min-h-[550px] sm:min-h-[650px] hero-bg-color flex justify-center items-center">
+            <div className="overflow-hidden rounded-3xl min-h-[550px] sm:min-h-[650px] hero-bg-color flex justify-center items-center mb-11">
                 <div className="container pb-8 sm:pb-0">
                     <Carousel
                         dots={false}

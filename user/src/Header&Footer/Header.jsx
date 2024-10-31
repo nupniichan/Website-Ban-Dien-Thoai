@@ -31,15 +31,15 @@ const Header = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768); // State for mobile check
   const navigate = useNavigate();
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      navigate(`/search-results?query=${searchQuery}`);
-    }
-  };
+    const handleSearch = () => {
+        if (searchQuery.trim()) {
+            navigate(`/search-results?query=${searchQuery}`);
+        }
+    };
 
-  const toggleSearch = () => {
-    setIsSearchExpanded((prev) => !prev);
-  };
+    const toggleSearch = () => {
+        setIsSearchExpanded((prev) => !prev);
+    };
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen((prev) => !prev);

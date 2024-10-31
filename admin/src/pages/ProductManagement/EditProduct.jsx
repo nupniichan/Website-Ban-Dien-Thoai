@@ -53,7 +53,7 @@ const EditProduct = () => {
         } else {
           throw new Error('Failed to fetch product');
         }
-      } catch (error) {
+      } catch (error) {                                           n
         console.error('Error fetching product:', error);
         setError('Failed to load product data. Please try again.');
       } finally {
