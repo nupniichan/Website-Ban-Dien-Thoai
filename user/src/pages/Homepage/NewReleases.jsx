@@ -3,9 +3,13 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
 import Heading from "../../shared/Heading";
+import { notification } from "antd";
 
 const NewReleases = () => {
     const [products, setProducts] = useState([]);
+    const userId = sessionStorage.getItem("userId");
+    const [product, setProduct] = useState(null);
+    const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -33,6 +37,88 @@ const NewReleases = () => {
         "SP036",
     ]);
 
+    const handleBuyNow = async () => {
+        if (!userId) {
+            notification.warning({
+                message: 'Lưu ý',
+                description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
+                duration: 4,
+                placement: "bottomRight",
+                pauseOnHover: true
+            });
+            window.location.href = "/login";
+            return;
+        }
+
+        if (!product || !product.id) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Không tìm thấy thông tin sản phẩm',
+                duration: 4,
+                placement: "bottomRight",
+                pauseOnHover: true
+            });
+            return;
+        }
+
+        if (quantity <= 0 || quantity > product.quantity) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Số lượng không hợp lệ!',
+                duration: 4,
+                placement: "bottomRight",
+                pauseOnHover: true
+            });
+            return;
+        }
+
+        const cartItem = {
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            color: product.color,
+            quantity: parseInt(quantity),
+            image: product.image,
+        };
+
+        console.log("Sending cart item:", cartItem);
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/cart/${userId}/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(cartItem),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
+                );
+            }
+
+            notification.success({
+                message: 'Thành công',
+                description: 'Đã thêm sản phẩm vào giỏ hàng',
+                duration: 4,
+                placement: "bottomRight",
+                pauseOnHover: true
+            });
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            notification.error({
+                message: 'Lỗi',
+                description: error.message,
+                duration: 4,
+                placement: "bottomRight",
+                pauseOnHover: true
+            });
+        }
+    };
+
     const handleProductClick = (productId) => {
         navigate(`/product/${productId}`);
     };
@@ -41,7 +127,7 @@ const NewReleases = () => {
     // }, [NReleaseProducts]);
 
     return (
-        <div className="mb-32">
+        <div className="mb-32 mt-80">
             <div className="container">
                 {/* Heading section */}
                 <Heading

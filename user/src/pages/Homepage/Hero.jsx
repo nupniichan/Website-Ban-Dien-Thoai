@@ -48,7 +48,7 @@ const Hero = () => {
     const heroProducts = getProductsById(["SP023", "SP035"]);
 
     const handleHeroClick = (productId) => {
-        navigate(`/product/${productId}`);
+        navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
     };
 
     useEffect(() => {
@@ -77,25 +77,44 @@ const Hero = () => {
                                         {/* <h1 className="text-2xl sm:text-6xl lg:text-2xl font-bold">
                                             {product.description}
                                         </h1> */}
-                                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
+                                        <h1
+                                            className="text-3xl sm:text-4xl lg:text-5xl font-bold"
+                                            data-aos="zoom-out"
+                                            data-aos-duration="500"
+                                            data-aos-once={false}
+                                        >
                                             {product.brand}
                                         </h1>
-                                        <h1 className="text-3xl uppercase text-white dark:text-white/5 sm:text-[50px] md:text-[70px] xl:text-[100px] font-bold leading-none">
+                                        <h1
+                                            className="text-3xl uppercase text-white dark:text-white/5 sm:text-[50px] md:text-[70px] xl:text-[100px] font-bold leading-none"
+                                            data-aos="zoom-out"
+                                            data-aos-duration="500"
+                                            data-aos-once={false}
+                                        >
                                             {product.name}
                                         </h1>
-                                        <div>
+                                        <div
+                                            data-aos="fade-up"
+                                            data-aos-duration="500"
+                                            data-aos-delay="300"
+                                            data-aos-once={false}
+                                        >
                                             <Button
                                                 text="Khám phá"
                                                 bgColor="bg-primary"
                                                 textColor="text-white"
-                                                onClick={() => handleHeroClick(product.id)}
+                                                onClick={() =>
+                                                    handleHeroClick(product.id)
+                                                }
                                             />
                                         </div>
                                     </div>
 
                                     {/* Img section */}
                                     <div className="order-1 sm:order-2">
-                                        <div>
+                                        <div data-aos="fade-left"
+                                            data-aos-duration="500"
+                                            data-aos-once={false}>
                                             <img
                                                 src={`${BASE_URL}/${product.image}`}
                                                 alt=""

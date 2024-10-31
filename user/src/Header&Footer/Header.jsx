@@ -19,7 +19,7 @@ const MenuItems = [
     {
         id: "2",
         name: "Cửa Hàng",
-        url: `${PathNames.PRODUCTS}`,
+        url: `${PathNames.SHOP}`,
     },
     {
         id: "3",
@@ -157,6 +157,7 @@ const Header = () => {
                         </div>
 
                         {/* Search for desktop */}
+                        {/* TODO make search box a popup modal */}
                         <div className="relative flex-1 mx-4">
                             <input
                                 type="text"

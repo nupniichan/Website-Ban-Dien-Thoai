@@ -22,7 +22,7 @@ const PaymentResult = () => {
                 placement: "bottomRight",
                 pauseOnHover: true
             });
-            navigate(`${pagesName.PAYMENTSUCCESS}`); // Điều hướng đến trang thành công
+            navigate(`${pagesName.PAYMENT_SUCCESS}`); // Điều hướng đến trang thành công
         } else {
             // Nếu resultCode khác 0, giao dịch thất bại
             notification.error({
@@ -32,7 +32,7 @@ const PaymentResult = () => {
                 placement: "bottomRight",
                 pauseOnHover: true
             });
-            navigate(`${pagesName.PAYMENTFAILED}`); // Điều hướng đến trang thất bại
+            navigate(`${pagesName.PAYMENT_FAILED}`); // Điều hướng đến trang thất bại
         }
     }, [location, navigate]);
 

@@ -14,22 +14,22 @@ import MyOrders from "./pages/MyOrders.jsx";
 import PaymentFailed from "./pages/PaymentFailed.jsx";
 import PaymentResult from "./pages/PaymentResult.jsx";
 import PaymentSuccess from "./pages/PaymentSuccess.jsx";
+import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
 import ProductDetails from "./pages/ProductDetails.jsx";
 import Profile from "./pages/Profile.jsx";
 import SearchResult from "./pages/SearchResults.jsx";
+import Shop from "./pages/Shop.jsx";
 import Stories from "./pages/Stories.jsx";
 import Support from "./pages/Support.jsx";
+import Terms from "./pages/Terms.jsx";
 import Vacancies from "./pages/Vacancies.jsx";
 import PathNames from "./PathNames.js";
-import PrivacyPolicy from "./pages/PrivacyPolicy.jsx";
-import Terms from "./pages/Terms.jsx";
-import Shop from "./pages/Shop.jsx";
 
 function App() {
     return (
         <>
-        {/* TODO Do notifications for actions */}
             <Header />
+
             <Routes>
                 <Route path={PathNames.REGISTER} element={<Register />} />
                 <Route path="/" element={<Homepage />} />
@@ -47,11 +47,10 @@ function App() {
                 <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
                 <Route path={PathNames.LOGIN} element={<Login />} />
                 <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />
-                <Route path={PathNames.PAYMENTRESULT} element={<PaymentResult />} />
-                <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
-                <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
-                <Route path={PathNames.PRODUCTS} element={<Shop/>} />
-
+                <Route path={PathNames.PAYMENT_RESULT} element={<PaymentResult />} />
+                <Route path={PathNames.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
+                <Route path={PathNames.PAYMENT_FAILED} element={<PaymentFailed />} />
+                <Route path={PathNames.SHOP} element={<Shop />} />
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>
 

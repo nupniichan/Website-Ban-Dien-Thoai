@@ -11,15 +11,15 @@ const PathNames = {
     CART: '/cart',
     CHECKOUT: '/checkout',
     SEARCH_RESULTS: '/search-results',
-    PRODUCTS: '/shop',
-    PRODUCT_DETAILS: '/:name',
+    SHOP: '/shop',
+    PRODUCT_DETAILS: '/product',
     REGISTER: '/user/register',
     LOGIN: '/user/login',
     PROFILE: '/user/profile',
     MY_ORDERS: '/user/my-orders',
-    PAYMENTRESULT: '/payment-result',
-    PAYMENTSUCCESS: '/payment-success',
-    PAYMENTFAILED: '/payment-failed'
+    PAYMENT_RESULT: '/payment-result',
+    PAYMENT_SUCCESS: '/payment-success',
+    PAYMENT_FAILED: '/payment-failed'
 };
 
 export default PathNames;

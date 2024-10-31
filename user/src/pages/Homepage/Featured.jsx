@@ -49,9 +49,10 @@ const Featured = () => {
                                     />
                                 </p>
                                 <Button
-                                    text="Browse"
+                                    text="Khám phá"
                                     bgColor={"bg-primary"}
                                     textColor={"text-white"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>
@@ -92,9 +93,10 @@ const Featured = () => {
                                     />
                                 </p>
                                 <Button
-                                    text="Browse"
+                                    text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-brandYellow"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>
@@ -135,9 +137,10 @@ const Featured = () => {
                                     Apple
                                 </p>
                                 <Button
-                                    text="Browse"
+                                    text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-[#1b1b1b]"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>

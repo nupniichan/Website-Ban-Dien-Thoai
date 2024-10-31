@@ -16,7 +16,7 @@ const Featured2 = () => {
     }
 
     return (
-        <section className="py-8">
+        <section className="py-8 mb-40">
             <div className="container">
                 <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
                     {/* first col */}
@@ -52,9 +52,10 @@ const Featured2 = () => {
                                     />
                                 </p>
                                 <Button
-                                    text="Browse"
+                                    text="Khám phá"
                                     bgColor={"bg-primary"}
                                     textColor={"text-white"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>
@@ -110,9 +111,10 @@ const Featured2 = () => {
                                     />
                                 </p>
                                 <Button
-                                    text="Browse"
+                                    text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-brandGreen"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>
@@ -139,9 +141,10 @@ const Featured2 = () => {
                                     />
                                 </p>
                                 <Button
-                                    text="Browse"
+                                    text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-brandBlue"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>
