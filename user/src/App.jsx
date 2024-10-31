@@ -51,7 +51,7 @@ function App() {
                 <Route path={PathNames.PAYMENTSUCCESS} element={<PaymentSuccess />} />
                 <Route path={PathNames.PAYMENTFAILED} element={<PaymentFailed />} />
                 <Route path={PathNames.PRODUCTS} element={<Shop/>} />
-                
+
                 <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
             </Routes>
 

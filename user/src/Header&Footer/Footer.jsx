@@ -18,7 +18,7 @@ const FooterLinks = [
         label: "Giới Thiệu",
         link: `${PathNames.ABOUT}`,
     },
-    {   
+    {
         label: "Câu chuyện",
         link: `${PathNames.STORIES}`,
     },
