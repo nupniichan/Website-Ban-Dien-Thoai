@@ -6,6 +6,7 @@ import {
     createUserWithEmailAndPassword,
     sendEmailVerification,
 } from "firebase/auth";
+import { notification } from "antd";
 
 const Register = ({ onRegisterSuccess }) => {
     const [name, setName] = useState("");
@@ -156,7 +157,13 @@ const Register = ({ onRegisterSuccess }) => {
                     }
                 );
 
-                alert("Đăng ký thành công!");
+                notification.success({
+                    message: 'Thành công',
+                    description: 'Đăng ký thành công!',
+                    duration: 4,
+                    placement: "bottomRight",
+                    pauseOnHover: true
+                });
                 onRegisterSuccess();
                 navigate("/login"); // Optionally redirect to the login page after successful registration
             } catch (error) {
@@ -164,9 +171,13 @@ const Register = ({ onRegisterSuccess }) => {
                     "Error during registration:",
                     error.response?.data || error.message
                 );
-                alert(
-                    "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại."
-                );
+                notification.error({
+                    message: 'Lỗi',
+                    description: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
+                    duration: 4,
+                    placement: "bottomRight",
+                    pauseOnHover: true
+                })
             }
         }
     };

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { BASE_URL } from "../config";
 import { useLocation, useNavigate } from "react-router-dom";
+import { notification } from "antd";
 
 const Checkout = () => {
     const location = useLocation();
@@ -161,16 +162,26 @@ const Checkout = () => {
                         }
                     );
 
-                    alert(
-                        "Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng."
-                    );
+                    notification.success({
+                        message: 'Thành công',
+                        description: 'Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.',
+                        duration: 4,
+                        placement: "bottomRight",
+                        pauseOnHover: true
+                    });
                     navigate("/payment-history");
                 } else {
                     throw new Error("Lỗi khi tạo đơn hàng");
                 }
             } catch (error) {
                 console.error("Error creating order:", error);
-                alert("Có lỗi xảy ra khi tạo đơn hàng");
+                notification.warning({
+                    message: 'Lỗi',
+                    description: "Có lỗi xảy ra khi tạo đơn hàng",
+                    duration: 4,
+                    placement: "bottomRight",
+                    pauseOnHover: true
+                });
             }
         }
     };
