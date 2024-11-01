@@ -4,7 +4,7 @@ module.exports = {
   orderInfo: 'Thanh toán SPhoneC',
   partnerCode: 'MOMO',
   redirectUrl: 'http://4.242.20.80:5173/payment-result',
-  ipnUrl: 'https://1b56-2001-ee0-267-2093-1c09-b322-c979-348d.ngrok-free.app/callback', // Tren develop thi xai ngrok
+  ipnUrl: 'https:/4.242.20.80:5000/callback', // Tren develop thi xai ngrok
   requestType: 'payWithMethod',
   extraData: '',
   orderGroupId: '',
