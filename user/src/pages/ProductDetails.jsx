@@ -37,6 +37,14 @@ const ProductDetails = () => {
         const value = parseInt(e.target.value, 10);
         if (value > product.quantity) {
             setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
+            notification.warning({
+                message: 'Lưu ý',
+                description: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này',
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
         } else {
             setError("");
         }
