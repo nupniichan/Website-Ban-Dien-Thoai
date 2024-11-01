@@ -170,11 +170,13 @@ const Cart = () => {
             selectedItems.includes(item.productId)
         );
         
+        // Lưu selectedItems vào sessionStorage để có thể xóa sau khi thanh toán thành công
+        sessionStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
+        
         navigate("/checkout", {
             state: {
                 cartItems: selectedProducts,
-                total: calculateSelectedTotal(),
-                onCheckoutSuccess: () => removeMultipleFromCart(selectedItems)
+                total: calculateSelectedTotal()
             },
         });
     };
