@@ -69,7 +69,7 @@ const Header = () => {
                 {/* Logo */}
                 <Link
                     to={`${PathNames.HOMEPAGE}`}
-                    className="flex items-center gap-4"
+                    className="xl:-translate-x-3"
                 >
                     <NeonSign text="PHONY BALONEY" />
                 </Link>

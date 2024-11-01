@@ -2,7 +2,10 @@
 // TODO: make a slideout cart sidebar
 const CartSidebar = () => {
 
-    return <div>CartSidebar</div>;
+    return (
+        <div className="cart-sidebar">
+        </div>
+    )
 };
 
 export default CartSidebar;

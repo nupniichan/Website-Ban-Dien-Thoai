@@ -1,15 +1,14 @@
-import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
-import { Card } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
 import Heading from "../../shared/Heading";
 import { notification } from "antd";
+import PathNames from "../../PathNames";
 
 const NewReleases = () => {
-    const [products, setProducts] = useState([]);
     const userId = sessionStorage.getItem("userId");
+    const [products, setProducts] = useState([]);
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
@@ -33,11 +32,29 @@ const NewReleases = () => {
         return products.filter((product) => ids.includes(product.id));
     };
     const NReleaseProducts = getProductsById([
-        "SP023",
+        "SP028",
         "SP022",
         "SP035",
         "SP036",
     ]);
+
+    // const handleQuantityChange = (e) => {
+    //     const value = parseInt(e.target.value, 10);
+    //     if (value > product.quantity) {
+    //         setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
+    //         notification.warning({
+    //             message: 'Lưu ý',
+    //             description: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này',
+    //             duration: 4,
+    //             placement: "bottomRight",
+    //             showProgress: true,
+    //             pauseOnHover: true
+    //         });
+    //     } else {
+    //         setError("");
+    //     }
+    //     setQuantity(value);
+    // };
 
     const handleBuyNow = async () => {
         if (!userId) {
@@ -125,11 +142,8 @@ const NewReleases = () => {
     };
 
     const handleProductClick = (productId) => {
-        navigate(`/product/${productId}`);
+        navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
     };
-    // useEffect(() => {
-    //     console.log(NReleaseProducts);
-    // }, [NReleaseProducts]);
 
     const formatCurrency = (price) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -191,10 +205,13 @@ const NewReleases = () => {
                                             {formatCurrency(item.price)}
                                         </span>
                                         <button
-                                            onClick={(e) => e.stopPropagation()}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleBuyNow();
+                                            }}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"
                                         >
-                                            Add to cart
+                                            Thêm vào giỏ
                                         </button>
                                     </div>
                                 </div>
