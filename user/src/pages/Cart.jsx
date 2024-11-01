@@ -147,14 +147,14 @@ const Cart = () => {
 
     if (cartItems.length === 0) {
         return (
-            <div className="text-center py-10">
+            <div className="py-10 text-center">
                 <h2 className="text-2xl font-semibold">
                     Giỏ hàng của bạn đang trống
                 </h2>
                 <p className="mt-4">Hãy chọn thêm sản phẩm để mua sắm nhé</p>
                 <button
                     onClick={() => (window.location.href = "/")}
-                    className="mt-6 bg-blue-400 text-white px-6 py-2 rounded-lg"
+                    className="px-6 py-2 mt-6 text-white bg-blue-400 rounded-lg"
                 >
                     Quay lại trang chủ
                 </button>
@@ -163,13 +163,13 @@ const Cart = () => {
     }
 
     return (
-        <div className="container mx-auto p-6">
-            <h2 className="text-2xl font-semibold mb-4">Giỏ hàng của bạn</h2>
+        <div className="container p-6 mx-auto">
+            <h2 className="mb-4 text-2xl font-semibold">Giỏ hàng của bạn</h2>
             <div className="grid grid-cols-1 gap-4">
                 {cartItems.map((item) => (
                     <div
                         key={item.productId}
-                        className="flex justify-between items-center p-4 border rounded-lg"
+                        className="flex items-center justify-between p-4 border rounded-lg"
                     >
                         <div className="flex items-center">
                             <div
@@ -195,7 +195,7 @@ const Cart = () => {
                                         : "/default-image.jpg"
                                 }
                                 alt={item.name}
-                                className="w-20 h-20 object-cover"
+                                className="object-cover w-20 h-20"
                             />
                             <div className="ml-4">
                                 <h3 className="text-lg font-semibold">
@@ -235,7 +235,7 @@ const Cart = () => {
                             </button>
                             <button
                                 onClick={() => removeFromCart(item.productId)}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                                className="px-4 py-2 text-white bg-blue-500 rounded-lg"
                             >
                                 Xóa
                             </button>
@@ -246,7 +246,7 @@ const Cart = () => {
 
             {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
             {overStockError && (
-                <div className="bg-red-100 text-red-700 p-4 rounded-lg mt-4">
+                <div className="p-4 mt-4 text-red-700 bg-red-100 rounded-lg">
                     {overStockError}
                 </div>
             )}
@@ -254,18 +254,18 @@ const Cart = () => {
             {/* Hiển thị hộp thoại xác nhận xóa sản phẩm */}
             {showConfirmDialog && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-75">
-                    <div className="bg-white p-6 rounded-lg">
+                    <div className="p-6 bg-white rounded-lg">
                         <h3>Bạn có chắc muốn xóa sản phẩm khỏi giỏ hàng?</h3>
-                        <div className="flex justify-end space-x-4 mt-4">
+                        <div className="flex justify-end mt-4 space-x-4">
                             <button
                                 onClick={() => setShowConfirmDialog(false)}
-                                className="bg-gray-500 text-white px-4 py-2 rounded-lg"
+                                className="px-4 py-2 text-white bg-gray-500 rounded-lg"
                             >
                                 Hủy
                             </button>
                             <button
                                 onClick={handleConfirmRemove}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+                                className="px-4 py-2 text-white bg-blue-500 rounded-lg"
                             >
                                 Xác nhận
                             </button>
@@ -277,12 +277,12 @@ const Cart = () => {
             <div className="mt-8 text-right">
                 <p className="text-xl">
                     Tạm tính:{" "}
-                    <span className="text-red-500 font-semibold">
+                    <span className="font-semibold text-red-500">
                         {calculateSelectedTotal().toLocaleString()}đ
                     </span>
                 </p>
                 <button
-                    className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg disabled:bg-gray-400"
+                    className="px-6 py-2 mt-4 text-white bg-blue-500 rounded-lg disabled:bg-gray-400"
                     onClick={() =>
                         navigate("/checkout", {
                             state: {
