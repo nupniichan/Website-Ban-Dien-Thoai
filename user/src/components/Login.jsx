@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { message } from 'antd';
-import {
-    auth,
-    signInWithEmailAndPassword,
-} from "../firebase";
 import { BASE_URL } from "../config";
 
 const Login = ({ onSwitchToRegister }) => {
@@ -12,7 +8,6 @@ const Login = ({ onSwitchToRegister }) => {
         email: "",
         password: "",
     });
-    // const [errorMessage, setErrorMessage] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -21,18 +16,9 @@ const Login = ({ onSwitchToRegister }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // setErrorMessage("");
 
         try {
-            // Firebase sign-in
-            const userCredential = await signInWithEmailAndPassword(
-                auth,
-                formData.email,
-                formData.password
-            );
-            const user = userCredential.user;
-
-            // Send a request to the backend API for additional user data
+            // Send a request to the backend API for user authentication
             const response = await fetch(`${BASE_URL}/api/login`, {
                 method: "POST",
                 headers: {
@@ -62,13 +48,10 @@ const Login = ({ onSwitchToRegister }) => {
                     type: 'warning',
                     content: errorData.message || "Email hoặc mật khẩu không chính xác",
                     duration: 3
-                }
-                    // errorData.message || "Email hoặc mật khẩu không chính xác"
-                );
+                });
             }
         } catch (err) {
             console.error("Error:", err);
-            // setErrorMessage("Email hoặc mật khẩu không chính xác");
             message.open({
                 type: 'warning',
                 content: 'Email hoặc mật khẩu không chính xác',
@@ -86,12 +69,6 @@ const Login = ({ onSwitchToRegister }) => {
                 <h2 className="text-2xl mb-6 text-center text-gray-800">
                     Đăng Nhập
                 </h2>
-
-                {/* {errorMessage && (
-                    <p className="text-red-500 text-center mb-4">
-                        {errorMessage}
-                    </p>
-                )} */}
 
                 <input
                     type="email"
