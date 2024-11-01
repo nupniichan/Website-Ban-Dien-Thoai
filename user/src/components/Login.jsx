@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { message } from 'antd';
 import { BASE_URL } from "../config";
 
 const Login = ({ onSwitchToRegister }) => {
@@ -8,6 +7,9 @@ const Login = ({ onSwitchToRegister }) => {
         email: "",
         password: "",
     });
+    const [errorMessage, setErrorMessage] = useState("");
+    const [showResend, setShowResend] = useState(false);
+    const [resendMessage, setResendMessage] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -16,9 +18,11 @@ const Login = ({ onSwitchToRegister }) => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setErrorMessage("");
+        setResendMessage("");
+        setShowResend(false);
 
         try {
-            // Send a request to the backend API for user authentication
             const response = await fetch(`${BASE_URL}/api/login`, {
                 method: "POST",
                 headers: {
@@ -33,30 +37,20 @@ const Login = ({ onSwitchToRegister }) => {
             if (response.ok) {
                 const data = await response.json();
                 sessionStorage.setItem("userEmail", formData.email);
-                sessionStorage.setItem("userId", data.user.userId);
-                sessionStorage.setItem("accountName", data.user.accountName);
+                sessionStorage.setItem("userId", data.user.userId); 
+                sessionStorage.setItem("accountName", data.user.accountName); 
                 window.dispatchEvent(new Event("loginSuccess"));
                 navigate("/");
                 console.log("Logged in successfully with user data:", data);
-                message.open({
-                    type: 'success',
-                    content: 'Đăng nhập thành công',
-                });
             } else {
                 const errorData = await response.json();
-                message.open({
-                    type: 'warning',
-                    content: errorData.message || "Email hoặc mật khẩu không chính xác",
-                    duration: 3
-                });
+                setErrorMessage(
+                    errorData.message || "Email hoặc mật khẩu không chính xác"
+                );
             }
         } catch (err) {
             console.error("Error:", err);
-            message.open({
-                type: 'warning',
-                content: 'Email hoặc mật khẩu không chính xác',
-                duration: 3
-            });
+            setErrorMessage("Email hoặc mật khẩu không chính xác");
         }
     };
 
@@ -69,6 +63,17 @@ const Login = ({ onSwitchToRegister }) => {
                 <h2 className="text-2xl mb-6 text-center text-gray-800">
                     Đăng Nhập
                 </h2>
+
+                {errorMessage && (
+                    <p className="text-red-500 text-center mb-4">
+                        {errorMessage}
+                    </p>
+                )}
+                {resendMessage && (
+                    <p className="text-green-500 text-center mb-4">
+                        {resendMessage}
+                    </p>
+                )}
 
                 <input
                     type="email"

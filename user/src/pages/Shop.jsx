@@ -336,40 +336,38 @@ const Shop = () => {
                             <div
                                 key={item.id}
                                 className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl shadow p-4 cursor-pointer relative"
-                                onClick={() => handleProductClick(item.id)}
                             >
-                                <div className="productcard-img relative">
-                                    {item.image ? (
-                                        <img
-                                            src={`${BASE_URL}/${item.image}`}
-                                            alt={item.name}
-                                            className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
-                                        />
-                                    ) : (
-                                        <p>Image not available</p>
-                                    )}
+                                <div onClick={() => handleProductClick(item.id)} className="cursor-pointer">
+                                    <div className="productcard-img relative">
+                                        {item.image ? (
+                                            <img
+                                                src={`${BASE_URL}/${item.image}`}
+                                                alt={item.name}
+                                                className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
+                                            />
+                                        ) : (
+                                            <p>Image not available</p>
+                                        )}
+                                    </div>
+                                    <div className="productcard-content text-left">
+                                        <h2 className="font-bold text-lg mb-2">
+                                            {item.name}
+                                        </h2>
+                                        <p className="text-gray-600">
+                                            {item.brand}
+                                        </p>
+                                        <p className="text-red-500 font-semibold">
+                                            {item.price.toLocaleString()} đ
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="productcard-content text-left">
-                                    <h2 className="font-bold text-lg mb-2">
-                                        {item.name}
-                                    </h2>
-                                    <p className="text-gray-600">
-                                        {item.brand}
-                                    </p>
-                                    <p className="text-red-500 font-semibold">
-                                        {item.price.toLocaleString()} đ
-                                    </p>
 
-                                    {/* Thêm nút Mua ngay */}
-                                    <button
-                                        onClick={(e) => {
-                                            handleBuyNow(e, item.id);
-                                        }}
-                                        className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                                    >
-                                        Mua ngay
-                                    </button>
-                                </div>
+                                <button
+                                    onClick={(e) => handleBuyNow(e, item.id)}
+                                    className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    Mua ngay
+                                </button>
                             </div>
                         ))}
                     </div>

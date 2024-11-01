@@ -887,31 +887,15 @@ app.get('/api/discountCodes/:id', async (req, res) => {
 app.post('/api/cart/:userId/add', async (req, res) => {
   const { userId } = req.params;
   const { productId, name, price, color, quantity, image } = req.body;
-  
 
   try {
-    // Sử dng findOneAndUpdate thay vì findOne và save
-    const user = await User.findOneAndUpdate(
-      { id: userId },
-      {
-        $push: {
-          cart: {
-            productId,
-            name,
-            price,
-            color,
-            quantity,
-            image
-          }
-        }
-      },
-      { new: true, runValidators: false } // Tắt validation
-    );
-
+    // Tìm user
+    const user = await User.findOne({ id: userId });
     if (!user) {
       return res.status(404).json({ message: 'Không tìm thấy thông tin người dùng' });
     }
 
+    // Kiểm tra sản phẩm trong kho
     const product = await Product.findOne({ id: productId });
     if (!product) {
       return res.status(404).json({ message: 'Không tìm thấy sản phẩm' });
@@ -924,6 +908,40 @@ app.post('/api/cart/:userId/add', async (req, res) => {
       });
     }
 
+    // Tìm vị trí của sản phẩm trong giỏ hàng (nếu có)
+    const existingItemIndex = user.cart.findIndex(item => 
+      item.productId === productId && 
+      item.color === color
+    );
+
+    if (existingItemIndex !== -1) {
+      // Nếu sản phẩm đã tồn tại
+      const newQuantity = user.cart[existingItemIndex].quantity + quantity;
+      
+      // Kiểm tra số lượng mới có vượt quá tồn kho không
+      if (newQuantity > product.quantity) {
+        return res.status(400).json({ 
+          message: `Tổng số lượng vượt quá tồn kho. Chỉ còn ${product.quantity} sản phẩm.` 
+        });
+      }
+
+      // Cập nhật số lượng mới
+      user.cart[existingItemIndex].quantity = newQuantity;
+    } else {
+      // Nếu sản phẩm chưa có trong giỏ hàng, thêm mới
+      user.cart.push({
+        productId,
+        name,
+        price,
+        color,
+        quantity,
+        image
+      });
+    }
+
+    // Lưu giỏ hàng đã cập nhật
+    await user.save();
+    
     res.status(200).json({ 
       message: 'Đã thêm sản phẩm vào giỏ hàng thành công',
       cart: user.cart 

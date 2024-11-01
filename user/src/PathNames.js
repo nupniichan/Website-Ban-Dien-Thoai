@@ -12,7 +12,7 @@ const PathNames = {
     CHECKOUT: '/checkout',
     SEARCH_RESULTS: '/search-results',
     SHOP: '/shop',
-    PRODUCT_DETAILS: '/product',
+    PRODUCT_DETAILS: '/:name',
     REGISTER: '/user/register',
     LOGIN: '/user/login',
     PROFILE: '/user/profile',
