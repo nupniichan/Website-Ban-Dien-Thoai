@@ -1069,7 +1069,7 @@ app.post('/payment', async (req, res) => {
 
 // Nhận callback từ MoMo sau khi thanh toán
 app.post('/callback', async (req, res) => {
-  const { resultCode, orderId, amount, orderInfo, extraData } = req.body;
+  const { resultCode, orderId, amount, extraData } = req.body;
 
   if (resultCode === 0) {
     // Thanh toán thành công
@@ -1103,19 +1103,21 @@ app.post('/callback', async (req, res) => {
 
         await newOrder.save();
 
-        // Trừ s lượng tồn kho
+        // Trừ số lượng tồn kho
         await adjustProductStock(orderData.items);
 
         // Xóa các sản phẩm đã thanh toán ra khỏi giỏ hàng
         const user = await User.findOne({ id: orderData.customerId });
         if (user) {
-          const updatedCart = user.cart.filter(cartItem =>
-            !orderData.items.some(orderedItem => orderedItem.productId === cartItem.productId)
-          );
-
-          user.cart = updatedCart;
-          await user.save();
+          // Lấy danh sách productId từ items đã đặt hàng
+          const orderedProductIds = orderData.items.map(item => item.productId);
           
+          // Lọc giỏ hàng để giữ lại những sản phẩm không có trong đơn hàng
+          user.cart = user.cart.filter(cartItem => 
+            !orderedProductIds.includes(cartItem.productId)
+          );
+          
+          await user.save();
         }
 
         // Chuyển hướng về trang lịch sử đơn hàng
@@ -1478,6 +1480,16 @@ app.post('/api/orders/create', async (req, res) => {
 
     await newOrder.save();
     await adjustProductStock(orderData.items);
+
+    // Xóa các sản phẩm đã đặt hàng khỏi giỏ hàng
+    const user = await User.findOne({ id: orderData.customerId });
+    if (user) {
+      const orderedProductIds = orderData.items.map(item => item.productId);
+      user.cart = user.cart.filter(cartItem => 
+        !orderedProductIds.includes(cartItem.productId)
+      );
+      await user.save();
+    }
 
     res.status(201).json({ 
       message: 'Đơn hàng đã được tạo thành công', 

@@ -9,7 +9,7 @@ const AddKho = () => {
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [kho, setKho] = useState({
     id: `PH${Date.now()}`,
-    type: 'nhập',
+    type: 'Nhập',
     managementPerson: '',
     responsiblePerson: '',
     date: new Date().toISOString().slice(0, 16),

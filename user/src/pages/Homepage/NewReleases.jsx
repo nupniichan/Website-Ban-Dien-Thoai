@@ -56,7 +56,7 @@ const NewReleases = () => {
     //     setQuantity(value);
     // };
 
-    const handleBuyNow = async () => {
+    const handleBuyNow = async (selectedProduct) => {
         if (!userId) {
             notification.warning({
                 message: 'Lưu ý',
@@ -70,7 +70,7 @@ const NewReleases = () => {
             return;
         }
 
-        if (!product || !product.id) {
+        if (!selectedProduct || !selectedProduct.id) {
             notification.error({
                 message: 'Lỗi',
                 description: 'Không tìm thấy thông tin sản phẩm',
@@ -82,7 +82,7 @@ const NewReleases = () => {
             return;
         }
 
-        if (quantity <= 0 || quantity > product.quantity) {
+        if (quantity <= 0 || quantity > selectedProduct.quantity) {
             notification.error({
                 message: 'Lỗi',
                 description: 'Số lượng không hợp lệ!',
@@ -95,12 +95,12 @@ const NewReleases = () => {
         }
 
         const cartItem = {
-            productId: product.id,
-            name: product.name,
-            price: product.price,
-            color: product.color,
+            productId: selectedProduct.id,
+            name: selectedProduct.name,
+            price: selectedProduct.price,
+            color: selectedProduct.color,
             quantity: parseInt(quantity),
-            image: product.image,
+            image: selectedProduct.image,
         };
 
         console.log("Sending cart item:", cartItem);
@@ -207,7 +207,7 @@ const NewReleases = () => {
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleBuyNow();
+                                                handleBuyNow(item);
                                             }}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"
                                         >

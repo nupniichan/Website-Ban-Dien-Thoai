@@ -136,6 +136,49 @@ const Cart = () => {
         );
     };
 
+    // Thêm hàm xóa nhiều sản phẩm
+    const removeMultipleFromCart = async (productIds) => {
+        const userId = sessionStorage.getItem("userId");
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/cart/${userId}/removeMultiple`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ productIds }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to remove items from cart');
+            }
+
+            // Cập nhật state local
+            setCartItems(prevItems => 
+                prevItems.filter(item => !productIds.includes(item.productId))
+            );
+            // Reset selected items
+            setSelectedItems([]);
+        } catch (error) {
+            console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
+        }
+    };
+
+    // Sửa hàm navigate để thêm callback xóa giỏ hàng
+    const handleCheckout = () => {
+        const selectedProducts = cartItems.filter(item => 
+            selectedItems.includes(item.productId)
+        );
+        
+        navigate("/checkout", {
+            state: {
+                cartItems: selectedProducts,
+                total: calculateSelectedTotal(),
+                onCheckoutSuccess: () => removeMultipleFromCart(selectedItems)
+            },
+        });
+    };
+
     // Giao diện khi giỏ hàng trống
     if (loading) {
         return <div>Đang tải...</div>;
@@ -283,16 +326,7 @@ const Cart = () => {
                 </p>
                 <button
                     className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg disabled:bg-gray-400"
-                    onClick={() =>
-                        navigate("/checkout", {
-                            state: {
-                                cartItems: cartItems.filter((item) =>
-                                    selectedItems.includes(item.productId)
-                                ),
-                                total: calculateSelectedTotal(),
-                            },
-                        })
-                    }
+                    onClick={handleCheckout}
                     disabled={selectedItems.length === 0}
                 >
                     Mua ngay ({selectedItems.length})
