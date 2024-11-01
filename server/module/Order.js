@@ -33,6 +33,10 @@ const orderSchema = new mongoose.Schema({
   notes: { type: String },
   cancellationReason: { type: String },
   cancelledAt: { type: Date },
+  momoOrderId: {
+    type: String,
+    sparse: true
+  }
 });
 
 orderSchema.pre('save', function(next) {

@@ -50,10 +50,10 @@ const Cart = () => {
 
     // Xóa sản phẩm khỏi giỏ hàng
     const removeFromCart = async (productId) => {
-        const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
-
+        const userId = sessionStorage.getItem("userId");
+        
         try {
-            await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
+            const response = await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -61,9 +61,11 @@ const Cart = () => {
                 body: JSON.stringify({ productId }),
             });
 
-            setCartItems(
-                cartItems.filter((item) => item.productId !== productId)
-            );
+            if (!response.ok) {
+                throw new Error('Failed to remove item from cart');
+            }
+
+            setCartItems(prevItems => prevItems.filter(item => item.productId !== productId));
         } catch (error) {
             console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
         }
@@ -213,7 +215,7 @@ const Cart = () => {
             <div className="grid grid-cols-1 gap-4">
                 {cartItems.map((item) => (
                     <div
-                        key={item.productId}
+                        key={`${item.productId}-${item.color}`}
                         className="flex justify-between items-center p-4 border rounded-lg"
                     >
                         <div className="flex items-center">
@@ -289,7 +291,7 @@ const Cart = () => {
                 ))}
             </div>
 
-            {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
+            {/* Hiển thị thông báo lỗi vượt qu tồn kho */}
             {overStockError && (
                 <div className="bg-red-100 text-red-700 p-4 rounded-lg mt-4">
                     {overStockError}

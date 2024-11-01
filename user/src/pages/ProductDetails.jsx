@@ -93,12 +93,10 @@ const ProductDetails = () => {
             productId: product.id,
             name: product.name,
             price: product.price,
-            color: product.color,
+            color: selectedColor ? availableColors.find(c => c.id === selectedColor)?.color : product.color,
             quantity: parseInt(quantity),
             image: product.image,
         };
-
-        console.log("Sending cart item:", cartItem);
 
         try {
             const response = await fetch(`${BASE_URL}/api/cart/${userId}/add`, {
@@ -107,14 +105,12 @@ const ProductDetails = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(cartItem),
+                cache: 'no-store'
             });
 
-            const data = await response.json();
-
             if (!response.ok) {
-                throw new Error(
-                    data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
-                );
+                const data = await response.json();
+                throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
             }
 
             notification.success({
@@ -125,6 +121,10 @@ const ProductDetails = () => {
                 showProgress: true,
                 pauseOnHover: true
             });
+
+            // Reset quantity sau khi thêm thành công
+            setQuantity(1);
+            
         } catch (error) {
             console.error("Error adding to cart:", error);
             notification.error({
