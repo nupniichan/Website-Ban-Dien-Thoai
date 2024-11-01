@@ -24,11 +24,16 @@ import Support from "./pages/Support.jsx";
 import Terms from "./pages/Terms.jsx";
 import Vacancies from "./pages/Vacancies.jsx";
 import PathNames from "./PathNames.js";
+import CartSidebar from "./components/CartSidebar.jsx";
+import { useState } from "react";
 
 function App() {
+    const [cartOpen, setCartOpen] = useState(false);
+
     return (
         <>
-            <Header />
+            <Header cartOpen={cartOpen} setCartOpen={setCartOpen} />
+            <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
 
             <Routes>
                 <Route path={PathNames.REGISTER} element={<Register />} />
