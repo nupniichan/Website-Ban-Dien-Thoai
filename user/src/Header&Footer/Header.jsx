@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import NeonSign from "../assets/BrandLogos/NeonSign.jsx";
 import UserMenu from "../components/UserMenu.jsx";
+import CartSidebar from "../components/CartSidebar";
 import PathNames from "../PathNames.js";
 import DarkModeBtn from "../shared/DarkModeBtn.jsx";
 
@@ -19,7 +20,7 @@ const MenuItems = [
     {
         id: "2",
         name: "Cửa Hàng",
-        url: `${PathNames.PRODUCTS}`,
+        url: `${PathNames.SHOP}`,
     },
     {
         id: "3",
@@ -28,7 +29,7 @@ const MenuItems = [
     },
 ];
 
-const Header = () => {
+const Header = ({cartOpen, setCartOpen}) => {
     const [searchQuery, setSearchQuery] = useState("");
     const [isSearchExpanded, setIsSearchExpanded] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -63,13 +64,21 @@ const Header = () => {
         };
     }, []);
 
+    const handleCartClick = () => {
+        setCartOpen(true);
+    };
+
     return (
-        <header className="bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40 ">
+        <header
+            className={`bg-white dark:bg-gray-900 dark:text-white duration-200 relative z-40 ${
+                isMobile ? "my-4" : ""
+            }`}
+        >
             <div className="container flex justify-between items-center">
                 {/* Logo */}
                 <Link
                     to={`${PathNames.HOMEPAGE}`}
-                    className="flex items-center gap-4"
+                    className="xl:-translate-x-3"
                 >
                     <NeonSign text="PHONY BALONEY" />
                 </Link>
@@ -98,10 +107,12 @@ const Header = () => {
                                 onClick={toggleSearch}
                             />
                         </div>
-                        <button className=" p-2" onClick={toggleMobileMenu}>
-                            <MenuOutlined className={`text-xl text-gray-600 dark:text-gray-400 transition-transform duration-200 ease-linear transform ${
+                        <button className="mr-4 p-2" onClick={toggleMobileMenu}>
+                            <MenuOutlined
+                                className={`text-xl text-gray-600 dark:text-gray-400 transition-transform duration-200 ease-linear transform ${
                                     isMobileMenuOpen ? `-rotate-90` : `rotate-0`
-                                }`} />
+                                }`}
+                            />
                         </button>
 
                         {isMobileMenuOpen && (
@@ -126,16 +137,17 @@ const Header = () => {
                                     <UserMenu />
                                     <button
                                         onClick={() => navigate(PathNames.CART)}
+                                        // onClick={() => handleCartClick()}
                                         className="relative p-3 mr-4"
                                     >
                                         <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
                                     </button>
+                                    <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
                                     <DarkModeBtn />
                                 </div>
                             </div>
                         )}
                     </>
-
                 )}
 
                 {isDesktop && (
@@ -157,6 +169,7 @@ const Header = () => {
                         </div>
 
                         {/* Search for desktop */}
+                        {/* TODO make search box a popup modal */}
                         <div className="relative flex-1 mx-4">
                             <input
                                 type="text"
@@ -184,6 +197,7 @@ const Header = () => {
                             <button
                                 className="relative p-3"
                                 onClick={() => navigate(PathNames.CART)}
+                                // onClick={() => handleCartClick()}
                             >
                                 <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
                                 <div className="w-4 h-4 bg-red-500 text-white rounded-full absolute top-0 right-0 flex items-center justify-center text-xs">

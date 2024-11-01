@@ -1,13 +1,16 @@
-import { EyeOutlined, PlusOutlined } from "@ant-design/icons";
-import { Card } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
 import Heading from "../../shared/Heading";
+import { notification } from "antd";
+import PathNames from "../../PathNames";
 
 const NewReleases = () => {
+    const userId = sessionStorage.getItem("userId");
     const [products, setProducts] = useState([]);
+    const [product, setProduct] = useState(null);
+    const [quantity, setQuantity] = useState(1);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -29,18 +32,118 @@ const NewReleases = () => {
         return products.filter((product) => ids.includes(product.id));
     };
     const NReleaseProducts = getProductsById([
-        "SP023",
+        "SP028",
         "SP022",
         "SP035",
         "SP036",
     ]);
 
-    const handleProductClick = (productId) => {
-        navigate(`/product/${productId}`);
+    // const handleQuantityChange = (e) => {
+    //     const value = parseInt(e.target.value, 10);
+    //     if (value > product.quantity) {
+    //         setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
+    //         notification.warning({
+    //             message: 'Lưu ý',
+    //             description: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này',
+    //             duration: 4,
+    //             placement: "bottomRight",
+    //             showProgress: true,
+    //             pauseOnHover: true
+    //         });
+    //     } else {
+    //         setError("");
+    //     }
+    //     setQuantity(value);
+    // };
+
+    const handleBuyNow = async () => {
+        if (!userId) {
+            notification.warning({
+                message: 'Lưu ý',
+                description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
+            window.location.href = "/login";
+            return;
+        }
+
+        if (!product || !product.id) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Không tìm thấy thông tin sản phẩm',
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
+            return;
+        }
+
+        if (quantity <= 0 || quantity > product.quantity) {
+            notification.error({
+                message: 'Lỗi',
+                description: 'Số lượng không hợp lệ!',
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
+            return;
+        }
+
+        const cartItem = {
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            color: product.color,
+            quantity: parseInt(quantity),
+            image: product.image,
+        };
+
+        console.log("Sending cart item:", cartItem);
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/cart/${userId}/add`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(cartItem),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
+                );
+            }
+
+            notification.success({
+                message: 'Thành công',
+                description: 'Đã thêm sản phẩm vào giỏ hàng',
+                duration: 4,
+                placement: "bottomRight",
+                pauseOnHover: true
+            });
+        } catch (error) {
+            console.error("Error adding to cart:", error);
+            notification.error({
+                message: 'Lỗi',
+                description: error.message,
+                duration: 4,
+                placement: "bottomRight",
+                pauseOnHover: true
+            });
+        }
     };
-    // useEffect(() => {
-    //     console.log(NReleaseProducts);
-    // }, [NReleaseProducts]);
+
+    const handleProductClick = (productId) => {
+        navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
+    };
 
     const formatCurrency = (price) => {
         return new Intl.NumberFormat('vi-VN', {
@@ -50,7 +153,7 @@ const NewReleases = () => {
     };
 
     return (
-        <div className="mb-32">
+        <div className="mb-32 mt-80">
             <div className="container">
                 {/* Phần tiêu đề */}
                 <Heading
@@ -102,10 +205,13 @@ const NewReleases = () => {
                                             {formatCurrency(item.price)}
                                         </span>
                                         <button
-                                            onClick={(e) => e.stopPropagation()}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleBuyNow();
+                                            }}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"
                                         >
-                                            Add to cart
+                                            Thêm vào giỏ
                                         </button>
                                     </div>
                                 </div>

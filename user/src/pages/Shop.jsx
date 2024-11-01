@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import Heading from "../shared/Heading";
 import { BASE_URL } from "../config";
 import { useNavigate } from "react-router-dom";
-import Slider from 'rc-slider';
-import 'rc-slider/assets/index.css';
+import Slider from "rc-slider";
+import "rc-slider/assets/index.css";
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
@@ -39,7 +39,11 @@ const Shop = () => {
                 setFilteredProducts(response.data);
 
                 // Calculate the maximum price
-                const highestPrice = Math.ceil(Math.max(...response.data.map(item => item.price)) / 1000) * 1000;
+                const highestPrice =
+                    Math.ceil(
+                        Math.max(...response.data.map((item) => item.price)) /
+                            1000
+                    ) * 1000;
                 setMaxPrice(highestPrice);
                 setTempPriceRange([0, highestPrice]);
             } catch (error) {
@@ -120,14 +124,22 @@ const Shop = () => {
         let filtered = products;
 
         if (tempSelectedBrands.length > 0) {
-            filtered = filtered.filter(item => tempSelectedBrands.includes(item.brand));
+            filtered = filtered.filter((item) =>
+                tempSelectedBrands.includes(item.brand)
+            );
         }
 
         if (tempSelectedColors.length > 0) {
-            filtered = filtered.filter(item => tempSelectedColors.includes(item.color));
+            filtered = filtered.filter((item) =>
+                tempSelectedColors.includes(item.color)
+            );
         }
 
-        filtered = filtered.filter(item => item.price >= tempPriceRange[0] && item.price <= tempPriceRange[1]);
+        filtered = filtered.filter(
+            (item) =>
+                item.price >= tempPriceRange[0] &&
+                item.price <= tempPriceRange[1]
+        );
 
         setFilteredProducts(filtered);
     };
@@ -150,7 +162,7 @@ const Shop = () => {
 
     // Hàm xử lý nút "Xem thêm"
     const handleLoadMore = () => {
-        setCurrentPage(prevPage => prevPage + 1);
+        setCurrentPage((prevPage) => prevPage + 1);
     };
 
     const handleBuyNow = (e, productId) => {
@@ -165,13 +177,22 @@ const Shop = () => {
 
                 <div className="mb-10 relative">
                     <div className="flex items-center">
-                        <button onClick={toggleBrandFilter} className="bg-gray-100 text-black py-2 px-4 rounded-full">
+                        <button
+                            onClick={toggleBrandFilter}
+                            className="bg-gray-100 text-black py-2 px-4 rounded-full"
+                        >
                             Thương hiệu
                         </button>
-                        <button onClick={togglePriceFilter} className="bg-gray-100 text-black py-2 px-4 rounded-full ml-2">
+                        <button
+                            onClick={togglePriceFilter}
+                            className="bg-gray-100 text-black py-2 px-4 rounded-full ml-2"
+                        >
                             Giá
                         </button>
-                        <button onClick={toggleColorFilter} className="bg-gray-100 text-black py-2 px-4 rounded-full ml-2">
+                        <button
+                            onClick={toggleColorFilter}
+                            className="bg-gray-100 text-black py-2 px-4 rounded-full ml-2"
+                        >
                             Màu
                         </button>
 
@@ -198,14 +219,27 @@ const Shop = () => {
                             <h3 className="font-semibold mb-1">Thương hiệu</h3>
                             <ul>
                                 {brands.map((brand, index) => (
-                                    <li key={index} className="flex items-center">
+                                    <li
+                                        key={index}
+                                        className="flex items-center"
+                                    >
                                         <input
                                             type="checkbox"
-                                            checked={tempSelectedBrands.includes(brand)}
-                                            onChange={() => handleBrandSelection(brand)}
+                                            checked={tempSelectedBrands.includes(
+                                                brand
+                                            )}
+                                            onChange={() =>
+                                                handleBrandSelection(brand)
+                                            }
                                             className="mr-2"
                                         />
-                                        <label onClick={() => handleBrandSelection(brand)}>{brand}</label>
+                                        <label
+                                            onClick={() =>
+                                                handleBrandSelection(brand)
+                                            }
+                                        >
+                                            {brand}
+                                        </label>
                                     </li>
                                 ))}
                             </ul>
@@ -230,7 +264,12 @@ const Shop = () => {
                                     min={0}
                                     max={maxPrice} // Update max here too
                                     value={tempPriceRange[0]}
-                                    onChange={(e) => setTempPriceRange([+e.target.value, tempPriceRange[1]])}
+                                    onChange={(e) =>
+                                        setTempPriceRange([
+                                            +e.target.value,
+                                            tempPriceRange[1],
+                                        ])
+                                    }
                                     className="w-30 border rounded px-2 py-1"
                                 />
                                 <span className="px-2">-</span>
@@ -239,7 +278,12 @@ const Shop = () => {
                                     min={0}
                                     max={maxPrice} // Update max here too
                                     value={tempPriceRange[1]}
-                                    onChange={(e) => setTempPriceRange([tempPriceRange[0], +e.target.value])}
+                                    onChange={(e) =>
+                                        setTempPriceRange([
+                                            tempPriceRange[0],
+                                            +e.target.value,
+                                        ])
+                                    }
                                     className="w-30 border rounded px-2 py-1"
                                 />
                             </div>
@@ -252,14 +296,27 @@ const Shop = () => {
                             <h3 className="font-semibold mb-1">Màu</h3>
                             <ul>
                                 {colors.map((color, index) => (
-                                    <li key={index} className="flex items-center">
+                                    <li
+                                        key={index}
+                                        className="flex items-center"
+                                    >
                                         <input
                                             type="checkbox"
-                                            checked={tempSelectedColors.includes(color)}
-                                            onChange={() => handleColorSelection(color)}
+                                            checked={tempSelectedColors.includes(
+                                                color
+                                            )}
+                                            onChange={() =>
+                                                handleColorSelection(color)
+                                            }
                                             className="mr-2"
                                         />
-                                        <label onClick={() => handleColorSelection(color)}>{color}</label>
+                                        <label
+                                            onClick={() =>
+                                                handleColorSelection(color)
+                                            }
+                                        >
+                                            {color}
+                                        </label>
                                     </li>
                                 ))}
                             </ul>
@@ -273,32 +330,38 @@ const Shop = () => {
                             <div
                                 key={item.id}
                                 className="productcard-item group h-[21em] md:h-[23em] lg:h-[25.5em] rounded-2xl shadow p-4 cursor-pointer relative"
-                                onClick={() => handleProductClick(item.id)}
                             >
-                                <div className="productcard-img relative">
-                                    {item.image ? (
-                                        <img
-                                            src={`${BASE_URL}/${item.image}`}
-                                            alt={item.name}
-                                            className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
-                                        />
-                                    ) : (
-                                        <p>Image not available</p>
-                                    )}
+                                <div onClick={() => handleProductClick(item.id)} className="cursor-pointer">
+                                    <div className="productcard-img relative">
+                                        {item.image ? (
+                                            <img
+                                                src={`${BASE_URL}/${item.image}`}
+                                                alt={item.name}
+                                                className="h-[13em] w-[13em] lg:h-[18em] lg:w-[18em] sm:h-[13em] sm:w-[13em] md:h-[13.5em] md:w-[16em] object-cover rounded-xl mb-3"
+                                            />
+                                        ) : (
+                                            <p>Image not available</p>
+                                        )}
+                                    </div>
+                                    <div className="productcard-content text-left">
+                                        <h2 className="font-bold text-lg mb-2">
+                                            {item.name}
+                                        </h2>
+                                        <p className="text-gray-600">
+                                            {item.brand}
+                                        </p>
+                                        <p className="text-red-500 font-semibold">
+                                            {item.price.toLocaleString()} đ
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="productcard-content text-left">
-                                    <h2 className="font-bold text-lg mb-2">{item.name}</h2>
-                                    <p className="text-gray-600">{item.brand}</p>
-                                    <p className="text-red-500 font-semibold">{item.price.toLocaleString()} đ</p>
-                                    
-                                    {/* Thêm nút Mua ngay */}
-                                    <button
-                                        onClick={(e) => handleBuyNow(e, item.id)}
-                                        className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
-                                    >
-                                        Mua ngay
-                                    </button>
-                                </div>
+
+                                <button
+                                    onClick={(e) => handleBuyNow(e, item.id)}
+                                    className="absolute bottom-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                                >
+                                    Mua ngay
+                                </button>
                             </div>
                         ))}
                     </div>

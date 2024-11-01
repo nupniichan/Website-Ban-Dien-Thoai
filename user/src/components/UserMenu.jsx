@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { MenuOutlined, UserOutlined } from "@ant-design/icons";
-import { Dropdown, Space, Modal, Avatar } from "antd";
+import { Dropdown, Space, Modal, Avatar, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login"; // Import your Login component
 import Register from "./Register"; // Import your Register component
@@ -57,6 +57,19 @@ const UserMenu = () => {
         sessionStorage.removeItem("accountName");
         setIsLoggedIn(false);
         setUserAvatar(null); // Clear avatar when logged out
+        if (isLoggedIn) {
+            message.open({
+                type: "success",
+                content: "Đăng xuất thành công",
+                duration: 3
+            });
+        } else {
+            message.open({
+                type: "error",
+                content: "Đăng xuất thất bại",
+                duration: 3
+            })
+        }
         navigate(PathNames.HOMEPAGE);
     };
 

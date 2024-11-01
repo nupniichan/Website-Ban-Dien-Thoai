@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import PathNames from "../PathNames.js";
 import { Spin, Pagination } from "antd"; // Import Spin for loading animation and Pagination
 
 const SearchResults = () => {
@@ -40,7 +41,7 @@ const SearchResults = () => {
     };
 
     const handleProductClick = (productId) => {
-        navigate(`/products/${productId}`);
+        navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
     };
 
     // Tính toán sản phẩm cho trang hiện tại

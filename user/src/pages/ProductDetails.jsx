@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import { notification } from "antd";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { BASE_URL } from "../config";
 
@@ -37,6 +37,14 @@ const ProductDetails = () => {
         const value = parseInt(e.target.value, 10);
         if (value > product.quantity) {
             setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
+            notification.warning({
+                message: 'Lưu ý',
+                description: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này',
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true
+            });
         } else {
             setError("");
         }
@@ -50,6 +58,7 @@ const ProductDetails = () => {
                 description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             window.location.href = "/login";
@@ -62,6 +71,7 @@ const ProductDetails = () => {
                 description: 'Không tìm thấy thông tin sản phẩm',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             return;
@@ -73,6 +83,7 @@ const ProductDetails = () => {
                 description: 'Số lượng không hợp lệ!',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
             return;
@@ -111,6 +122,7 @@ const ProductDetails = () => {
                 description: 'Đã thêm sản phẩm vào giỏ hàng',
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
         } catch (error) {
@@ -120,6 +132,7 @@ const ProductDetails = () => {
                 description: error.message,
                 duration: 4,
                 placement: "bottomRight",
+                showProgress: true,
                 pauseOnHover: true
             });
         }
@@ -232,7 +245,7 @@ const ProductDetails = () => {
                             <button
                                 className={`ml-4 py-2 px-4 rounded-md transition-colors duration-200 ${
                                     userId
-                                        ? "bg-blue-600 text-white hover:bg-blue-700"
+                                        ? "bg-primary text-white hover:bg-red-600"
                                         : "bg-gray-400 text-gray-100 cursor-not-allowed"
                                 }`}
                                 onClick={handleBuyNow}

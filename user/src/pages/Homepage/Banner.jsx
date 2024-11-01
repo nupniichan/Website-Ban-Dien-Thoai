@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import PathNames from "../../PathNames";
 
 const Banner = ({ data }) => {
     const navigate = useNavigate();
-    
+
     const handleButtonClick = () => {
-        navigate('/product/SP023');
+        navigate(`${PathNames.PRODUCT_DETAILS}/SP023`);
     };
     return (
         <div className="min-h-[550px] flex justify-center items-center py-12">
@@ -14,15 +15,35 @@ const Banner = ({ data }) => {
                 >
                     {/* first col */}
                     <div className="p-6 sm:p-8">
-                        <p className="text-sm">{data.discount}</p>
-                        <h1 className="uppercase text-4xl lg:text-7xl font-bold">
+                        <h1
+                            data-aos="fade-up"
+                            data-aos-duration="500"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="bottom-bottom"
+                            className="font-bold uppercase 2xl:text-7xl xl:text-6xl lg:text-5xl md:text-5xl sm:"
+                        >
                             {data.title}
                         </h1>
-                        <p className="text-sm">{data.date}</p>
+                        <p
+                            data-aos="fade-up"
+                            data-aos-duration="500"
+                            data-aos-delay="250"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="center-bottom"
+                            className="text-sm"
+                        >
+                            {data.date}
+                        </p>
                     </div>
 
                     {/* second col */}
-                    <div className="h-full flex items-center">
+                    <div
+                        className="flex items-center h-full"
+                        data-aos="zoom-in"
+                        data-aos-duration="500"
+                        data-aos-once={false}
+                        data-aos-anchor-placement="center-bottom"
+                    >
                         <img
                             src={data.image}
                             alt=""
@@ -32,11 +53,55 @@ const Banner = ({ data }) => {
 
                     {/* third col */}
                     <div className="flex flex-col justify-center gap-4 p-6 sm:p-8">
-                        <p className="font-bold text-xl">{data.title2}</p>
-                        <p className="text-3xl sm:text-5xl font-bold">{data.title3}</p>
-                        <p className="text-sm tracking-wide leading-5">{data.title4}</p>
-                        <div>
-                            <button className={`bg-white py-2 px-4 rounded-full text-black`} onClick={handleButtonClick}>Mua ngay</button>
+                        <p
+                            className="text-xl font-bold"
+                            data-aos="fade-up"
+                            data-aos-duration="500"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="bottom-bottom"
+                        >
+                            {data.title2}
+                        </p>
+                        <p
+                            className="2xl:text-xl xl:text-lg font-bold"
+                            data-aos="fade-up"
+                            data-aos-duration="500"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="bottom-bottom"
+                        >
+                            {data.title3}
+                        </p>
+                        <p
+                            data-aos="fade-left"
+                            data-aos-duration="500"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="bottom-bottom"
+                            className="font-bold 2xl:text-6xl xl:text-5xl lg:text-4xl text-5xl"
+                        >
+                            {data.discount}
+                        </p>
+                        <p
+                            data-aos="fade-up"
+                            data-aos-duration="500"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="bottom-bottom"
+                            className="text-sm leading-5 tracking-wide"
+                        >
+                            {data.title4}
+                        </p>
+                        <div
+                            data-aos="fade-up"
+                            data-aos-duration="500"
+                            data-aos-delay="250"
+                            data-aos-once={false}
+                            data-aos-anchor-placement="top-bottom"
+                        >
+                            <button
+                                className={`bg-white py-2 px-4 rounded-full text-primary`}
+                                onClick={() => handleButtonClick()}
+                            >
+                                Mua Ngay
+                            </button>
                         </div>
                     </div>
                 </div>

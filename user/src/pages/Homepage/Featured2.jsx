@@ -16,7 +16,7 @@ const Featured2 = () => {
     }
 
     return (
-        <section className="py-4 sm:py-8">
+        <section className="py-8 mt-2 mb-40">
             <div className="container">
                 <div className="grid grid-cols-1 gap-4 sm:gap-8 sm:grid-cols-2 lg:grid-cols-4">
                     {/* cột thứ nhất */}
@@ -37,16 +37,17 @@ const Featured2 = () => {
                                     />
                                 </p>
                                 <Button
-                                    text="Xem thêm"
-                                    bgColor={"bg-primary"}
-                                    textColor={"text-white"}
+                                    text="Khám phá"
+                                    bgColor={"bg-white"}
+                                    fontSize= {"text-sm"}
+                                    textColor="text-[rgba(0,0,128,1)]"
                                 />
                             </div>
                         </div>
                         <img
                             src={Image1}
                             alt=""
-                            className="absolute top-1/2 -translate-y-1/2 right-4 sm:right-9 w-[30%] sm:w-[35%]"
+                            className="absolute top-1/2 -translate-y-1/2 2xl:right-9 md:right-9 sm:right-9 right-3 2xl:w-[35%] xl:w-[] lg:max-xl:right-1"
                         />
                     </div>
 
@@ -66,16 +67,17 @@ const Featured2 = () => {
                                     />
                                 </p>
                                 <Button
-                                    text="Xem thêm"
+                                    text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-brandGreen"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>
                         <img
                             src={Image2}
                             alt=""
-                            className="w-[150px] sm:w-[200px] md:w-[170px] lg:w-[180px] xl:w-[160px] absolute bottom-0 right-0"
+                            className="w-[150px] sm:w-[200px] md:w-[170px] lg:w-[180px] 2xl:w-[160px] absolute bottom-0 right-0 translate-y-8"
                         />
                     </div>
 
@@ -91,13 +93,14 @@ const Featured2 = () => {
                                     <img
                                         src={Samsung}
                                         alt="Samsung logo"
-                                        className="w-[70%] sm:w-90 h-auto"
+                                        className="w-[70%] sm:w-72 2xl:-translate-x-9 xl:-translate-x-8 lg:-translate-x-5  md:-translate-x-9 sm:-translate-x-7"
                                     />
                                 </p>
                                 <Button
-                                    text="Xem thêm"
+                                    text="Khám phá"
                                     bgColor={"bg-white"}
                                     textColor={"text-brandBlue"}
+                                    fontSize= {"text-sm"}
                                 />
                             </div>
                         </div>

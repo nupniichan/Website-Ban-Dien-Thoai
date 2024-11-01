@@ -1,9 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-    auth,
-    signInWithEmailAndPassword,
-} from "../firebase";
 import { BASE_URL } from "../config";
 
 const Login = ({ onSwitchToRegister }) => {
@@ -12,6 +8,8 @@ const Login = ({ onSwitchToRegister }) => {
         password: "",
     });
     const [errorMessage, setErrorMessage] = useState("");
+    const [showResend, setShowResend] = useState(false);
+    const [resendMessage, setResendMessage] = useState("");
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -21,17 +19,10 @@ const Login = ({ onSwitchToRegister }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setErrorMessage("");
+        setResendMessage("");
+        setShowResend(false);
 
         try {
-            // Firebase sign-in
-            const userCredential = await signInWithEmailAndPassword(
-                auth,
-                formData.email,
-                formData.password
-            );
-            const user = userCredential.user;
-
-            // Send a request to the backend API for additional user data
             const response = await fetch(`${BASE_URL}/api/login`, {
                 method: "POST",
                 headers: {
@@ -46,8 +37,8 @@ const Login = ({ onSwitchToRegister }) => {
             if (response.ok) {
                 const data = await response.json();
                 sessionStorage.setItem("userEmail", formData.email);
-                sessionStorage.setItem("userId", data.user.userId);
-                sessionStorage.setItem("accountName", data.user.accountName);
+                sessionStorage.setItem("userId", data.user.userId); 
+                sessionStorage.setItem("accountName", data.user.accountName); 
                 window.dispatchEvent(new Event("loginSuccess"));
                 navigate("/");
                 console.log("Logged in successfully with user data:", data);
@@ -76,6 +67,11 @@ const Login = ({ onSwitchToRegister }) => {
                 {errorMessage && (
                     <p className="text-red-500 text-center mb-4">
                         {errorMessage}
+                    </p>
+                )}
+                {resendMessage && (
+                    <p className="text-green-500 text-center mb-4">
+                        {resendMessage}
                     </p>
                 )}
 
