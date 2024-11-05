@@ -1,7 +1,7 @@
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import "./App.css";
-import Login from "./components/Login.jsx";
-import Register from "./components/Register.jsx";
+import CartSidebar from "./components/CartSidebar.jsx";
 import Footer from "./Header&Footer/Footer.jsx";
 import Header from "./Header&Footer/Header.jsx";
 import About from "./pages/About.jsx";
@@ -24,8 +24,6 @@ import Support from "./pages/Support.jsx";
 import Terms from "./pages/Terms.jsx";
 import Vacancies from "./pages/Vacancies.jsx";
 import PathNames from "./PathNames.js";
-import CartSidebar from "./components/CartSidebar.jsx";
-import { useState } from "react";
 
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
@@ -36,7 +34,6 @@ function App() {
             <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
 
             <Routes>
-                <Route path={PathNames.REGISTER} element={<Register />} />
                 <Route path="/" element={<Homepage />} />
                 <Route path={PathNames.ABOUT} element={<About />} />
                 <Route path={PathNames.STORIES} element={<Stories />} />
@@ -47,10 +44,9 @@ function App() {
                 <Route path={PathNames.TERMS} element={<Terms />} />
                 <Route path={PathNames.SUPPORT} element={<Support />} />
                 <Route path={PathNames.CART} element={<Cart />} />
-                <Route path={PathNames.CHECKOUT} element={<Checkout />} />
+                <Route path={`${PathNames.CHECKOUT}/:productId`} element={<Checkout />} />
                 <Route path={PathNames.PROFILE} element={<Profile />} />
                 <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
-                <Route path={PathNames.LOGIN} element={<Login />} />
                 <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />
                 <Route path={PathNames.PAYMENT_RESULT} element={<PaymentResult />} />
                 <Route path={PathNames.PAYMENT_SUCCESS} element={<PaymentSuccess />} />

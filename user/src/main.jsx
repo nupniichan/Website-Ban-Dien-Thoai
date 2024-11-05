@@ -38,6 +38,10 @@ createRoot(document.getElementById("root")).render(
                 components: {
                     Badge: {
                         textFontSize: 11,
+                    },
+                    Drawer: {
+                        footerPaddingBlock: 28,
+                        footerPaddingInline: 40
                     }
                 },
             }}

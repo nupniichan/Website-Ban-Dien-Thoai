@@ -195,8 +195,8 @@ const Header = ({cartOpen, setCartOpen}) => {
                         <div className="flex justify-between items-center 2xl:gap-4 xl:gap-2 lg:gap-0">
                             <button
                                 className="relative p-3"
-                                onClick={() => navigate(PathNames.CART)}
-                                // onClick={() => handleCartClick()}
+                                // onClick={() => navigate(PathNames.CART)}
+                                onClick={() => handleCartClick()}
                             >
                                 <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
                                 <div className="w-4 h-4 bg-red-500 text-white rounded-full absolute top-0 right-0 flex items-center justify-center text-xs">

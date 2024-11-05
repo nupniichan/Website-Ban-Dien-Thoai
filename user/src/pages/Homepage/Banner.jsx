@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import PathNames from "../../PathNames";
+import PathNames from "../../PathNames.js";
 
 const Banner = ({ data }) => {
     const navigate = useNavigate();

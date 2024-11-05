@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import { notification } from "antd";
+import PathNames from "../PathNames.js";
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
@@ -18,7 +20,14 @@ const Cart = () => {
 
             if (!userId) {
                 console.error("Xin hãy đăng nhập để sử dụng tính năng này");
-                navigate("/login");
+                // notification.warning({
+                //     message: 'Lỗi',
+                //     description: "Vui lòng đăng nhập để sử dụng tính năng này",
+                //     duration: 4,
+                //     placement: "bottomRight",
+                //     showProgress: true,
+                //     pauseOnHover: true
+                // });
                 return;
             }
 
@@ -284,7 +293,7 @@ const Cart = () => {
                 <button
                     className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg disabled:bg-gray-400"
                     onClick={() =>
-                        navigate("/checkout", {
+                        navigate(PathNames.CHECKOUT, {
                             state: {
                                 cartItems: cartItems.filter((item) =>
                                     selectedItems.includes(item.productId)

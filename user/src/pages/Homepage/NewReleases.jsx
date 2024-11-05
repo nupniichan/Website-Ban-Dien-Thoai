@@ -4,7 +4,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
 import Heading from "../../shared/Heading";
 import { notification } from "antd";
-import PathNames from "../../PathNames";
+import PathNames from "../../PathNames.js";
+import AddtoCartBtn from "../../shared/AddtoCartBtn.jsx";
 
 const NewReleases = () => {
     const userId = sessionStorage.getItem("userId");
@@ -204,15 +205,14 @@ const NewReleases = () => {
                                         <span className="text-xl font-bold text-gray-900 dark:text-white">
                                             {formatCurrency(item.price)}
                                         </span>
-                                        <button
+                                        <AddtoCartBtn
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 handleBuyNow();
                                             }}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"
-                                        >
-                                            Thêm vào giỏ
-                                        </button>
+                                            text={"Thêm vào giở"}
+                                        />
                                     </div>
                                 </div>
                             </div>
