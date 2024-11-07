@@ -76,7 +76,7 @@ const OrderManagement = () => {
       case 'Đã hủy':
         return { color: 'red' };
       default:
-        return {};
+        return {color: 'orange' };
     }
   };
 
