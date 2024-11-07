@@ -116,7 +116,7 @@ const Register = ({ onRegisterSuccess }) => {
                     formData.append("userAvatar", userAvatar);
                 }
 
-                await axios.post("http://4.242.20.80:5173:5000/api/register", formData, {
+                await axios.post("http://localhost:5000/api/register", formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },

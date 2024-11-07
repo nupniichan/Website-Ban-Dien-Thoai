@@ -143,26 +143,26 @@ app.post('/api/login', async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(400).json({ message: 'Email hoặc mật khẩu không hợp lệ' });
-    }
-
-    if (user.password !== password) {
-      return res.status(400).json({ message: 'Email hoặc mật khẩu không hợp lệ' });
-    }
-
-    res.status(200).json({
-      message: 'Đăng nhập thành công',
-      user: {
-        userId: user.id,
-        accountName: user.accountName,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        userAvatar: user.userAvatar
-      }
-    });
-  } catch (error) {
-    console.error('Error logging in:', error);
-    res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình đăng nhập.', error: error.message });
   }
+
+  if (user.password !== password) {
+    return res.status(400).json({ message: 'Email hoặc mật khẩu không hợp lệ' });
+  }
+
+  res.status(200).json({
+    message: 'Đăng nhập thành công',
+    user: {
+      userId: user.id,
+      accountName: user.accountName,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      userAvatar: user.userAvatar
+    }
+  });
+} catch (error) {
+  console.error('Error logging in:', error);
+  res.status(500).json({ message: 'Đã xảy ra lỗi trong quá trình đăng nhập.', error: error.message });
+}
 });
 
 
@@ -420,6 +420,21 @@ app.delete('/api/products/:id', async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Kiểm tra xem sản phẩm có đang được sử dụng không
+    const orderWithProduct = await Order.findOne({
+      'items.productId': id
+    });
+
+    const khoWithProduct = await Kho.findOne({
+      'products.productId': id
+    });
+
+    if (orderWithProduct || khoWithProduct) {
+      return res.status(400).json({ 
+        message: 'Không thể xóa sản phẩm vì đang được sử dụng trong đơn hàng hoặc phiếu kho' 
+      });
+    }
+
     const deletedProduct = await Product.findOneAndDelete({ id });
     if (!deletedProduct) {
       return res.status(404).json({ message: 'Sản phẩm không tồn tại' });
@@ -1577,6 +1592,36 @@ app.get('/api/dashboard/revenue/weekly', async (req, res) => {
     res.json(weeklyRevenue);
   } catch (error) {
     res.status(500).json({ message: 'Lỗi khi lấy doanh thu theo tuần', error: error.message });
+  }
+});
+
+// Thêm endpoint mới để kiểm tra sản phẩm có đang được sử dụng
+app.get('/api/products/:id/check-usage', async (req, res) => {
+  const { id } = req.params;
+  
+  try {
+    // Kiểm tra trong đơn hàng
+    const orderWithProduct = await Order.findOne({
+      'items.productId': id
+    });
+
+    // Kiểm tra trong phiếu kho
+    const khoWithProduct = await Kho.findOne({
+      'products.productId': id
+    });
+
+    const isInUse = !!(orderWithProduct || khoWithProduct);
+    
+    res.json({
+      isInUse,
+      inOrders: !!orderWithProduct,
+      inKho: !!khoWithProduct
+    });
+  } catch (err) {
+    res.status(500).json({ 
+      message: 'Lỗi khi kiểm tra sử dụng sản phẩm', 
+      error: err.message 
+    });
   }
 });
 
