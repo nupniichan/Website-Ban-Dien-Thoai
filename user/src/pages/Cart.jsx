@@ -50,10 +50,10 @@ const Cart = () => {
 
     // Xóa sản phẩm khỏi giỏ hàng
     const removeFromCart = async (productId) => {
-        const userId = sessionStorage.getItem("userId"); // Lấy userId từ sessionStorage
-
+        const userId = sessionStorage.getItem("userId");
+        
         try {
-            await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
+            const response = await fetch(`${BASE_URL}/api/cart/${userId}/remove`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -61,9 +61,11 @@ const Cart = () => {
                 body: JSON.stringify({ productId }),
             });
 
-            setCartItems(
-                cartItems.filter((item) => item.productId !== productId)
-            );
+            if (!response.ok) {
+                throw new Error('Failed to remove item from cart');
+            }
+
+            setCartItems(prevItems => prevItems.filter(item => item.productId !== productId));
         } catch (error) {
             console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
         }
@@ -136,6 +138,51 @@ const Cart = () => {
         );
     };
 
+    // Thêm hàm xóa nhiều sản phẩm
+    const removeMultipleFromCart = async (productIds) => {
+        const userId = sessionStorage.getItem("userId");
+
+        try {
+            const response = await fetch(`${BASE_URL}/api/cart/${userId}/removeMultiple`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ productIds }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to remove items from cart');
+            }
+
+            // Cập nhật state local
+            setCartItems(prevItems => 
+                prevItems.filter(item => !productIds.includes(item.productId))
+            );
+            // Reset selected items
+            setSelectedItems([]);
+        } catch (error) {
+            console.error("Lỗi khi xóa sản phẩm khỏi giỏ hàng:", error);
+        }
+    };
+
+    // Sửa hàm navigate để thêm callback xóa giỏ hàng
+    const handleCheckout = () => {
+        const selectedProducts = cartItems.filter(item => 
+            selectedItems.includes(item.productId)
+        );
+        
+        // Lưu selectedItems vào sessionStorage để có thể xóa sau khi thanh toán thành công
+        sessionStorage.setItem('checkoutItems', JSON.stringify(selectedItems));
+        
+        navigate("/checkout", {
+            state: {
+                cartItems: selectedProducts,
+                total: calculateSelectedTotal()
+            },
+        });
+    };
+
     // Giao diện khi giỏ hàng trống
     if (loading) {
         return <div>Đang tải...</div>;
@@ -168,8 +215,8 @@ const Cart = () => {
             <div className="grid grid-cols-1 gap-4">
                 {cartItems.map((item) => (
                     <div
-                        key={item.productId}
-                        className="flex items-center justify-between p-4 border rounded-lg"
+                        key={`${item.productId}-${item.color}`}
+                        className="flex justify-between items-center p-4 border rounded-lg"
                     >
                         <div className="flex items-center">
                             <div
@@ -244,7 +291,7 @@ const Cart = () => {
                 ))}
             </div>
 
-            {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
+            {/* Hiển thị thông báo lỗi vượt qu tồn kho */}
             {overStockError && (
                 <div className="p-4 mt-4 text-red-700 bg-red-100 rounded-lg">
                     {overStockError}
@@ -282,17 +329,8 @@ const Cart = () => {
                     </span>
                 </p>
                 <button
-                    className="px-6 py-2 mt-4 text-white bg-blue-500 rounded-lg disabled:bg-gray-400"
-                    onClick={() =>
-                        navigate("/checkout", {
-                            state: {
-                                cartItems: cartItems.filter((item) =>
-                                    selectedItems.includes(item.productId)
-                                ),
-                                total: calculateSelectedTotal(),
-                            },
-                        })
-                    }
+                    className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg disabled:bg-gray-400"
+                    onClick={handleCheckout}
                     disabled={selectedItems.length === 0}
                 >
                     Mua ngay ({selectedItems.length})

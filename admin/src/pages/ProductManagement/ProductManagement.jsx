@@ -45,16 +45,34 @@ const ProductManagement = () => {
 
   const handleDeleteProduct = async (productId) => {
     try {
+      // Kiểm tra sử dụng sản phẩm trước khi xóa
+      const checkResponse = await fetch(`${BASE_URL}/api/products/${productId}/check-usage`);
+      const checkData = await checkResponse.json();
+
+      if (checkData.isInUse) {
+        let message = 'Không thể xóa sản phẩm vì đang được sử dụng trong:';
+        if (checkData.inOrders) message += '\n- Đơn hàng';
+        if (checkData.inKho) message += '\n- Phiếu kho';
+        
+        alert(message);
+        return;
+      }
+
+      // Nếu sản phẩm không được sử dụng, tiến hành xóa
       const response = await fetch(`${BASE_URL}/api/products/${productId}`, {
         method: 'DELETE',
       });
+
       if (response.ok) {
         setProducts(products.filter(product => product.id !== productId));
+        alert('Sản phẩm đã được xóa thành công');
       } else {
-        console.error('Failed to delete product');
+        const data = await response.json();
+        alert(data.message || 'Lỗi khi xóa sản phẩm');
       }
     } catch (error) {
-      console.error('Error deleting product:', error);
+      console.error('Error:', error);
+      alert('Đã xảy ra lỗi khi xóa sản phẩm');
     }
   };
 

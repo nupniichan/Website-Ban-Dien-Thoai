@@ -96,93 +96,110 @@ const Checkout = () => {
     };
 
     const handleContinue = async () => {
+        // Chuyển đổi số tiền về dạng số nguyên
         const finalAmount = totalAmount - discountedAmount;
 
-        const orderData = {
+        // Tạo object chứa thông tin cần thiết cho thanh toán
+        const paymentData = {
             customerId: userId,
             customerName: customerInfo.name,
-            shippingAddress: customerInfo.address,
-            items: cartItems,
+            amount: finalAmount,
             paymentMethod: paymentMethod,
-            totalAmount: finalAmount,
-            notes: notes,
-            discount: selectedDiscount
-                ? {
-                      discountId: selectedDiscount.id,
-                      discountName: selectedDiscount.name,
-                      discountAmount: discountedAmount,
-                  }
-                : null,
+            customerNote: notes,
+            discountId: selectedDiscount?.id || null,
+            items: cartItems.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity,
+                price: item.price
+            })),
+            shippingAddress: shippingOption === "store" ? storeAddress : customerInfo.address,
         };
 
-        if (paymentMethod === "Thanh toán qua MOMO") {
+        if (paymentMethod === "MoMo") {
             try {
-                const response = await fetch(`${BASE_URL}/payment`, {
+                // Gọi API tạo thanh toán MOMO
+                const paymentResponse = await fetch(`${BASE_URL}/payment`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        totalAmount: finalAmount, // Sử dụng số tiền sau khi đã giảm giá
-                        extraData: JSON.stringify(orderData),
+                        amount: finalAmount,
+                        extraData: JSON.stringify(paymentData),
+                        orderInfo: `Thanh toán đơn hàng cho ${customerInfo.name}`
                     }),
                 });
 
-                const data = await response.json();
-                if (data.payUrl) {
-                    window.location.href = data.payUrl;
+                const result = await paymentResponse.json();
+
+                if (!paymentResponse.ok) {
+                    throw new Error(result.message || "Lỗi kết nối đến cổng thanh toán");
+                }
+                
+                if (result.payUrl) {
+                    // Lưu ID sản phẩm để xóa khỏi giỏ hàng sau khi thanh toán thành công
+                    sessionStorage.setItem('checkoutItems', JSON.stringify(
+                        cartItems.map(item => item.productId)
+                    ));
+                    
+                    // Chuyển hướng đến trang thanh toán MOMO
+                    window.location.href = result.payUrl;
                 } else {
-                    console.error("Failed to get payment URL:", data);
+                    throw new Error("Không nhận được URL thanh toán");
                 }
             } catch (error) {
-                console.error("Error initiating payment:", error);
+                console.error("Lỗi khi xử lý thanh toán:", error);
+                notification.error({
+                    message: 'Lỗi thanh toán',
+                    description: error.message || "Có lỗi xảy ra khi xử lý thanh toán",
+                    duration: 4,
+                    placement: "bottomRight"
+                });
             }
-        } else {
+        } else if (paymentMethod === "Tiền mặt") {
             try {
-                // Gọi API để tạo đơn hàng và xóa sản phẩm khỏi giỏ hàng
+                // Tạo đơn hàng với trạng thái chờ xác nhận
                 const response = await fetch(`${BASE_URL}/api/orders/create`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify(orderData),
+                    body: JSON.stringify({
+                        ...paymentData,
+                        status: "Chờ xác nhận",
+                        paymentStatus: "Chưa thanh toán",
+                        paymentMethod: "Tiền mặt"
+                    }),
                 });
 
                 if (response.ok) {
-                    // Xóa sản phẩm đã mua khỏi giỏ hàng
+                    // Xóa sản phẩm khỏi giỏ hàng
                     const productIds = cartItems.map((item) => item.productId);
-                    await fetch(
-                        `${BASE_URL}/api/cart/${userId}/removeMultiple`,
-                        {
-                            method: "DELETE",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ productIds }),
-                        }
-                    );
+                    await fetch(`${BASE_URL}/api/cart/${userId}/removeMultiple`, {
+                        method: "DELETE",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ productIds }),
+                    });
 
                     notification.success({
-                        message: 'Thành công',
-                        description: 'Đơn hàng đã được tạo thành công. Vui lòng thanh toán khi nhận hàng.',
+                        message: 'Đặt hàng thành công',
+                        description: 'Đơn hàng của bạn đang chờ xác nhận. Chúng tôi sẽ liên hệ với bạn sớm nhất!',
                         duration: 4,
-                        placement: "bottomRight",
-                        showProgress: true,
-                        pauseOnHover: true
+                        placement: "bottomRight"
                     });
                     navigate("/payment-history");
                 } else {
                     throw new Error("Lỗi khi tạo đơn hàng");
                 }
             } catch (error) {
-                console.error("Error creating order:", error);
-                notification.warning({
+                console.error("Lỗi khi tạo đơn hàng:", error);
+                notification.error({
                     message: 'Lỗi',
                     description: "Có lỗi xảy ra khi tạo đơn hàng",
                     duration: 4,
-                    placement: "bottomRight",
-                    showProgress: true,
-                    pauseOnHover: true
+                    placement: "bottomRight"
                 });
             }
         }
@@ -284,7 +301,7 @@ const Checkout = () => {
                             )}
                         </div>
                         <label className="text-gray-800">
-                            Giao hàng tận nơi
+                            Giao hng tận nơi
                         </label>
                     </div>
                 </div>
@@ -362,7 +379,7 @@ const Checkout = () => {
                     {shippingOption === "store" && (
                         <option value="Tiền mặt">Tiền mặt</option>
                     )}
-                    <option value="Thanh toán qua MOMO">
+                    <option value="MoMo">
                         Thanh toán qua MOMO
                     </option>
                     <option value="Thanh toán qua VNpay">
@@ -474,7 +491,7 @@ const Checkout = () => {
                                                     </p>
                                                     {!isApplicable && (
                                                         <p className="text-xs text-red-500">
-                                                            Đơn hàng chưa đạt
+                                                            Đơn hàng chưa đt
                                                             giá trị tối thiểu
                                                         </p>
                                                     )}
