@@ -33,16 +33,16 @@ const Featured = () => {
                                         alt=""
                                         style={{
                                             width: "50%",
-                                            "@media (min-width: 640px)": {
+                                            "@media (minWidth: 640px)": {
                                                 width: "50%",
                                             },
-                                            "@media (min-width: 768px)": {
+                                            "@media (minWidth: 768px)": {
                                                 width: "33.33%",
                                             },
-                                            "@media (min-width: 1024px)": {
+                                            "@media (minWidth: 1024px)": {
                                                 width: "25%",
                                             },
-                                            "@media (min-width: 1280px)": {
+                                            "@media (minWidth: 1280px)": {
                                                 width: "20%",
                                             },
                                         }}
@@ -77,16 +77,16 @@ const Featured = () => {
                                         alt="Xiaomi logo"
                                         style={{
                                             width: "100px",
-                                            "@media (min-width: 640px)": {
+                                            "@media (minWidth: 640px)": {
                                                 width: "50%",
                                             },
-                                            "@media (min-width: 768px)": {
+                                            "@media (minWidth: 768px)": {
                                                 width: "33.33%",
                                             },
-                                            "@media (min-width: 1024px)": {
+                                            "@media (minWidth: 1024px)": {
                                                 width: "25%",
                                             },
-                                            "@media (min-width: 1280px)": {
+                                            "@media (minWidth: 1280px)": {
                                                 width: "20%",
                                             },
                                         }}

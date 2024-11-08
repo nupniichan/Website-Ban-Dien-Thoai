@@ -76,7 +76,7 @@ const OrderManagement = () => {
       case 'Đã hủy':
         return { color: 'red' };
       default:
-        return {};
+        return {color: 'orange' };
     }
   };
 
@@ -225,6 +225,7 @@ const OrderManagement = () => {
                   <Typography><strong>Địa chỉ:</strong> {selectedOrder.shippingAddress}</Typography>
                   <Typography><strong>Ngày đặt:</strong> {new Date(selectedOrder.orderDate).toLocaleDateString('vi-VN')}</Typography>
                   <Typography><strong>Phương thức thanh toán:</strong> {selectedOrder.paymentMethod}</Typography>
+                  <Typography><strong>Ghi chú:</strong> {selectedOrder.notes}</Typography>
                 </Box>
               </Box>
 
@@ -272,9 +273,10 @@ const OrderManagement = () => {
                   <Typography variant="h6" color="primary">
                     {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(selectedOrder.totalAmount)}
                   </Typography>
+                  
                 </Box>
               </Box>
-
+              <Typography><strong>Lý do huỷ:</strong> {selectedOrder.cancellationReason}</Typography>
               {/* Ghi chú */}
               {selectedOrder.notes && (
                 <Box>
