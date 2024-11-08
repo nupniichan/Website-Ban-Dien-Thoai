@@ -1,9 +1,8 @@
 // import { LockOutlined, MailOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Flex, Form, Input, message } from "antd";
+import { message } from "antd";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
-import { auth, signInWithEmailAndPassword } from "../firebase";
 
 const Login = ({ onSwitchToRegister }) => {
     const [formData, setFormData] = useState({
