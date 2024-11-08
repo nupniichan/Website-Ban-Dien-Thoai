@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { auth, signInWithEmailAndPassword, sendEmailVerification } from "../firebase"; // Adjust path if needed
 import { BASE_URL } from "../config";
 
 const Login = ({ onSwitchToRegister }) => {
@@ -23,6 +24,19 @@ const Login = ({ onSwitchToRegister }) => {
         setShowResend(false);
 
         try {
+            // Attempt to sign in using Firebase Auth
+            const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
+            const user = userCredential.user;
+
+            // Check if email is verified
+            if (!user.emailVerified) {
+                setErrorMessage("Vui lòng xác thực tài khoản trước khi đăng nhập");
+                setShowResend(true);
+                await auth.signOut(); 
+                return;
+            }
+
+            // If email is verified, proceed with backend login
             const response = await fetch(`${BASE_URL}/api/login`, {
                 method: "POST",
                 headers: {
@@ -44,13 +58,59 @@ const Login = ({ onSwitchToRegister }) => {
                 console.log("Logged in successfully with user data:", data);
             } else {
                 const errorData = await response.json();
-                setErrorMessage(
-                    errorData.message || "Email hoặc mật khẩu không chính xác"
-                );
+                setErrorMessage(errorData.message || "Email or password is incorrect");
             }
         } catch (err) {
-            console.error("Error:", err);
-            setErrorMessage("Email hoặc mật khẩu không chính xác");
+            if (err.code === 'auth/invalid-credential') {
+                console.warn("Invalid Firebase credentials, attempting backend login directly...");
+
+                // Fallback: Direct backend login without Firebase
+                try {
+                    const response = await fetch(`${BASE_URL}/api/login`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email: formData.email,
+                            password: formData.password,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        sessionStorage.setItem("userEmail", formData.email);
+                        sessionStorage.setItem("userId", data.user.userId); 
+                        sessionStorage.setItem("accountName", data.user.accountName); 
+                        window.dispatchEvent(new Event("loginSuccess"));
+                        navigate("/");
+                        console.log("Logged in successfully with user data:", data);
+                    } else {
+                        const errorData = await response.json();
+                        setErrorMessage(errorData.message || "Email or password is incorrect");
+                    }
+                } catch (backendError) {
+                    console.error("Backend login error:", backendError);
+                    setErrorMessage("An error occurred during login. Please try again later.");
+                }
+            } else {
+                console.error("Login error:", err);
+                setErrorMessage("Email or password is incorrect");
+            }
+        }
+    };
+
+    const handleResendVerification = async () => {
+        try {
+            const user = auth.currentUser;
+            if (user) {
+                await sendEmailVerification(user);
+                setResendMessage("Verification email sent! Please check your inbox.");
+                setShowResend(false);
+            }
+        } catch (error) {
+            console.error("Error sending verification email:", error);
+            setErrorMessage("Unable to resend verification email. Please try again later.");
         }
     };
 
@@ -99,6 +159,16 @@ const Login = ({ onSwitchToRegister }) => {
                 >
                     Đăng Nhập
                 </button>
+
+                {showResend && (
+                    <button
+                        type="button"
+                        onClick={handleResendVerification}
+                        className="w-full bg-yellow-500 text-white p-3 mt-4 rounded hover:bg-yellow-600 transition duration-300"
+                    >
+                        Resend Verification Email
+                    </button>
+                )}
 
                 <p className="text-center mt-4">
                     Chưa có tài khoản?{" "}
