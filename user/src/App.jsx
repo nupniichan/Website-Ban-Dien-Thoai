@@ -24,36 +24,41 @@ import Support from "./pages/Support.jsx";
 import Terms from "./pages/Terms.jsx";
 import Vacancies from "./pages/Vacancies.jsx";
 import PathNames from "./PathNames.js";
+import Breadcrumbs from './shared/Breadcrumbs.jsx';
 
 function App() {
     const [cartOpen, setCartOpen] = useState(false);
 
     return (
         <>
-            <Header cartOpen={cartOpen} setCartOpen={setCartOpen} />
+            <Header cartOpen={cartOpen} setCartOpen={setCartOpen}  />
             <CartSidebar cartOpen={cartOpen} setCartOpen={setCartOpen} />
 
-            <Routes>
-                <Route path="/" element={<Homepage />} />
-                <Route path={PathNames.ABOUT} element={<About />} />
-                <Route path={PathNames.STORIES} element={<Stories />} />
-                <Route path={PathNames.FAQ} element={<FaQ />} />
-                <Route path={PathNames.VACANCIES} element={<Vacancies />} />
-                <Route path={PathNames.CONTACTUS} element={<ContactUs />} />
-                <Route path={PathNames.PRIVACYPOLICY} element={<PrivacyPolicy />} />
-                <Route path={PathNames.TERMS} element={<Terms />} />
-                <Route path={PathNames.SUPPORT} element={<Support />} />
-                <Route path={PathNames.CART} element={<Cart />} />
-                <Route path={`${PathNames.CHECKOUT}/:productId`} element={<Checkout />} />
-                <Route path={PathNames.PROFILE} element={<Profile />} />
-                <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
-                <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />
-                <Route path={PathNames.PAYMENT_RESULT} element={<PaymentResult />} />
-                <Route path={PathNames.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
-                <Route path={PathNames.PAYMENT_FAILED} element={<PaymentFailed />} />
-                <Route path={PathNames.SHOP} element={<Shop />} />
-                <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
-            </Routes>
+            <div className="container mx-auto p-4">
+                <Breadcrumbs />
+
+                <Routes>
+                    <Route path="/" element={<Homepage />} />
+                    <Route path={PathNames.ABOUT} element={<About />} />
+                    <Route path={PathNames.STORIES} element={<Stories />} />
+                    <Route path={PathNames.FAQ} element={<FaQ />} />
+                    <Route path={PathNames.VACANCIES} element={<Vacancies />} />
+                    <Route path={PathNames.CONTACT_US} element={<ContactUs />} />
+                    <Route path={PathNames.PRIVACY_POLICY} element={<PrivacyPolicy />} />
+                    <Route path={PathNames.TERMS} element={<Terms />} />
+                    <Route path={PathNames.SUPPORT} element={<Support />} />
+                    <Route path={PathNames.CART} element={<Cart />} />
+                    <Route path={`${PathNames.CHECKOUT}/:productId`} element={<Checkout />} />
+                    <Route path={PathNames.PROFILE} element={<Profile />} />
+                    <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
+                    <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />
+                    <Route path={PathNames.PAYMENT_RESULT} element={<PaymentResult />} />
+                    <Route path={PathNames.PAYMENT_SUCCESS} element={<PaymentSuccess />} />
+                    <Route path={PathNames.PAYMENT_FAILED} element={<PaymentFailed />} />
+                    <Route path={PathNames.SHOP} element={<Shop />} />
+                    <Route path={`${PathNames.PRODUCT_DETAILS}/:productId`} element={<ProductDetails />} />
+                </Routes>
+            </div>
 
             <Footer />
         </>

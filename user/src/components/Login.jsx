@@ -1,11 +1,9 @@
+// import { LockOutlined, MailOutlined } from "@ant-design/icons";
+import { Button, Checkbox, Flex, Form, Input, message } from "antd";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { message } from 'antd';
-import {
-    auth,
-    signInWithEmailAndPassword,
-} from "../firebase";
+import { Link, useNavigate } from "react-router-dom";
 import { BASE_URL } from "../config";
+import { auth, signInWithEmailAndPassword } from "../firebase";
 
 const Login = ({ onSwitchToRegister }) => {
     const [formData, setFormData] = useState({
@@ -53,16 +51,19 @@ const Login = ({ onSwitchToRegister }) => {
                 navigate("/");
                 console.log("Logged in successfully with user data:", data);
                 message.open({
-                    type: 'success',
-                    content: 'Đăng nhập thành công',
+                    type: "success",
+                    content: "Đăng nhập thành công",
                 });
             } else {
                 const errorData = await response.json();
-                message.open({
-                    type: 'warning',
-                    content: errorData.message || "Email hoặc mật khẩu không chính xác",
-                    duration: 3
-                }
+                message.open(
+                    {
+                        type: "warning",
+                        content:
+                            errorData.message ||
+                            "Email hoặc mật khẩu không chính xác",
+                        duration: 3,
+                    }
                     // errorData.message || "Email hoặc mật khẩu không chính xác"
                 );
             }
@@ -70,28 +71,110 @@ const Login = ({ onSwitchToRegister }) => {
             console.error("Error:", err);
             // setErrorMessage("Email hoặc mật khẩu không chính xác");
             message.open({
-                type: 'warning',
-                content: 'Email hoặc mật khẩu không chính xác',
-                duration: 3
+                type: "warning",
+                content: "Email hoặc mật khẩu không chính xác",
+                duration: 3,
             });
         }
     };
 
+    const onFinish = (values) => {
+        console.log("Received values of form: ", values);
+    };
+
     return (
-        <div className="flex justify-center items-center bg-gray-100 ">
+        //         <div className="flex justify-center items-center">
+        //             <Form
+        //                 name="login"
+        //                 initialValues={{
+        //                     remember: true,
+        //                 }}
+        //                 style={{
+        //                     maxWidth: 450,
+        //                 }}
+        //                 size="large"
+        //                 onFinish={handleSubmit}
+        //                 className="py-8"
+        //             >
+        //                 <Form.Item
+        //                     name="email"
+        //                     rules={[
+        //                         {
+        //                             required: true,
+        //                             message: "Trường này bắt buộc!",
+        //                         },
+        //                     ]}
+        //                     className="mb-6"
+        //                 >
+        //                     <label className="text-sm">Email</label>
+        //                     <Input
+        //                         prefix={<MailOutlined />}
+        //                         placeholder="Nhập email của bạn"
+        //                         value={formData.email}
+        //                         onChange={handleChange}
+        //                     />
+        //                 </Form.Item>
+        //                 <Form.Item
+        //                     name="password"
+        //                     rules={[
+        //                         {
+        //                             required: true,
+        //                             message: "Trường này bắt buộc!",
+        //                         },
+        //                     ]}
+        //                 >
+        //                     <label className="text-sm translate-y-4">Mật khẩu</label>
+        //                     <Input.Password
+        //                         prefix={<LockOutlined />}
+        //                         type="password"
+        //                         placeholder="Nhập mật khẩu của bạn"
+        //                         value={formData.password}
+        //                         onChange={handleChange}
+        //                     />
+        //                 </Form.Item>
+        //                 <Form.Item>
+        //                     <Flex
+        //                         justify="space-between"
+        //                         align="center"
+        //                         className="-mt-4"
+        //                     >
+        //                         <Form.Item
+        //                             name="remember"
+        //                             valuePropName="checked"
+        //                             noStyle
+        //                         >
+        //                             <Checkbox className="">Nhớ thông tin</Checkbox>
+        //                         </Form.Item>
+        //                     </Flex>
+        //                 </Form.Item>
+
+        //                 <Form.Item>
+        //                     <Button
+        //                         block
+        //                         type="primary"
+        //                         htmlType="submit"
+        //                         className="mb-2 h-12 -mt-2 text-lg font-medium bg-primary"
+        //                     >
+        //                         Đăng nhập
+        //                     </Button>
+        //                     {`Chưa có tài khoản? `}
+        //                     <Link onClick={onSwitchToRegister} className="text-primary">
+        //                         Đăng kí ngay!
+        //                     </Link>
+        //                 </Form.Item>
+        //             </Form>
+        //         </div>
+        //     );
+        // };
+
+        <div className="flex justify-center items-center  ">
             <form
-                className="bg-white p-8 rounded-lg shadow-md max-w-lg w-full"
+                className="bg-white p-8 rounded-lg max-w-lg w-full"
                 onSubmit={handleSubmit}
             >
-                <h2 className="text-2xl mb-6 text-center text-gray-800">
-                    Đăng Nhập
-                </h2>
-
-                {/* {errorMessage && (
-                    <p className="text-red-500 text-center mb-4">
-                        {errorMessage}
-                    </p>
-                )} */}
+                {/* <h2 className="text-2xl mb-6 text-center text-gray-800">
+            Đăng Nhập
+        </h2> */}
 
                 <input
                     type="email"

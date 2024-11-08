@@ -1,10 +1,10 @@
 import styled from "styled-components";
 
-const ArrowTextBtn = ({text}) => {
+const ArrowTextBtn = ({ text }) => {
     return (
         <StyledWrapper>
             <button>
-                {text}
+                <p>{text}</p>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6"
@@ -65,7 +65,7 @@ const StyledWrapper = styled.div`
     button p::before {
         position: absolute;
         /*   box-sizing: border-box; */
-        content: "Subscribe";
+        /* content: "Về chúng tôi"; */
         width: 0%;
         inset: 0;
         color: var(--hovered-color);

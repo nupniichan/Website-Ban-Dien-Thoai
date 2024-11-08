@@ -12,6 +12,7 @@ const NewReleases = () => {
     const [products, setProducts] = useState([]);
     const [product, setProduct] = useState(null);
     const [quantity, setQuantity] = useState(1);
+    const [error, setError] = useState("");
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -39,33 +40,34 @@ const NewReleases = () => {
         "SP036",
     ]);
 
-    // const handleQuantityChange = (e) => {
-    //     const value = parseInt(e.target.value, 10);
-    //     if (value > product.quantity) {
-    //         setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
-    //         notification.warning({
-    //             message: 'Lưu ý',
-    //             description: 'Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này',
-    //             duration: 4,
-    //             placement: "bottomRight",
-    //             showProgress: true,
-    //             pauseOnHover: true
-    //         });
-    //     } else {
-    //         setError("");
-    //     }
-    //     setQuantity(value);
-    // };
-
-    const handleBuyNow = async () => {
-        if (!userId) {
+    const handleQuantityChange = (e) => {
+        const value = parseInt(e.target.value, 10);
+        if (value > product.quantity) {
+            setError("Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này");
             notification.warning({
-                message: 'Lưu ý',
-                description: 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng',
+                message: "Lưu ý",
+                description:
+                    "Số lượng bạn chọn đã đạt mức tối đa của sản phẩm này",
                 duration: 4,
                 placement: "bottomRight",
                 showProgress: true,
-                pauseOnHover: true
+                pauseOnHover: true,
+            });
+        } else {
+            setError("");
+        }
+        setQuantity(value);
+    };
+
+    const handleAddtoCart = async () => {
+        if (!userId) {
+            notification.warning({
+                message: "Lưu ý!",
+                description: "Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng",
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true,
             });
             window.location.href = "/login";
             return;
@@ -73,24 +75,24 @@ const NewReleases = () => {
 
         if (!product || !product.id) {
             notification.error({
-                message: 'Lỗi',
-                description: 'Không tìm thấy thông tin sản phẩm',
+                message: "Lỗi",
+                description: "Không tìm thấy thông tin sản phẩm",
                 duration: 4,
                 placement: "bottomRight",
                 showProgress: true,
-                pauseOnHover: true
+                pauseOnHover: true,
             });
             return;
         }
 
         if (quantity <= 0 || quantity > product.quantity) {
             notification.error({
-                message: 'Lỗi',
-                description: 'Số lượng không hợp lệ!',
+                message: "Lỗi",
+                description: "Số lượng không hợp lệ!",
                 duration: 4,
                 placement: "bottomRight",
                 showProgress: true,
-                pauseOnHover: true
+                pauseOnHover: true,
             });
             return;
         }
@@ -124,20 +126,20 @@ const NewReleases = () => {
             }
 
             notification.success({
-                message: 'Thành công',
-                description: 'Đã thêm sản phẩm vào giỏ hàng',
+                message: "Thành công",
+                description: "Đã thêm sản phẩm vào giỏ hàng",
                 duration: 4,
                 placement: "bottomRight",
-                pauseOnHover: true
+                pauseOnHover: true,
             });
         } catch (error) {
             console.error("Error adding to cart:", error);
             notification.error({
-                message: 'Lỗi',
+                message: "Lỗi",
                 description: error.message,
                 duration: 4,
                 placement: "bottomRight",
-                pauseOnHover: true
+                pauseOnHover: true,
             });
         }
     };
@@ -147,9 +149,9 @@ const NewReleases = () => {
     };
 
     const formatCurrency = (price) => {
-        return new Intl.NumberFormat('vi-VN', {
-            style: 'currency',
-            currency: 'VND'
+        return new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
         }).format(price);
     };
 
@@ -169,13 +171,15 @@ const NewReleases = () => {
                             <div
                                 key={item.id}
                                 className="w-[20rem] bg-white border xl:scale-100 lg:scale-90 md:scale-75 sm:scale-50 border-gray-200 rounded-2xl shadow dark:bg-gray-800 dark:border-gray-700"
-                                onClick={() => handleProductClick(item.id)}
                             >
                                 {item.image ? (
                                     <img
-                                        className="p-8 rounded-t-lg"
+                                        className="p-8 rounded-t-lg cursor-pointer"
                                         src={`${BASE_URL}/${item.image}`}
                                         alt="product image"
+                                        onClick={() =>
+                                            handleProductClick(item.id)
+                                        }
                                     />
                                 ) : (
                                     <div className="h-[180px] w-[260px] flex items-center justify-center mb-3">
@@ -183,35 +187,23 @@ const NewReleases = () => {
                                     </div>
                                 )}
                                 <div className="px-5 pb-5">
-                                    <Link href="#">
+                                    <Link
+                                        to={`${PathNames.PRODUCT_DETAILS}/${item.id}`}
+                                    >
                                         <h5 className="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">
                                             {item.name}
                                         </h5>
                                     </Link>
-                                    {/* Rating section */}
-                                    {/* <div className="flex items-center mt-2.5 mb-5">
-                                        <div className="flex items-center space-x-1 rtl:space-x-reverse">
-                                            <div onClick={(e) => e.stopPropagation()}>
-                                                <StarRating
-                                                    rating={item.rating}
-                                                />
-                                            </div>
-                                        </div>
-                                        <span className="bg-red-100 text-[#f42c37] text-xs font-semibold px-2.5 py-0.5 rounded dark:bg-red-200 dark:text-red-800 ms-3">
-                                            5.0
-                                        </span>
-                                    </div> */}
                                     <div className="flex items-center justify-between mt-5">
                                         <span className="text-xl font-bold text-gray-900 dark:text-white">
                                             {formatCurrency(item.price)}
                                         </span>
+
+                                        {/* TODO Add to cart functionality */}
                                         <AddtoCartBtn
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleBuyNow();
-                                            }}
+                                            onClick={() => handleAddtoCart()}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"
-                                            text={"Thêm vào giở"}
+                                            text={"Thêm vào giỏ"}
                                         />
                                     </div>
                                 </div>

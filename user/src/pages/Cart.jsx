@@ -6,6 +6,7 @@ import PathNames from "../PathNames.js";
 
 const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
+    const [cartAmount, setCartAmount] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -146,9 +147,9 @@ const Cart = () => {
     };
 
     // Giao diện khi giỏ hàng trống
-    if (loading) {
-        return <div>Đang tải...</div>;
-    }
+    // if (loading) {
+    //     return <div>Đang tải...</div>;
+    // }
 
     if (error) {
         return <div>{error}</div>;
@@ -293,7 +294,7 @@ const Cart = () => {
                 <button
                     className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg disabled:bg-gray-400"
                     onClick={() =>
-                        navigate(PathNames.CHECKOUT, {
+                        navigate(`${PathNames.CHECKOUT}/:productId`, {
                             state: {
                                 cartItems: cartItems.filter((item) =>
                                     selectedItems.includes(item.productId)

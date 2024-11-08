@@ -1,5 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
+import { Form, Upload } from "antd";
+import { PlusOutlined } from '@ant-design/icons';
+
 import { useNavigate } from "react-router-dom";
 import {
     getAuth,
@@ -167,8 +170,8 @@ const Register = ({ onRegisterSuccess }) => {
                 message.open({
                     type: "success",
                     content: "Đăng ký thành công!",
-                    duration: 4
-                })
+                    duration: 4,
+                });
                 onRegisterSuccess();
                 navigate("/login"); // Optionally redirect to the login page after successful registration
             } catch (error) {
@@ -185,19 +188,20 @@ const Register = ({ onRegisterSuccess }) => {
                 // })
                 message.open({
                     type: "error",
-                    content: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
-                    duration: 4
-                })
+                    content:
+                        "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
+                    duration: 4,
+                });
             }
         }
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 py-6">
-            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center transition-transform hover:translate-y-1">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800">
+        <div className="flex items-center justify-center min-h-screen">
+            <div className=" p-8 rounded-lg max-w-md w-full text-center">
+                {/* <h2 className="text-3xl font-bold mb-6 text-gray-800">
                     Đăng ký
-                </h2>
+                </h2> */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="text-left">
                         <label className="block text-sm font-medium text-gray-700">
@@ -374,6 +378,21 @@ const Register = ({ onRegisterSuccess }) => {
                             className="mt-1 block w-full text-sm border border-gray-300 rounded-md"
                         />
                     </div>
+                    {/* <Form.Item
+                        label=<p className="block text-sm font-medium text-gray-700">Avatar</p>
+                        valuePropName="fileList"
+                        // getValueFromEvent={normFile}
+                    >
+                        <Upload action="/upload.do" listType="picture-card" accept="image/*" onChange={(e) => setUserAvatar(e.target.files[0])}>
+                            <button
+                                style={{ border: 0, background: "none" }}
+                                type="button"
+                            >
+                                <PlusOutlined />
+                                <div style={{ marginTop: 8 }}>Upload</div>
+                            </button>
+                        </Upload>
+                    </Form.Item> */}
 
                     <button
                         type="submit"
