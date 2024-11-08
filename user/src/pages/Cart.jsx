@@ -189,7 +189,7 @@ const Cart = () => {
         // Lưu selectedItems vào sessionStorage để có thể xóa sau khi thanh toán thành công
         sessionStorage.setItem("checkoutItems", JSON.stringify(selectedItems));
 
-        navigate("/checkout", {
+        navigate(PathNames.CHECKOUT, {
             state: {
                 cartItems: selectedProducts,
                 total: calculateSelectedTotal(),

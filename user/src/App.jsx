@@ -48,7 +48,7 @@ function App() {
                     <Route path={PathNames.TERMS} element={<Terms />} />
                     <Route path={PathNames.SUPPORT} element={<Support />} />
                     <Route path={PathNames.CART} element={<Cart />} />
-                    <Route path={`${PathNames.CHECKOUT}/:productId`} element={<Checkout />} />
+                    <Route path={PathNames.CHECKOUT} element={<Checkout />} />
                     <Route path={PathNames.PROFILE} element={<Profile />} />
                     <Route path={PathNames.MY_ORDERS} element={<MyOrders />} />
                     <Route path={PathNames.SEARCH_RESULTS} element={<SearchResult />} />

@@ -14,13 +14,6 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     const [overStockError, setOverStockError] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
-
-    const [products, setProducts] = useState([]);
-    const [colors, setColors] = useState([]);
-    const [tempPriceRange, setTempPriceRange] = useState([0, 20000000]);
-    const [maxPrice, setMaxPrice] = useState(20000000);
-
-    // const subtotal = 299000;
     // const fakeCartItems = [
     //     {
     //         id: 1,
@@ -147,30 +140,11 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         }
     };
 
-    // Xác nhận xóa sản phẩm
-    const handleConfirmRemove = () => {
-        removeFromCart(itemToRemove.productId);
-        setShowConfirmDialog(false);
-    };
-
-    // Tính tổng tiền cho các sản phẩm được chọn
-    const calculateSelectedTotal = () => {
-        return cartItems
-            .filter((item) => selectedItems.includes(item.productId))
-            .reduce((total, item) => total + item.price * item.quantity, 0);
-    };
-
     // Xử lý chọn/bỏ chọn sản phẩm
-    const handleSelectItem = (productId) => {
-        setSelectedItems((prev) =>
-            prev.includes(productId)
-                ? prev.filter((id) => id !== productId)
-                : [...prev, productId]
-        );
-    };
 
     const { confirm } = Modal;
-    const showDeleteConfirm = () => {
+    const showDeleteConfirm = (productId) => {
+        setItemToRemove(productId); // Set item to remove
         confirm({
             title: "Xóa sản phẩm?",
             icon: <ExclamationCircleFilled />,
@@ -180,10 +154,26 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             cancelText: "Không",
             onOk() {
                 console.log("OK");
-                removeFromCart(itemToRemove.productId);
+                removeFromCart(productId); // Use productId directly
             },
             onCancel() {
                 console.log("Cancel");
+            },
+        });
+    };
+
+    // Sửa hàm navigate để thêm callback xóa giỏ hàng
+    const handleCheckout = () => {
+        // Lấy tất cả sản phẩm trong giỏ hàng
+        const selectedProducts = cartItems;
+
+        // Lưu selectedItems vào sessionStorage để có thể xóa sau khi thanh toán thành công
+        sessionStorage.setItem("checkoutItems", JSON.stringify(selectedProducts));
+
+        navigate(PathNames.CHECKOUT, {
+            state: {
+                cartItems: selectedProducts,
+                total: calculateTotal(),
             },
         });
     };
@@ -197,9 +187,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             footer=<div className="flex items-center justify-between">
                 {/* Subtotal section */}
                 <div className="flex items-center justify-between gap-2">
-                    <span className="text-2xl font-bold">Tạm tính:</span>
-                    <span className="text-2xl font-semibold">
-                        {calculateSelectedTotal().toLocaleString()}đ
+                    <span className="text-xl font-bold">Tạm tính:</span>
+                    <span className="text-xl font-semibold">
+                        {calculateTotal().toLocaleString()}đ
                     </span>
                 </div>
 
@@ -217,14 +207,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                     <button
                         onClick={() => {
                             setCartOpen(false);
-                            navigate(PathNames.CHECKOUT, {
-                                state: {
-                                    cartItems: cartItems.filter((item) =>
-                                        selectedItems.includes(item.productId)
-                                    ),
-                                    total: calculateSelectedTotal(),
-                                },
-                            });
+                            handleCheckout();
                         }}
                         className="px-4 py-2 text-sm bg-primary text-white rounded-3xl hover:bg-red-700 transition-colors"
                     >
@@ -235,90 +218,6 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         >
             <div className="flex flex-col h-full overflow-y-auto">
                 <section className="flex-1">
-                    {/* <>
-                        {fakeCartItems.map((item) => (
-                            <div
-                                key={`${item.productId}-${item.color}`}
-                                className="flex justify-between items-center p-4 border rounded-lg"
-                            >
-                                <div className="flex items-center">
-                                    <div
-                                        onClick={() =>
-                                            handleSelectItem(item.productId)
-                                        }
-                                        className={`w-6 h-6 rounded-full border-2 cursor-pointer mr-4 flex items-center justify-center
-                                ${
-                                    fakeCartItems.includes(item.productId)
-                                        ? "border-blue-500 bg-blue-500"
-                                        : "border-gray-400"
-                                }`}
-                                    >
-                                        {fakeCartItems.includes(
-                                            item.productId
-                                        ) && (
-                                            <div className="w-3 h-3 bg-white rounded-full"></div>
-                                        )}
-                                    </div>
-                                    <img
-                                        src={
-                                            item.image
-                                                ? `${BASE_URL}/${item.image.replace(
-                                                      /\\/g,
-                                                      "/"
-                                                  )}`
-                                                : "/default-image.jpg"
-                                        }
-                                        alt={item.name}
-                                        className="w-20 h-20 object-cover"
-                                    />
-                                    <div className="ml-4">
-                                        <h3 className="text-lg font-semibold">
-                                            Tên sản phẩm: {item.name}
-                                        </h3>
-                                        <p className="text-sm font-semibold">
-                                            Màu: {item.color}
-                                        </p>
-                                        <p className="text-red-500">
-                                            Giá: {item.price.toLocaleString()}đ
-                                        </p>
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-4">
-                                    <button
-                                        onClick={() =>
-                                            updateQuantity(
-                                                item.productId,
-                                                item.quantity - 1
-                                            )
-                                        }
-                                        className="px-3 py-1 border rounded-md"
-                                    >
-                                        -
-                                    </button>
-                                    <span>{item.quantity}</span>
-                                    <button
-                                        onClick={() =>
-                                            updateQuantity(
-                                                item.productId,
-                                                item.quantity + 1
-                                            )
-                                        }
-                                        className="px-3 py-1 border rounded-md"
-                                    >
-                                        +
-                                    </button>
-                                    <button
-                                        onClick={() =>
-                                            removeFromCart(item.productId)
-                                        }
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-                                    >
-                                        <DeleteOutlined />
-                                    </button>
-                                </div>
-                            </div>
-                        ))}
-                    </> */}
                     {cartItems.map((item) => (
                         <div
                             className="w-full max-w-7xl px-4 md:px-5 lg-6 mx-auto"
@@ -407,12 +306,6 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                     />
                                                 </svg>
                                             </button>
-                                            {/* <input
-                                                type="text"
-                                                id="number"
-                                                className="border border-gray-200 rounded-full w-10 aspect-square outline-none text-gray-900 font-semibold text-sm py-1.5 px-3 bg-gray-100  text-center"
-                                                placeholder={0}
-                                            /> */}
                                             <span className="border border-gray-200 rounded-full w-10 aspect-square outline-none text-gray-900 font-semibold text-sm py-2 px-3 bg-gray-100  text-center">{item.quantity}</span>
                                             <button
                                                 className="group rounded-[50px] border border-gray-200 shadow-sm shadow-transparent p-2.5 flex items-center justify-center bg-white transition-all duration-500 hover:shadow-gray-200 hover:bg-gray-50 hover:border-gray-300 focus-within:outline-gray-300"
@@ -442,7 +335,7 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                             </button>
                                         </div>
                                         <h6 className="text-primary font-manrope font-bold text-2xl leading-9 text-right">
-                                            $220
+                                            {(item.price * item.quantity).toLocaleString()}đ
                                         </h6>
                                     </div>
                                 </div>
