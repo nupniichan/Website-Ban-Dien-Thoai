@@ -1,10 +1,12 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
-import Heading from "../shared/Heading";
-import { BASE_URL } from "../config";
-import { useNavigate } from "react-router-dom";
 import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { BASE_URL } from "../config";
+import PathNames from "../PathNames.js";
+import Heading from "../shared/Heading";
+import { notification } from "antd";
 
 const Shop = () => {
     const [products, setProducts] = useState([]);
@@ -93,7 +95,7 @@ const Shop = () => {
     };
 
     const handleProductClick = (productId) => {
-        navigate(`/product/${productId}`);
+        navigate(`${PathNames.PRODUCT_DETAILS}/${productId}`);
     };
 
     const handleBrandSelection = (brand) => {
@@ -167,7 +169,20 @@ const Shop = () => {
 
     const handleBuyNow = (e, productId) => {
         e.stopPropagation(); // Ngăn chặn sự kiện click lan ra thẻ cha
-        navigate(`/checkout/${productId}`); // Điều hướng đến trang checkout
+        const userId = sessionStorage.getItem("userId");
+        if (!userId) {
+            notification.warning({
+                message: "Lưu Ý",
+                description: "Vui lòng đăng nhập để sử dụng tính năng này",
+                duration: 4,
+                placement: "bottomRight",
+                showProgress: true,
+                pauseOnHover: true,
+            });
+            return;
+        } else {
+            navigate(`${PathNames.CHECKOUT}/${productId}`);
+        }
     };
 
     return (

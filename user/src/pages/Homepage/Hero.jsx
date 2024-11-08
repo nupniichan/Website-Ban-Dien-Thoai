@@ -3,7 +3,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { BASE_URL } from "../../config";
-import PathNames from "../../PathNames";
+import PathNames from "../../PathNames.js";
 import Button from "../../shared/Button.jsx";
 
 // const HeroPlaceholderData = [

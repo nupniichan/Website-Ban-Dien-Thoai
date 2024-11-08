@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import AboutUsImg from "../../assets/fakeAssets/aboutus.jpg";
-import PathNames from "../../PathNames";
-import { ArrowRightOutlined } from "@ant-design/icons";
+import PathNames from "../../PathNames.js";
+import ArrowTextBtn from "../../shared/ArrowTextBtn";
 
 const AboutUsSection = () => {
     return (
@@ -25,10 +25,9 @@ const AboutUsSection = () => {
 
                     <Link
                         to={PathNames.ABOUT}
-                        className="text-lg font-semibold text-black  hover:underline flex items-center"
+                        className="text-lg font-semibold flex items-center"
                     >
-                        Về chúng tôi&nbsp;
-                        <ArrowRightOutlined />
+                        <ArrowTextBtn text="Về chúng tôi" />
                     </Link>
                 </div>
 
