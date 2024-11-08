@@ -14,22 +14,6 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
     const [overStockError, setOverStockError] = useState(null);
     const [selectedItems, setSelectedItems] = useState([]);
     const navigate = useNavigate();
-    // const fakeCartItems = [
-    //     {
-    //         id: 1,
-    //         name: "Áo thun nam",
-    //         price: 199000,
-    //         image: "https://via.placeholder.com/150",
-    //         quantity: 1,
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "Quần jean nam",
-    //         price: 299000,
-    //         image: "https://via.placeholder.com/150",
-    //         quantity: 1,
-    //     },
-    // ];
 
     useEffect(() => {
         const fetchCartItems = async () => {
@@ -63,8 +47,8 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             }
         };
 
-        fetchCartItems();
-    }, [navigate]);
+        if (cartOpen) fetchCartItems();
+    }, [navigate, cartOpen]);
 
     // Tính tổng giá tiền
     const calculateTotal = () => {

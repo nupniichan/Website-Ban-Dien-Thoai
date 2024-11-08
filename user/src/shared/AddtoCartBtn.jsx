@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-const AddtoCartBtn = ({text}) => {
+const AddtoCartBtn = ({text, onClick}) => {
     return (
         <StyledWrapper>
-            <button className="CartBtn">
+            <button className="CartBtn" onClick={onClick}>
                 <span className="IconContainer">
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

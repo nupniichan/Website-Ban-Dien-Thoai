@@ -69,7 +69,6 @@ const NewReleases = () => {
                 showProgress: true,
                 pauseOnHover: true,
             });
-            window.location.href = "/login";
             return;
         }
 
