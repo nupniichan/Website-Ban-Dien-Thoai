@@ -95,7 +95,9 @@ const ProductDetails = () => {
             productId: product.id,
             name: product.name,
             price: product.price,
-            color: selectedColor ? availableColors.find(c => c.id === selectedColor)?.color : product.color,
+            color: selectedColor
+                ? availableColors.find((c) => c.id === selectedColor)?.color
+                : product.color,
             quantity: parseInt(quantity),
             image: product.image,
         };
@@ -107,12 +109,14 @@ const ProductDetails = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(cartItem),
-                cache: 'no-store'
+                cache: "no-store",
             });
 
             if (!response.ok) {
                 const data = await response.json();
-                throw new Error(data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng");
+                throw new Error(
+                    data.message || "Có lỗi xảy ra khi thêm vào giỏ hàng"
+                );
             }
 
             notification.success({
@@ -126,7 +130,6 @@ const ProductDetails = () => {
 
             // Reset quantity sau khi thêm thành công
             setQuantity(1);
-            
         } catch (error) {
             console.error("Error adding to cart:", error);
             notification.error({
@@ -216,11 +219,11 @@ const ProductDetails = () => {
     ];
 
     return (
-        <div className="mt-20">
-            <div className="container mx-auto px-4 py-8">
-                <div className="flex flex-wrap -mx-4">
+        <div className="mt-14">
+            <div className="container mx-auto px-4 py-8 flex flex-col mb-24">
+                <div className="flex flex-wrap -mx-4 justify-center xl:ml-40 lg:ml-10">
                     {/* <!-- Product Images --> */}
-                    <div className="w-full md:w-1/2 px-4 mb-8">
+                    <div className="w-full 2xl:w-[40%] xl:w-[50%] lg:w-[50%] md:w-[50%] sm:w-[50%] px-4 mb-8 -translate-x-4">
                         <img
                             src={`${BASE_URL}/${product.image}`}
                             alt={product.name}
@@ -273,10 +276,11 @@ const ProductDetails = () => {
                             </span>
                         </p> */}
 
+                        <p className="text-red-500 mb-1 text-lg">{product.brand}</p>
                         <h2 className="text-3xl font-bold mb-2">
                             {product.name}
                         </h2>
-                        <p className="text-gray-600 mb-4">SKU: {product.id}</p>
+                        <p className="text-gray-600 mb-4 text-xs">SKU: {product.id}</p>
                         <div className="mb-4">
                             <span className="text-2xl font-bold mr-2 text-primary">
                                 {product.price.toLocaleString()} đ
@@ -353,7 +357,10 @@ const ProductDetails = () => {
                         </div>
 
                         <div className="flex space-x-4 mb-6">
-                            <button className="bg-primary flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2" onClick={handleBuyNow}>
+                            <button
+                                className="bg-primary flex gap-2 items-center text-white px-6 py-2 rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
+                                onClick={handleBuyNow}
+                            >
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
@@ -397,33 +404,35 @@ const ProductDetails = () => {
                                 <li>Bền bỉ vượt trội</li>
                                 <li>Thời lượng pin lên đến 30 giờ</li>
                                 <li>Tích hợp trí tuệ nhân tạo tiên tiến</li>
-                                <li>Hiệu năng mạnh mẽ với vi xử lý tiên tiến</li>
+                                <li>
+                                    Hiệu năng mạnh mẽ với vi xử lý tiên tiến
+                                </li>
                             </ul>
                         </div>
                     </div>
                 </div>
 
                 {/* Specifications Section */}
-                <div className="mt-6 flex justify-center">
-        <div className="w-full max-w-4xl">
-                    <h2 className="text-lg font-semibold text-gray-800 mb-2 text-left">
-                        Thông số kỹ thuật
-                    </h2>
-                    <table className="min-w-full border border-gray-300 table-auto">
-                        <tbody className="text-gray-600">
-                            {tableData.map((item, index) => (
-                                <tr key={index}>
-                                    <td className="border border-gray-300 px-4 py-2">
-                                        <strong>{item.key}</strong>
-                                    </td>
-                                    <td className="border border-gray-300 px-4 py-2">
-                                        {item.value || "Không có thông tin"}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                <div className="mt-20 flex justify-center">
+                    <div className="w-full max-w-4xl">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-2 text-left">
+                            Thông số kỹ thuật
+                        </h2>
+                        <table className="min-w-full border border-gray-300 table-auto">
+                            <tbody className="text-gray-600">
+                                {tableData.map((item, index) => (
+                                    <tr key={index}>
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            <strong>{item.key}</strong>
+                                        </td>
+                                        <td className="border border-gray-300 px-4 py-2">
+                                            {item.value || "Không có thông tin"}
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

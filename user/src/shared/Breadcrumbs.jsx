@@ -14,8 +14,7 @@ const Breadcrumbs = () => {
         <Breadcrumb className="my-9 mt-6  lg:ml-16 sm:ml-14" separator=">">
             <Breadcrumb.Item>
                 <Link to="/">
-                    <HomeOutlined className="mr-1" />
-                    Home
+                    <HomeOutlined className="mr-1" /> Home
                 </Link>
             </Breadcrumb.Item>
             {pathnames.map((name, index) => {
