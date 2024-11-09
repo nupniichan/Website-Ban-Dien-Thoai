@@ -21,6 +21,7 @@ A modern e-commerce platform for mobile phones with comprehensive admin and user
 ## Features
 
 ### 🚀 Highlights
+
 - Excel export functionality for inventory management
 - MoMo payment integration
 - CI/CD pipeline implementation
@@ -29,6 +30,7 @@ A modern e-commerce platform for mobile phones with comprehensive admin and user
 - And more...
 
 ### 💡 Core Features
+
 - **Admin Panel**: Complete control over products, orders, vouchers, customers,...
 - **User Interface**: Intuitive shopping experience
 - **Server**: Backend architecture
@@ -38,12 +40,14 @@ A modern e-commerce platform for mobile phones with comprehensive admin and user
 ### Prerequisites
 
 **Required:**
+
 - Bun Runtime
 - Node.js >= 20.00
 - IDE (Visual Studio Code, JetBrains, etc.)
 - MongoDB
 
 **Optional:**
+
 - Deployment server ( it quite hard so you can DM me if you want to do this )
 
 ## Installation
@@ -85,7 +89,8 @@ bun server.js
 
 1. Create a MongoDB database
 2. Configure the connection string:
-   ```javascript
+
+   ```js
    // /server/module/db.js
    // Replace YOUR_CONNECTION_STRING with your MongoDB connection URL
    ```
@@ -93,9 +98,10 @@ bun server.js
 ### Server Configuration (Optional)
 
 For deployment, modify CORS settings in `server.js`:
+
 ```javascript
-app.use(cors({ 
-  origin: ['YOUR_SERVER_IP'] 
+app.use(cors({
+  origin: ['YOUR_SERVER_IP']
 }));
 ```
 
@@ -118,12 +124,14 @@ app.use(cors({
 ## Tech Stack
 
 ### Frontend
+
 - ⚛️ React.js
 - 🛠️ Vite
 - 🎨 Tailwind CSS
 - 🚀 Bun Runtime
 
 ### Backend
+
 - 📡 Node.js
 - 🗄️ MongoDB
 - 🚀 Bun Runtime

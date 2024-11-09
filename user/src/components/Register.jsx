@@ -138,7 +138,6 @@ const Register = ({ onRegisterSuccess }) => {
                     duration: 4,
                 });
                 onRegisterSuccess();
-                navigate("/login"); // Optionally redirect to the login page after successful registration
             } catch (error) {
                 console.error(
                     "Error during registration:",

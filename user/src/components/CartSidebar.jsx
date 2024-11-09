@@ -47,7 +47,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
             }
         };
 
-        if (cartOpen) fetchCartItems();
+        if (cartOpen) {
+            fetchCartItems();
+        }
     }, [navigate, cartOpen]);
 
     // Tính tổng giá tiền
@@ -152,7 +154,10 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
         const selectedProducts = cartItems;
 
         // Lưu selectedItems vào sessionStorage để có thể xóa sau khi thanh toán thành công
-        sessionStorage.setItem("checkoutItems", JSON.stringify(selectedProducts));
+        sessionStorage.setItem(
+            "checkoutItems",
+            JSON.stringify(selectedProducts)
+        );
 
         navigate(PathNames.CHECKOUT, {
             state: {
@@ -290,7 +295,9 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                                     />
                                                 </svg>
                                             </button>
-                                            <span className="border border-gray-200 rounded-full w-10 aspect-square outline-none text-gray-900 font-semibold text-sm py-2 px-3 bg-gray-100  text-center">{item.quantity}</span>
+                                            <span className="border border-gray-200 rounded-full w-10 aspect-square outline-none text-gray-900 font-semibold text-sm py-2 px-3 bg-gray-100  text-center">
+                                                {item.quantity}
+                                            </span>
                                             <button
                                                 className="group rounded-[50px] border border-gray-200 shadow-sm shadow-transparent p-2.5 flex items-center justify-center bg-white transition-all duration-500 hover:shadow-gray-200 hover:bg-gray-50 hover:border-gray-300 focus-within:outline-gray-300"
                                                 onClick={() =>
@@ -319,7 +326,10 @@ const CartSidebar = ({ cartOpen, setCartOpen }) => {
                                             </button>
                                         </div>
                                         <h6 className="text-primary font-manrope font-bold text-2xl leading-9 text-right">
-                                            {(item.price * item.quantity).toLocaleString()}đ
+                                            {(
+                                                item.price * item.quantity
+                                            ).toLocaleString()}
+                                            đ
                                         </h6>
                                     </div>
                                 </div>

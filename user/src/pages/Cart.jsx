@@ -305,7 +305,7 @@ const Cart = () => {
                 ))}
             </div>
 
-            {/* Hiển thị thông báo lỗi vượt qu tồn kho */}
+            {/* Hiển thị thông báo lỗi vượt quá tồn kho */}
             {overStockError && (
                 <div className="p-4 mt-4 text-red-700 bg-red-100 rounded-lg">
                     {overStockError}

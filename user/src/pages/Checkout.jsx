@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { BASE_URL } from "../config";
 import { useLocation, useNavigate } from "react-router-dom";
 import { notification } from "antd";
+import PathNames from "../PathNames.js";
 
 const Checkout = () => {
     const location = useLocation();
@@ -48,7 +49,7 @@ const Checkout = () => {
             setCartItems(location.state.cartItems);
             setTotalAmount(location.state.total);
         } else {
-            navigate("/cart");
+            navigate(PathNames.CART);
         }
 
         if (userId) {
@@ -56,7 +57,7 @@ const Checkout = () => {
         } else {
             console.error("No userId found in sessionStorage");
         }
-    }, [userId, location.state]);
+    }, [userId, location.state, navigate]);
 
     // Thêm useEffect để fetch mã giảm giá
     useEffect(() => {

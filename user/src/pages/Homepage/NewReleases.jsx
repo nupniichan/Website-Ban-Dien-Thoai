@@ -198,7 +198,6 @@ const NewReleases = () => {
                                             {formatCurrency(item.price)}
                                         </span>
 
-                                        {/* TODO Add to cart functionality */}
                                         <AddtoCartBtn
                                             onClick={() => handleAddtoCart(item)}
                                             className="text-white bg-[#f42c37] focus:outline-none font-medium rounded-xl hover:scale-105 ease transition-transform text-sm px-5 py-2.5 text-center"
