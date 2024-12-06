@@ -1,6 +1,6 @@
 <div align="center">
 
-# Website bán điện thoại
+# Mobile Phone E-commerce Website
 
 [![ReactJS](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
@@ -8,56 +8,56 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
-Một nền tảng thương mại điện tử hiện đại dành cho cửa hàng điện thoại di động với đầy đủ chức năng quản trị và người dùng.
+A modern e-commerce platform for a mobile phone store with full administrative and user functionalities.
 
-[Tính năng](#tính-năng) •
-[Bắt đầu](#bắt-đầu) •
-[Cài đặt](#cài-đặt) •
-[Cấu hình](#cấu-hình) •
+[Features](#features) •
+[Getting Started](#getting-started) •
+[Installation](#installation) •
+[Configuration](#configuration) •
 
 </div>
 
-## Tính năng
+## Features
 
-### 🚀 Điểm nổi bật
+### 🚀 Highlights
 
-- Chức năng xuất dữ liệu sang Excel để quản lý kho hàng
-- Tích hợp thanh toán Momo
-- Triển khai pipeline CI/CD
-- Giao diện người dùng bắt mắt
-- Bảng điều khiển quản trị toàn diện
-- Và nhiều hơn nữa...
+- Excel export functionality for inventory management
+- Momo payment integration
+- CI/CD pipeline implemented
+- Eye-catching user interface
+- Comprehensive admin dashboard
+- And much more...
 
-### 💡 Tính năng cốt lõi
+### 💡 Core Features
 
-- **Admin dashboard**: Kiểm soát hoàn toàn sản phẩm, đơn hàng, phiếu giảm giá, khách hàng,...
-- **Giao diện người dùng**: Trải nghiệm mua sắm trực quan nhất dành cho người dùng
+- **Admin Dashboard**: Full control over products, orders, discounts, customers, etc.
+- **User Interface**: Intuitive shopping experience for users
 
-## Bắt đầu
+## Getting Started
 
-### Điều kiện tiên quyết
+### Prerequisites
 
-**Bắt buộc:**
+**Required:**
 
 - Bun Runtime
 - Node.js >= 20.00
-- Môi trường phát triển tích hợp (IDE) (Visual Studio Code, JetBrains, v.v.)
+- Integrated Development Environment (IDE) (Visual Studio Code, JetBrains, etc.)
 - MongoDB
 
-**Tùy chọn:**
+**Optional:**
 
-- Triển khai tự động (khá khó vì nó cần kĩ năng devops, nếu bạn muốn bạn có thể nhắn tin riêng cho mình nếu muốn thực hiện việc này)
+- Automated Deployment (This is quite challenging and requires DevOps skills.  Feel free to contact me directly if you'd like to implement this.)
 
-## Cài đặt
+## Installation
 
-### 1. Clone dự án về
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/nupniichan/Website-Ban-Dien-Thoai.git
 cd Website-Ban-Dien-Thoai
 ```
 
-### 2. Cài đặt và khởi chạy admin
+### 2. Install and Run the Admin Panel
 
 ```bash
 cd admin
@@ -65,7 +65,7 @@ bun install
 bun run dev
 ```
 
-### 3. Cài đặt và khởi chạy giao diện người dùng
+### 3. Install and Run the User Interface
 
 ```bash
 cd user
@@ -73,7 +73,7 @@ bun install
 bun run dev
 ```
 
-### 4. Cài đặt máy chủ
+### 4. Install and Run the Server
 
 ```bash
 cd server
@@ -81,45 +81,45 @@ bun install
 bun server.js
 ```
 
-## Cấu hình
+## Configuration
 
-### Cấu hình MongoDB
+### MongoDB Configuration
 
-1. Tạo cơ sở dữ liệu MongoDB
-2. Cấu hình url đến MongoDB:
+1. Create a MongoDB database.
+2. Configure the MongoDB URL:
 
    ```js
    // /server/module/db.js
-   // Thay thế YOUR_CONNECTION_STRING bằng URL kết nối MongoDB của bạn
+   // Replace YOUR_CONNECTION_STRING with your MongoDB connection URL
    ```
 
-### Cấu hình triển khai tự động (Tùy chọn)
+### Automated Deployment Configuration (Optional)
 
-Đối với việc triển khai, Bạn cần sửa đổi cài đặt CORS trong `server.js`:
+For deployment, you need to modify the CORS settings in `server.js`:
 
 ```javascript
 app.use(cors({
-  origin: ['YOUR_SERVER_IP'] // [YOUR_SERVER_IP] ở đây sẽ là ip public của server bạn. Còn nếu chạy localhost thì cứ để là localhost:5173 và localhost:5174 là được
+  origin: ['YOUR_SERVER_IP'] // Replace [YOUR_SERVER_IP] with your server's public IP. For localhost, use localhost:5173 and localhost:5174.
 }));
 ```
 
-## Cấu trúc dự án
+## Project Structure
 
 ```
-├── admin/              # Admin (React + Vite)
-├── user/               # User (React + Vite)
+├── admin/              # Admin Panel (React + Vite)
+├── user/               # User Interface (React + Vite)
 ├── server/             # Backend (Node.js)
-│   ├── module/        # Mô-đun máy chủ
-│   └── server.js      # Thư mục làm việc chính của server
-└── README.md
+│   ├── module/        # Server Modules
+│   └── server.js      # Main Server File
+└── ...
 ```
 
-## Quản lý nhánh
+## Branch Management
 
-- `develop` - Nhánh phát triển chính
-- `main` - Nhánh production
+- `develop` - Main development branch
+- `main` - Production branch
 
-## Công nghệ sử dụng
+## Technologies Used
 
 ### Frontend
 
@@ -134,17 +134,18 @@ app.use(cors({
 - 🚀 Bun Runtime
 
 ### Tools
+
 - Docker
-- Github action
+- GitHub Actions
 
 ## CI/CD
 
-- 🚀 Azure (Ubuntu server 24.04)
+- 🚀 Azure (Ubuntu Server 24.04)
 
 
-## Người đóng góp
+## Contributors
 
-Cảm ơn những người bạn tuyệt vời này đã góp phần xây dựng dự án này:
+Thanks to these awesome people for contributing to this project:
 
 <table>
   <tr>
@@ -178,6 +179,6 @@ Cảm ơn những người bạn tuyệt vời này đã góp phần xây dựng
 
 <div align="center">
 
-Cảm ơn bạn đã ghé thăm responsitory này ❤️
+Thank you for visiting this repository ❤️
 
 </div>
