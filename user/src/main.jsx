@@ -38,12 +38,41 @@ createRoot(document.getElementById("root")).render(
                 components: {
                     Badge: {
                         textFontSize: 11,
+                    },
+                    Drawer: {
+                        footerPaddingBlock: 28,
+                        footerPaddingInline: 40,
+                    },
+                    Checkbox: {
+                        colorPrimary: '#f42c37',
+                        colorPrimaryHover: '#f42c37',
+                    },
+                    Button: {
+                        defaultHoverColor: '#f42c37',
+                        defaultHoverBorderColor: '#f42c37',
+                        defaultHoverBg: '#f42c37',
+                    },
+                    Input: {
+                        activeBorderColor: '#f42c37',
+                        hoverBorderColor: '#f42c37',
+                    },
+                    Select: {
+                        activeBorderColor: '#f42c37',
+                        hoverBorderColor: '#f42c37',
+                        optionSelectedBg: '#f42c37',
+                        optionSelectedColor: '#fff',
+                    },
+                    Breadcrumb: {
+                        linkHoverColor: '#f42c37',
                     }
                 },
+                token: {
+
+                }
             }}
         >
             <BrowserRouter>
-                <App />
+                    <App />
             </BrowserRouter>
         </ConfigProvider>
     </StrictMode>

@@ -58,7 +58,7 @@ const Homepage = () => {
             <AboutUsSection />
             <NewReleases />
             <Blogs />
-            <Partners />
+            {/* <Partners /> */}
         </main>
     );
 };

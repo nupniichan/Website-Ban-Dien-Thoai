@@ -158,10 +158,12 @@ const UserMenu = () => {
 
             {/* Modal for Login */}
             <Modal
-                title="Login"
+                title=<div className="text-3xl mt-10 font-bold text-center">Đăng Nhập</div>
                 open={isLoginModalVisible}
-                onCancel={() => setIsLoginModalVisible(false)} // Close modal
-                footer={null} // No footer for modal
+                onCancel={() => setIsLoginModalVisible(false)}
+                closeIcon={null}
+                footer={null}
+                width= {450}
             >
                 <Login
                     onSwitchToRegister={() => {
@@ -173,9 +175,10 @@ const UserMenu = () => {
 
             {/* Modal for Register */}
             <Modal
-                title="Register"
+                title=<div className="text-3xl my-8 -mb-3 font-bold text-center">Đăng Kí</div>
                 open={isRegisterModalVisible}
                 onCancel={() => setIsRegisterModalVisible(false)} // Close modal
+                closeIcon={null}
                 footer={null} // No footer for modal
             >
                 <Register

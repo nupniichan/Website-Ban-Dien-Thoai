@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { Form, Upload } from "antd";
+import { PlusOutlined } from '@ant-design/icons';
+
 import { useNavigate } from "react-router-dom";
 import { auth, sendEmailVerification } from "../firebase"; // Adjust the import path as needed
-import { notification, Modal } from "antd";
+import { message, Modal } from "antd";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 const Register = ({ onRegisterSuccess }) => {
@@ -63,7 +66,7 @@ const Register = ({ onRegisterSuccess }) => {
         } else {
             const selectedDate = new Date(dayOfBirth);
             const today = new Date();
-            today.setHours(0, 0, 0, 0); 
+            today.setHours(0, 0, 0, 0);
             if (selectedDate > today) {
                 setDayOfBirthError("Ngày sinh không thể là ngày trong tương lai.");
                 isValid = false;
@@ -98,7 +101,7 @@ const Register = ({ onRegisterSuccess }) => {
                 const user = userCredential.user;
                 await sendEmailVerification(user);
                 console.log("User registered successfully, verification email sent.");
-                setIsModalVisible(true); 
+                setIsModalVisible(true);
 
                 // Prepare user data to send to your server
                 const formData = new FormData();
@@ -116,21 +119,42 @@ const Register = ({ onRegisterSuccess }) => {
                     formData.append("userAvatar", userAvatar);
                 }
 
-                await axios.post("http://4.242.20.80:5173:5000/api/register", formData, {
+                await axios.post("http://localhost:5000/api/register", formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },
                 });
 
+                // notification.success({
+                //     message: 'Thành công',
+                //     description: 'Đăng ký thành công!',
+                //     duration: 4,
+                //     placement: "bottomRight",
+                //     pauseOnHover: true
+                // });
+                message.open({
+                    type: "success",
+                    content: "Đăng ký thành công!",
+                    duration: 4,
+                });
                 onRegisterSuccess();
             } catch (error) {
-                console.error("Error during registration:", error.response?.data || error.message);
-                notification.error({
-                    message: 'Lỗi',
-                    description: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
+                console.error(
+                    "Error during registration:",
+                    error.response?.data || error.message
+                );
+                // notification.error({
+                //     message: 'Lỗi',
+                //     description: "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
+                //     duration: 4,
+                //     placement: "bottomRight",
+                //     pauseOnHover: true
+                // })
+                message.open({
+                    type: "error",
+                    content:
+                        "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.",
                     duration: 4,
-                    placement: "bottomRight",
-                    pauseOnHover: true
                 });
             }
         }
@@ -138,18 +162,20 @@ const Register = ({ onRegisterSuccess }) => {
 
     // Modal handling functions
     const handleOk = () => {
-        setIsModalVisible(false); 
-        navigate("/"); 
+        setIsModalVisible(false);
+        navigate("/");
     };
 
     const handleCancel = () => {
-        setIsModalVisible(false); 
+        setIsModalVisible(false);
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gray-100 py-6">
-            <div className="bg-white p-8 rounded-lg shadow-lg max-w-md w-full text-center transition-transform hover:translate-y-1">
-                <h2 className="text-3xl font-bold mb-6 text-gray-800">Đăng ký</h2>
+        <div className="flex items-center justify-center min-h-screen">
+            <div className=" p-8 rounded-lg max-w-md w-full text-center">
+                {/* <h2 className="text-3xl font-bold mb-6 text-gray-800">
+                    Đăng ký
+                </h2> */}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
                         <label className="block text-left">Họ tên</label>
@@ -259,6 +285,22 @@ const Register = ({ onRegisterSuccess }) => {
                             className="border rounded-md p-2 w-full"
                         />
                     </div>
+                    {/* <Form.Item
+                        label=<p className="block text-sm font-medium text-gray-700">Avatar</p>
+                        valuePropName="fileList"
+                        // getValueFromEvent={normFile}
+                    >
+                        <Upload action="/upload.do" listType="picture-card" accept="image/*" onChange={(e) => setUserAvatar(e.target.files[0])}>
+                            <button
+                                style={{ border: 0, background: "none" }}
+                                type="button"
+                            >
+                                <PlusOutlined />
+                                <div style={{ marginTop: 8 }}>Upload</div>
+                            </button>
+                        </Upload>
+                    </Form.Item> */}
+
                     <button
                         type="submit"
                         className="w-full bg-blue-600 text-white rounded-md p-2 hover:bg-blue-700 transition duration-300"
@@ -271,7 +313,7 @@ const Register = ({ onRegisterSuccess }) => {
             {/* Verification Modal */}
             <Modal
                 title="Xác thực tài khoản"
-                visible={isModalVisible}
+                open={isModalVisible}
                 onOk={handleOk}
                 onCancel={handleCancel}
                 footer={[

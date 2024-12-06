@@ -169,7 +169,6 @@ const Header = ({cartOpen, setCartOpen}) => {
                         </div>
 
                         {/* Search for desktop */}
-                        {/* TODO make search box a popup modal */}
                         <div className="relative flex-1 mx-4">
                             <input
                                 type="text"
@@ -196,10 +195,14 @@ const Header = ({cartOpen, setCartOpen}) => {
                         <div className="flex justify-between items-center 2xl:gap-4 xl:gap-2 lg:gap-0">
                             <button
                                 className="relative p-3"
-                                onClick={() => navigate(PathNames.CART)}
-                                // onClick={() => handleCartClick()}
+                                // onClick={() => navigate(PathNames.CART)}
+                                onClick={() => handleCartClick()}
                             >
                                 <ShoppingOutlined className="text-xl text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white" />
+                                {/* NOTE abandoned showing cart amount of items */}
+                                {/* <div className="w-4 h-4 bg-red-500 text-white rounded-full absolute top-0 right-0 flex items-center justify-center text-xs">
+                                    4
+                                </div> */}
                             </button>
 
                             <DarkModeBtn />
