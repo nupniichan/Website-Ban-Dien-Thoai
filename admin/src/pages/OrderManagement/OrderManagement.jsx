@@ -148,7 +148,7 @@ const OrderManagement = () => {
                 <TableCell>{new Date(order.orderDate).toLocaleDateString('vi-VN')}</TableCell>
                 <TableCell>{order.paymentMethod}</TableCell>
                 <TableCell>{new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.totalAmount)}</TableCell>
-                <TableCell style={getStatusColor(order.status)}>{order.status}</TableCell>
+                <TableCell style={getStatusColor(order.orderStatus)}>{order.orderStatus}</TableCell>
                 <TableCell>
                   <Box display="flex" justifyContent="space-between">
                     <IconButton onClick={() => handleViewDetails(order)} color="primary">
@@ -197,11 +197,11 @@ const OrderManagement = () => {
             <Typography 
               variant="subtitle1" 
               sx={{ 
-                ...getStatusColor(selectedOrder.status),
+                ...getStatusColor(selectedOrder.orderStatus),
                 fontWeight: 'bold' 
               }}
             >
-              {selectedOrder.status}
+              {selectedOrder.orderStatus}
             </Typography>
           </DialogTitle>
           <DialogContent sx={{ padding: '24px' }}>

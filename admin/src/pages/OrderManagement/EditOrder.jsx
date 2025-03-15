@@ -113,8 +113,8 @@ const EditOrder = () => {
       newErrors.orderDate = 'Vui lòng chọn ngày đặt hàng';
     }
 
-    if (!order.status) {
-      newErrors.status = 'Vui lòng chọn trạng thái đơn hàng';
+    if (!order.orderStatus) {
+      newErrors.orderStatus = 'Vui lòng chọn trạng thái đơn hàng';
     }
 
     setErrors(newErrors);
@@ -282,10 +282,10 @@ const EditOrder = () => {
           <Grid item xs={12} sm={6}>
             <Autocomplete
               options={orderStatusOptions}
-              value={order.status || ''}
+              value={order.orderStatus || ''}
               onChange={(event, newValue) => {
                 handleChange({
-                  target: { name: 'status', value: newValue }
+                  target: { name: 'orderStatus', value: newValue }
                 });
               }}
               renderInput={(params) => (
@@ -294,8 +294,8 @@ const EditOrder = () => {
                   label="Trạng thái đơn hàng"
                   required
                   margin="normal"
-                  error={!!errors.status}
-                  helperText={errors.status}
+                  error={!!errors.orderStatus}
+                  helperText={errors.orderStatus}
                 />
               )}
             />

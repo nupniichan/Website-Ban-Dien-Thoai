@@ -384,10 +384,18 @@ const Dashboard = () => {
                       style={{ 
                         padding: '8px', 
                         border: '1px solid #ddd',
-                        color: getStatusColor(order.status)
+                        color: getStatusColor(order.orderStatus)
                       }}
                     >
-                      {getStatusText(order.status)}
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          fontWeight: 'bold', 
+                          color: getStatusColor(order.orderStatus)
+                        }}
+                      >
+                        {getStatusText(order.orderStatus)}
+                      </Typography>
                     </td>
                   </tr>
                 ))}

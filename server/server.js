@@ -223,7 +223,7 @@ app.post('/api/orders', async (req, res) => {
       items,
       paymentMethod,
       totalAmount,
-      status: orderStatus || 'Chờ xác nhận',
+      orderStatus: orderStatus || 'Chờ xác nhận',
       paymentStatus: paymentStatus || 'Chưa thanh toán',
       orderDate: parsedOrderDate,
       notes,
@@ -250,12 +250,12 @@ app.post('/api/orders', async (req, res) => {
 // Update order, adjust stock if necessary
 app.put('/api/orders/:id', async (req, res) => {
   const { id } = req.params;
-  const { status, paymentStatus, items, shippingAddress, orderDate } = req.body;
+  const { orderStatus, paymentStatus, items, shippingAddress, orderDate, paymentMethod, notes, customerName, customerId } = req.body;
 
   try {
     const updatedOrder = await Order.findOneAndUpdate(
       { id },
-      { status, paymentStatus, items, shippingAddress, orderDate },
+      { orderStatus, paymentStatus, items, shippingAddress, orderDate, paymentMethod, notes, customerName, customerId },
       { new: true, runValidators: true }
     );
 
@@ -762,7 +762,7 @@ app.get('/api/users/:id', async (req, res) => {
   const { id } = req.params; // Lấy ID từ params
 
   try {
-    const user = await User.findOne({ id }); // Tìm theo trường id
+    const user = await User.findOne({ id });
     if (!user) {
       return res.status(404).json({ message: 'Người dùng không tồn tại' });
     }
@@ -1158,7 +1158,7 @@ app.post('/callback', async (req, res) => {
                 items: orderData.items,
                 totalAmount: amount,
                 paymentMethod: 'MoMo',
-                status: 'Đã thanh toán',
+                orderStatus: 'Đã thanh toán',
                 paymentStatus: 'Đã thanh toán',
                 orderDate: new Date(),
                 notes: orderData.customerNote || '',
@@ -1425,9 +1425,9 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
     }
 
     // Kiểm tra xem đơn hàng có thể hủy không
-    if (['Đang giao hàng', 'Đã giao hàng', 'Đã hủy'].includes(order.status)) {
-      return res.status(400).json({ 
-        message: 'Không thể hủy đơn hàng trong trạng thái này' 
+    if (['Đang giao hàng', 'Đã giao hàng', 'Đã hủy'].includes(order.orderStatus)) {
+      return res.status(400).json({
+        message: 'Không thể hủy đơn hàng đã giao hoặc đã hủy'
       });
     }
 
@@ -1438,7 +1438,7 @@ app.post('/api/orders/:id/cancel', async (req, res) => {
     }
 
     // Cập nhật trạng thái đơn hàng
-    order.status = 'Đã hủy';
+    order.orderStatus = 'Đã hủy';
     order.cancellationReason = cancellationReason;
     order.cancelledAt = new Date();
 
@@ -1505,7 +1505,7 @@ app.post('/api/orders/create', async (req, res) => {
     const newOrder = new Order({
       id: newOrderId,
       ...orderData,
-      status: 'Chờ xác nhận',
+      orderStatus: orderData.status || 'Chờ xác nhận',
       orderDate: new Date(),
     });
 

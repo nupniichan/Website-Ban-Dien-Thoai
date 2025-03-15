@@ -224,14 +224,14 @@ const MyOrders = () => {
                                 <ul className="grid gap-5">
                                     {currentOrders.map((order) => {
                                         const statusStyle = getStatusStyle(
-                                            order.status
+                                            order.orderStatus
                                         );
                                         const canCancel = ![
                                             "Đã hủy",
                                             "Đã giao hàng",
                                             "Đang giao hàng",
                                             "Đã hoàn tiền",
-                                        ].includes(order.status);
+                                        ].includes(order.orderStatus);
 
                                         return (
                                             <li
@@ -264,7 +264,7 @@ const MyOrders = () => {
                                                         <div
                                                             className={`px-4 py-2 rounded-full border ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
                                                         >
-                                                            {order.status}
+                                                            {order.orderStatus}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -345,13 +345,13 @@ const MyOrders = () => {
                                                     <p
                                                         className={`font-semibold ${
                                                             getStatusStyle(
-                                                                selectedOrder.status
+                                                                selectedOrder.orderStatus
                                                             ).text
                                                         } 
-                            ${getStatusStyle(selectedOrder.status).bg} 
+                            ${getStatusStyle(selectedOrder.orderStatus).bg} 
                             px-3 py-1 rounded-full inline-block mt-1`}
                                                     >
-                                                        {selectedOrder.status}
+                                                        {selectedOrder.orderStatus}
                                                     </p>
                                                 </div>
                                                 <div>
