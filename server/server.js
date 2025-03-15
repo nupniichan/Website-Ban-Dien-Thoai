@@ -1172,6 +1172,7 @@ app.post('/callback', async (req, res) => {
 
             // Cập nhật số lượng sản phẩm
             await adjustProductStock(orderData.items);
+            console.log('Product stock adjusted for items:', orderData.items);
 
             // Xóa sản phẩm khỏi giỏ hàng
             const user = await User.findOne({ id: orderData.customerId });
@@ -1488,18 +1489,64 @@ app.delete('/api/cart/:userId/removeMultiple', async (req, res) => {
   }
 });
 
+// Endpoint để lấy ID đơn hàng mới nhất
+app.get('/api/orders/latest-id', async (req, res) => {
+  try {
+    console.log('Fetching latest order ID');
+    // Tìm đơn hàng mới nhất theo ID
+    const latestOrder = await Order.findOne().sort({ id: -1 });
+    console.log('Latest order found:', latestOrder ? latestOrder.id : 'No orders yet');
+    
+    let nextId;
+    if (latestOrder) {
+      // Nếu có đơn hàng, lấy số từ ID hiện tại và tăng lên 1
+      const currentNumber = parseInt(latestOrder.id.replace('OD', ''));
+      nextId = `OD${String(currentNumber + 1).padStart(3, '0')}`;
+    } else {
+      // Nếu không có đơn hàng nào, bắt đầu từ OD001
+      nextId = 'OD001';
+    }
+    
+    console.log('Next order ID will be:', nextId);
+    res.json({ nextId });
+  } catch (error) {
+    console.error('Error getting latest order ID:', error);
+    res.status(500).json({ 
+      message: 'Lỗi khi lấy ID đơn hàng mới nhất', 
+      error: error.message 
+    });
+  }
+});
+
 // API tạo đơn hàng cho thanh toán tiền mặt
 app.post('/api/orders/create', async (req, res) => {
   try {
+    console.log('Creating new order with data:', req.body);
     const orderData = req.body;
     
-    // Tạo ID cho đơn hàng mới
-    const counter = await Counter.findByIdAndUpdate(
-      { _id: 'orderId' },
-      { $inc: { seq: 1 } },
-      { new: true, upsert: true }
-    );
-    const newOrderId = `OD${String(counter.seq).padStart(3, '0')}`;
+    // Validate required fields
+    if (!orderData.customerId || !orderData.customerName || !orderData.shippingAddress || !orderData.items) {
+      console.error('Missing required order fields:', orderData);
+      return res.status(400).json({ 
+        message: 'Thiếu thông tin đơn hàng bắt buộc',
+        requiredFields: ['customerId', 'customerName', 'shippingAddress', 'items']
+      });
+    }
+    
+    // Lấy ID đơn hàng mới nhất
+    const latestOrder = await Order.findOne().sort({ id: -1 });
+    let newOrderId;
+    
+    if (latestOrder) {
+      // Nếu có đơn hàng, lấy số từ ID hiện tại và tăng lên 1
+      const currentNumber = parseInt(latestOrder.id.replace('OD', ''));
+      newOrderId = `OD${String(currentNumber + 1).padStart(3, '0')}`;
+    } else {
+      // Nếu không có đơn hàng nào, bắt đầu từ OD001
+      newOrderId = 'OD001';
+    }
+    
+    console.log('Generated new order ID:', newOrderId);
 
     // Tạo đơn hàng mới
     const newOrder = new Order({
@@ -1510,7 +1557,11 @@ app.post('/api/orders/create', async (req, res) => {
     });
 
     await newOrder.save();
+    console.log('Order saved successfully with ID:', newOrderId);
+    
+    // Adjust product stock
     await adjustProductStock(orderData.items);
+    console.log('Product stock adjusted for items:', orderData.items);
 
     // Xóa các sản phẩm đã đặt hàng khỏi giỏ hàng
     const user = await User.findOne({ id: orderData.customerId });
@@ -1520,6 +1571,7 @@ app.post('/api/orders/create', async (req, res) => {
         !orderedProductIds.includes(cartItem.productId)
       );
       await user.save();
+      console.log('User cart updated, removed ordered items');
     }
 
     res.status(201).json({ 
@@ -1528,6 +1580,16 @@ app.post('/api/orders/create', async (req, res) => {
     });
   } catch (error) {
     console.error('Error creating order:', error);
+    
+    // Check for validation errors from Mongoose
+    if (error.name === 'ValidationError') {
+      const validationErrors = Object.values(error.errors).map(err => err.message);
+      return res.status(400).json({ 
+        message: 'Lỗi xác thực dữ liệu đơn hàng', 
+        validationErrors 
+      });
+    }
+    
     res.status(500).json({ 
       message: 'Lỗi khi tạo đơn hàng', 
       error: error.message 

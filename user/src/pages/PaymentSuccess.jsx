@@ -13,10 +13,10 @@ const PaymentSuccess = () => {
     return (
         <div className="flex flex-col items-center justify-center h-screen bg-green-50">
             <h1 className="text-4xl font-bold text-green-600 mb-4">
-                Thanh toán thành công!
+                Đặt hàng thành công!
             </h1>
             <p className="text-lg text-gray-700 mb-6">
-                Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi.
+                Cảm ơn bạn đã đặt hàng. Chúng tôi sẽ xử lý đơn hàng của bạn trong thời gian sớm nhất.
             </p>
             <div className="flex space-x-4">
                 <button

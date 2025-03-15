@@ -15,7 +15,7 @@ const Checkout = () => {
         address: "",
     });
     const [shippingOption, setShippingOption] = useState("store");
-    const [paymentMethod, setPaymentMethod] = useState("Thanh toán qua MOMO");
+    const [paymentMethod, setPaymentMethod] = useState("Tiền mặt");
     const [cartItems, setCartItems] = useState([]);
     const [totalAmount, setTotalAmount] = useState(0);
     const [notes, setNotes] = useState(""); // Lưu trữ ghi chú từ người dùng
@@ -105,7 +105,7 @@ const Checkout = () => {
         const paymentData = {
             customerId: userId,
             customerName: customerInfo.name,
-            amount: finalAmount,
+            totalAmount: finalAmount,
             paymentMethod: paymentMethod,
             customerNote: notes,
             discountId: selectedDiscount?.id || null,
@@ -160,6 +160,17 @@ const Checkout = () => {
             }
         } else if (paymentMethod === "Tiền mặt") {
             try {
+                // Lấy ID đơn hàng mới nhất trước khi tạo đơn hàng
+                const getLatestOrderIdResponse = await fetch(`${BASE_URL}/api/orders/latest-id`);
+                
+                if (!getLatestOrderIdResponse.ok) {
+                    const errorData = await getLatestOrderIdResponse.json().catch(() => ({}));
+                    console.error("Error response from latest-id endpoint:", errorData);
+                    
+                    // Nếu không lấy được ID mới, vẫn tiếp tục tạo đơn hàng mà không cần ID cụ thể
+                    console.log("Proceeding with order creation without specific ID");
+                }
+                
                 // Tạo đơn hàng với trạng thái chờ xác nhận
                 const response = await fetch(`${BASE_URL}/api/orders/create`, {
                     method: "POST",
@@ -193,15 +204,17 @@ const Checkout = () => {
                         showProgress: true,
                         pauseOnHover: true,
                     });
-                    navigate("/payment-history");
+                    navigate(PathNames.PAYMENT_SUCCESS);
                 } else {
-                    throw new Error("Lỗi khi tạo đơn hàng");
+                    const errorData = await response.json();
+                    console.error("Error response from create order endpoint:", errorData);
+                    throw new Error(errorData.message || "Lỗi khi tạo đơn hàng");
                 }
             } catch (error) {
                 console.error("Lỗi khi tạo đơn hàng:", error);
                 notification.error({
                     message: 'Lỗi',
-                    description: "Có lỗi xảy ra khi tạo đơn hàng",
+                    description: error.message || "Có lỗi xảy ra khi tạo đơn hàng",
                     duration: 4,
                     placement: "bottomRight",
                     showProgress: true,
@@ -391,9 +404,7 @@ const Checkout = () => {
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                 >
-                    {shippingOption === "store" && (
-                        <option value="Tiền mặt">Tiền mặt</option>
-                    )}
+                    <option value="Tiền mặt">Tiền mặt</option>
                     <option value="MoMo">
                         Thanh toán qua MOMO
                     </option>
